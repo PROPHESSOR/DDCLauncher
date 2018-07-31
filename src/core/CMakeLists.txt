@@ -476,6 +476,7 @@ set(HEADER_FILES
 
 # Translations
 set (TRANSLATIONS_FILES
+    translations/ru_RU.ts
 	translations/pl_PL.ts
 )
 

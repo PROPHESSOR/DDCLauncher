@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>392</width>
-    <height>472</height>
+    <height>533</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -132,7 +132,7 @@
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>&lt;a href=&quot;http://doomseeker.drdteam.org/&quot;&gt;http://doomseeker.drdteam.org/&lt;/a&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/doomseeker/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHub.com/PROPHESSOR/DoomSeeker/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -170,6 +170,7 @@
          </property>
          <property name="plainText">
           <string>Copyright © 2009 - 2014 The Doomseeker Team
+Copyright © 2018 PROPHESSOR
 
 This program is distributed under the terms of the GPL v2.</string>
          </property>
@@ -207,10 +208,23 @@ This program is distributed under the terms of the GPL v2.</string>
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_9">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_11">
            <property name="text">
-            <string>Zalewa:</string>
+            <string>Blzut3:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>admin@maniacsvault.net</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
@@ -230,23 +244,10 @@ This program is distributed under the terms of the GPL v2.</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_11">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>Blzut3:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>admin@maniacsvault.net</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+            <string>Zalewa:</string>
            </property>
           </widget>
          </item>
@@ -275,7 +276,7 @@ This program is distributed under the terms of the GPL v2.</string>
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Eruanna, Hyper_Eye, Nece228</string>
+          <string>Eruanna, Hyper_Eye, Nece228, PROPHESSOR</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -516,8 +517,6 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
   </layout>
-  <zorder>buttonBox</zorder>
-  <zorder>tabWidget</zorder>
  </widget>
  <resources/>
  <connections/>
