@@ -121,7 +121,7 @@ qt4_add_resources(doomseekerResources
 # Translations
 set (TRANSLATIONS_FILES
         translations/ru_RU.ts
-	translations/pl_PL.ts
+        translations/pl_PL.ts
 )
 
 option (UPDATE_TRANSLATIONS "Update source translation translations/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")

@@ -3707,7 +3707,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="1238"/>
         <source>Get Servers</source>
-        <translation>Получить сервера</translation>
+        <translation>Обновить список серверов</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1239"/>
@@ -3762,7 +3762,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="750"/>
         <source>Server &amp;Details</source>
-        <translation>Сервер &amp;Подробности</translation>
+        <translation>Подробности сервера</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="751"/>

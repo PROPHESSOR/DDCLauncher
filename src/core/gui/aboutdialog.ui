@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>409</width>
-    <height>600</height>
+    <width>475</width>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -132,7 +132,7 @@
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>&lt;a href=&quot;https://doomseeker.drdteam.org/&quot;&gt;https://doomseeker.drdteam.org/&lt;/a&gt;</string>
+          <string>&lt;a href=&quot;https://github.com/PROPHESSOR/doomseeker/tree/DDCLauncher/&quot;&gt;GitHub.com/PROPHESSOR/Doomseeker&lt;/a&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -161,6 +161,7 @@
          </property>
          <property name="plainText">
           <string>Copyright © 2009 - 2017 The Doomseeker Team
+Copyright © 2018 PROPHESSOR &amp; DDC
 
 This program is distributed under the terms of the LGPL v2.1 or later.
 
@@ -243,6 +244,23 @@ This program uses icons (or derivates of) from following sources:
            </property>
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>PROPHESSOR</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>xenteze@gmail.com</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
