@@ -153,7 +153,7 @@ if (WIN32 AND NOT Qt5Widgets_FOUND)
 		${QT_TRANSLATIONS_DIR}/qt_pl.ts)
 endif()
 
-qt4_add_translation(QM_FILES ${TRANSLATIONS_FILES})
+qt5_add_translation(QM_FILES ${TRANSLATIONS_FILES})
 
 if (WIN32 AND Qt5Widgets_FOUND)
 	# Copy Qt5 translations that need to be redistributed with the .exe.

@@ -44,7 +44,7 @@
         <location filename="../../../../debug/src/core/ui_aboutdialog.h" line="392"/>
         <location filename="../../../../debug/src/core/ui_aboutdialog.h" line="412"/>
         <source>&lt;a href=&quot;http://doomseeker.drdteam.org/&quot;&gt;http://doomseeker.drdteam.org/&lt;/a&gt;&lt;br/&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/doomseeker/&quot;&gt;https://github.com/PROPHESSOR/doomseeker&lt;/a&gt;</source>
-        <translation></translation>
+        <translation>&lt;a href=&quot;http://doomseeker.drdteam.org/&quot;&gt;http://doomseeker.drdteam.org/&lt;/a&gt;&lt;br/&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/doomseeker/&quot;&gt;https://github.com/PROPHESSOR/doomseeker&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_aboutdialog.h" line="393"/>
@@ -63,7 +63,7 @@ Copyright © 2018 PROPHESSOR
                 p, li { white-space: pre-wrap; }
                 &lt;/style&gt;&lt;/head&gt;&lt;body&gt;
                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/ereilin/qt-json&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/ereilin/qt-json&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -130,7 +130,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_aboutdialog.h" line="402"/>
         <source>Eruanna, Hyper_Eye, Nece228, PROPHESSOR (перевод на русский)</source>
-        <translation></translation>
+        <translation>Eruanna, Hyper_Eye, Nece228, PROPHESSOR (перевод на русский)</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_aboutdialog.h" line="403"/>
@@ -318,132 +318,132 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../updater/autoupdater.cpp" line="215"/>
         <source>Failed to save update script.</source>
-        <translation></translation>
+        <translation>Ошибка при сохранении скрипта обновлений.</translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="344"/>
         <source>Confirm</source>
-        <translation></translation>
+        <translation>Подтвердить</translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="441"/>
         <source>Update info</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="463"/>
         <source>Package: %1</source>
-        <translation></translation>
+        <translation>Пакет: %1</translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="509"/>
         <source>Invalid download URL for package script &quot;%1&quot;: %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="514"/>
         <source>Downloading package script &quot;%1&quot; from URL: %2.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="217"/>
         <source>Unknown error.</source>
-        <translation></translation>
+        <translation>Неизвестная ошибка.</translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="261"/>
         <source>Finished downloading package &quot;%1&quot;.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="267"/>
         <source>Network error when downloading package &quot;%1&quot;: [%2] %3</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="290"/>
         <source>Finished downloading package script &quot;%1&quot;.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="307"/>
         <source>All packages downloaded. Building updater script.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="314"/>
         <source>Network error when downloading package script &quot;%1&quot;: [%2] %3</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="343"/>
         <source>Requesting update confirmation.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="355"/>
         <source>No new program updates detected.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="358"/>
         <source>Some update packages were ignored. To install them select &quot;Check for updates&quot; option from &quot;Help&quot; menu.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="423"/>
         <source>Failed to create directory for updates storage: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="458"/>
         <source>Invalid download URL for package &quot;%1&quot;: %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="464"/>
         <source>Downloading package &quot;%1&quot; from URL: %2.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="479"/>
         <source>Couldn&apos;t save file in path: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="91"/>
         <source>Missing main &quot;update&quot; node.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="126"/>
         <source>Missing &quot;install&quot; element.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="136"/>
         <source>Missing text node for &quot;package&quot; element for &quot;file&quot; element %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="158"/>
         <source>Missing &quot;packages&quot; element.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="172"/>
         <source>More than one &quot;package&quot; element found.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="174"/>
         <source>Missing &quot;package&quot; element.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterscriptparser.cpp" line="183"/>
         <source>Failed to find &quot;name&quot; text node.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -623,7 +623,7 @@ Copyright © 2018 PROPHESSOR
                 p, li { white-space: pre-wrap; }
                 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Adds a new entry to the list. To specify the address and port of the custom server double-click on the cells in the table. Domain names are supported.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_cfgcustomservers.h" line="105"/>
@@ -881,7 +881,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_cfgircdefinenetworkdialog.h" line="273"/>
         <source>/privmsg nickserv identify %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_cfgircdefinenetworkdialog.h" line="274"/>
@@ -1043,7 +1043,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/configuration/irc/cfgircsounds.cpp" line="38"/>
         <source>WAVE (*.wav)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/cfgircsounds.h" line="38"/>
@@ -1075,7 +1075,7 @@ Copyright © 2018 PROPHESSOR
         <location filename="../../../../debug/src/core/ui_cfgircsounds.h" line="144"/>
         <location filename="../../../../debug/src/core/ui_cfgircsounds.h" line="152"/>
         <source>...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_cfgircsounds.h" line="147"/>
@@ -1479,12 +1479,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/configuration/cfgwadseekeridgames.h" line="38"/>
         <source>Idgames</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekeridgames.h" line="40"/>
         <source>Wadseeker - Idgames</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_cfgwadseekeridgames.h" line="98"/>
@@ -1662,12 +1662,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../connectionhandler.cpp" line="188"/>
         <source>Error while launching executable for server &quot;%1&quot;, game &quot;%2&quot;: %3</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../connectionhandler.cpp" line="190"/>
         <source>Doomseeker - launch executable</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1801,7 +1801,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_createserverdialog.h" line="622"/>
         <source>Started from DDC Doomseeker</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_createserverdialog.h" line="623"/>
@@ -1827,7 +1827,7 @@ Copyright © 2018 PROPHESSOR
         <location filename="../../../../debug/src/core/ui_createserverdialog.h" line="627"/>
         <location filename="../../../../debug/src/core/ui_createserverdialog.h" line="629"/>
         <source>...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_createserverdialog.h" line="628"/>
@@ -2137,7 +2137,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/dockBuddiesList.cpp" line="44"/>
         <source>ID</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/dockBuddiesList.cpp" line="45"/>
@@ -2192,7 +2192,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/configuration/doomseekerconfigurationdialog.cpp" line="87"/>
         <source>Wadseeker</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/configuration/doomseekerconfigurationdialog.cpp" line="110"/>
@@ -2272,7 +2272,7 @@ Copyright © 2018 PROPHESSOR
         <location filename="../../../../debug/src/core/ui_engineconfigurationbasebox.h" line="185"/>
         <location filename="../../../../debug/src/core/ui_engineconfigurationbasebox.h" line="187"/>
         <source>...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_engineconfigurationbasebox.h" line="186"/>
@@ -2318,7 +2318,7 @@ Copyright © 2018 PROPHESSOR
         <source>Path to working directory for game &quot;%1&quot; is empty.
 
                 Make sure the configuration for the client executable is set properly.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="204"/>
@@ -2327,27 +2327,27 @@ Copyright © 2018 PROPHESSOR
                 This directory cannot be used as working directory for game: %2
 
                 Executable: %3</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="222"/>
         <source>BUG: Plugin doesn&apos;t specify argument for in-game password, but the server requires such password.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="256"/>
         <source>BUG: Plugin doesn&apos;t specify argument for connect password, but the server is passworded.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="404"/>
         <source>Game can be installed by Doomseeker</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="410"/>
         <source>Client binary cannot be obtained for %1, please check the location given in the configuration.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2355,12 +2355,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../serverapi/gameexefactory.cpp" line="63"/>
         <source>offline</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gameexefactory.cpp" line="72"/>
         <source>server</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2368,25 +2368,27 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../serverapi/gamehost.cpp" line="103"/>
         <source>Iwad is not set</source>
-        <translation></translation>
+        <translation>IWAD не задан</translation>
     </message>
     <message>
         <location filename="../serverapi/gamehost.cpp" line="111"/>
         <source>Iwad Path error:
                 &quot;%1&quot; doesn&apos;t exist or is a directory!</source>
-        <translation></translation>
+        <translation>Ошибка в пути к IWAD файлу:
+                &quot;%1&quot; не существует, или является директорией!</translation>
     </message>
     <message>
         <location filename="../serverapi/gamehost.cpp" line="127"/>
         <source>Pwad path error:
                 &quot;%1&quot; doesn&apos;t exist or is a directory!</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/gamehost.cpp" line="307"/>
         <source>%1
                 doesn&apos;t exist or is not a file.</source>
-        <translation></translation>
+        <translation>%1
+                не существует, или не является файлом.</translation>
     </message>
 </context>
 <context>
@@ -2496,12 +2498,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../ip2c/ip2c.cpp" line="156"/>
         <source>Localhost</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2c.cpp" line="161"/>
         <source>LAN</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2c.cpp" line="173"/>
@@ -2514,62 +2516,62 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="38"/>
         <source>IP2C parser is still working. Program will close once this job is done.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="79"/>
         <source>IP2C database finished downloading.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="84"/>
         <source>Unable to save IP2C database at path: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="90"/>
         <source>IP2C download has failed.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="101"/>
         <source>Failed to read IP2C database. Reverting...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="105"/>
         <source>IP2C revert attempt failed. Nothing to go back to.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="111"/>
         <source>Using precompiled IP2C database.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="127"/>
         <source>IP2C database updated successfully.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="140"/>
         <source>IP2C parsing finished.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="145"/>
         <source>IP2C update finished.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="154"/>
         <source>Please wait. IP2C database is being read and converted if necessary. This may take some time.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cloader.cpp" line="163"/>
         <source>Starting IP2C update.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2577,42 +2579,42 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="107"/>
         <source>Parsing IP2C database: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="113"/>
         <source>Unable to open IP2C file.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="125"/>
         <source>IP2C database is not in compacted format. Performing conversion!</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="132"/>
         <source>IP2C database conversion failed</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="137"/>
         <source>IP2C database converted in %1 ms</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="138"/>
         <source>Parsing now compacted IP2C database</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="185"/>
         <source>IP2C database read in %1 ms. Entries read: %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ip2c/ip2cparser.cpp" line="192"/>
         <source>IP2C parsing thread has finished.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2629,7 +2631,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/ip2cupdatebox.cpp" line="59"/>
         <source>This file cannot be found. Precompiled database will be used. Use update button if you want to fix this problem.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ip2cupdatebox.h" line="98"/>
@@ -2639,17 +2641,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_ip2cupdatebox.h" line="99"/>
         <source>IP2C file location:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ip2cupdatebox.h" line="100"/>
         <source>&lt;ENTER LOCATION HERE&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ip2cupdatebox.h" line="101"/>
         <source>&lt;ENTER DATABASE AGE HERE OR LEAVE EMPTY&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ip2cupdatebox.h" line="102"/>
@@ -2658,7 +2660,7 @@ Copyright © 2018 PROPHESSOR
                 p, li { white-space: pre-wrap; }
                 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
                 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Please note that IP2C update is performed in the background. Doomseeker will notify you of download progress through a progress bar and log messages.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ip2cupdatebox.h" line="107"/>
@@ -2676,37 +2678,37 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="40"/>
         <source>Doomseeker End Of Line</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="166"/>
         <source>%1 is now known as %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="175"/>
         <source>User %1 [%2] has joined the channel.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="192"/>
         <source>User %1 has left the channel. (PART: %2)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="197"/>
         <source>Connection for user %1 has been killed. (KILL: %2)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="202"/>
         <source>User %1 has quit the network. (QUIT: %2)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircchanneladapter.cpp" line="207"/>
         <source>Unknown quit type from user %1.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2714,12 +2716,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircclient.cpp" line="47"/>
         <source>IRC: attempting host lookup: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircclient.cpp" line="92"/>
         <source>IRC: Connecting: %1:%2 [IP: %3]</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2737,17 +2739,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="45"/>
         <source>Settings save failed!</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="84"/>
         <source>Config validation</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="84"/>
         <source>You have chosen one or more networks for autojoin startup but you have not defined any nickname. Please define it now.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2755,7 +2757,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircctcpparser.cpp" line="67"/>
         <source>CTCP %1: [%2] %3 %4</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircctcpparser.cpp" line="71"/>
@@ -2800,22 +2802,22 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="274"/>
         <source>Cannot obtain network connection adapter.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="278"/>
         <source>You are not connected to this network.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="282"/>
         <source>Specify a channel or user name:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircdock.h" line="75"/>
         <source>IRC</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2824,109 +2826,109 @@ Copyright © 2018 PROPHESSOR
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="51"/>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="765"/>
         <source>CTCP Ping</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="52"/>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="764"/>
         <source>CTCP Time</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="53"/>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="766"/>
         <source>CTCP Version</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="390"/>
         <source>Error: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="682"/>
         <source>Ban user</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="682"/>
         <source>Input reason for banning user %1 from channel %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="720"/>
         <source>Kick user</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="720"/>
         <source>Input reason for kicking user %1 from channel %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="762"/>
         <source>Open chat window</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="768"/>
         <source>Op</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="769"/>
         <source>Deop</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="770"/>
         <source>Half op</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="771"/>
         <source>De half op</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="772"/>
         <source>Voice</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="773"/>
         <source>Devoice</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="775"/>
         <source>Kick</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="776"/>
         <source>Ban</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircdocktabcontents.h" line="139"/>
         <source>Form</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircdocktabcontents.h" line="140"/>
         <source>Send</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircdocktabcontents.h" line="141"/>
         <source>Command</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircdocktabcontents.h" line="143"/>
         <source>Do not scroll text area</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2934,32 +2936,32 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="182"/>
         <source>You are not connected to the network.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="192"/>
         <source>Insufficient parameters.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="196"/>
         <source>This is a server window. All commands must be prepended with a &apos;/&apos; character.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="200"/>
         <source>Attempted to send empty message.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="204"/>
         <source>Command is too long.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="208"/>
         <source>Not a chat window.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="217"/>
@@ -2969,82 +2971,82 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="320"/>
         <source>IRC: Successfuly registered on network %1 [%2:%3]</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="359"/>
         <source>Invalid parse result for mesage: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="410"/>
         <source>You have been kicked from channel %1 by %2 (Reason: %3)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="415"/>
         <source>%1 was kicked by %2 (%3)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="467"/>
         <source>%1 sets mode: %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="490"/>
         <source>Nickname %1 is already taken.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="497"/>
         <source>Both nickname and alternate nickname are taken on this network.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="501"/>
         <source>No alternate nickname specified.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="507"/>
         <source>Using alternate nickname %1 to join.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="516"/>
         <source>User %1 is not logged in.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="542"/>
         <source>IRC parse error: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="638"/>
         <source>Updated own nickname.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="698"/>
         <source>You left channel %1.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="732"/>
         <source>Ping to user %1: %2ms</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="568"/>
         <source>FROM %1: %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.h" line="78"/>
         <source>Doomseeker End Of Line</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3052,82 +3054,82 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="54"/>
         <source>&lt;Last Used Configuration&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="158"/>
         <source>IRC connection error</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="163"/>
         <source>You must specify a nick.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="169"/>
         <source>You must specify a network address.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="194"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="195"/>
         <source>Nick:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="196"/>
         <source>DSTest</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="197"/>
         <source>Alternate nick:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="198"/>
         <source>DSTestA</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="199"/>
         <source>Real name:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="200"/>
         <source>Doomseeker Tester</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="201"/>
         <source>New</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="202"/>
         <source>Server address:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="203"/>
         <source>74.207.247.18</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="204"/>
         <source>Port:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_ircnetworkselectionbox.h" line="205"/>
         <source>Password:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3135,17 +3137,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircprivadapter.cpp" line="57"/>
         <source>This user connection has been killed. (KILL: %1)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircprivadapter.cpp" line="61"/>
         <source>This user has left the network. (QUIT: %1)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircprivadapter.cpp" line="65"/>
         <source>Unhandled IRCQuitType in IRCPrivAdapter::userLeaves()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3153,43 +3155,43 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="159"/>
         <source>Topic: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="171"/>
         <source>Topic set by %1 on %2.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="193"/>
         <source>RPLNamReply: Received names list but no channel name.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="483"/>
         <source>Type &apos;%1&apos; was incorrectly parsed in PrivMsg block.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="396"/>
         <source>New topic set by user %1:
                 %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="415"/>
         <source>IRCResponseParser: Type &apos;%1&apos; was recognized but there has been no parse code implemented for it.(yep, it&apos;s a bug in the application!)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="499"/>
         <source>MODE flags string from IRC server are incorrect: &quot;%1&quot;. Information for channel &quot;%2&quot; might not be correct anymore.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="533"/>
         <source>IRCResponseParser::parseUserModeMessage(): wrong FlagMode. Information for channel &quot;%2&quot; might not be correct anymore.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3197,12 +3199,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="763"/>
         <source>Connected. Sending registration messages.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="785"/>
         <source>IRC: Disconnected from network %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3217,7 +3219,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="108"/>
         <source>Attempted to obtain a join command line for a &quot;%1&quot; server that is under refresh.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="115"/>
@@ -3229,7 +3231,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="116"/>
         <source>Attempted to obtain a join command line for an unknown server &quot;%1&quot;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="145"/>
@@ -3242,7 +3244,7 @@ Copyright © 2018 PROPHESSOR
         <location filename="../joincommandlinebuilder.cpp" line="149"/>
         <location filename="../joincommandlinebuilder.cpp" line="193"/>
         <source>Doomseeker - files are missing</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="152"/>
@@ -3251,35 +3253,35 @@ Copyright © 2018 PROPHESSOR
                 Following files can be downloaded: %1
 
                 Do you want Wadseeker to find the missing WADs?</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="179"/>
         <source>Unknown error.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="183"/>
         <source>Error when obtaining join parameters for server &quot;%1&quot;, game &quot;%2&quot;: %3</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="194"/>
         <source>You don&apos;t have all the files required by this server and an instance of Wadseeker is already running.
 
                 Press &apos;Ignore&apos; to join anyway.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="201"/>
         <source>Following files are missing:
             </source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="205"/>
         <source>IWAD: </source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="208"/>
@@ -3289,17 +3291,17 @@ Copyright © 2018 PROPHESSOR
                 Wadseeker will not download commercial IWADs.
 
             </source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="221"/>
         <source>PWADS: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../joincommandlinebuilder.cpp" line="379"/>
         <source>Game installation failure</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3307,7 +3309,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../fileutils.cpp" line="40"/>
         <source>Failed to remove: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3315,17 +3317,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_logdock.h" line="92"/>
         <source>Log</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_logdock.h" line="93"/>
         <source>Copy all to clipboard</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_logdock.h" line="94"/>
         <source>Clear</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3343,7 +3345,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../main.cpp" line="213"/>
         <source>Init finished.</source>
-        <translation></translation>
+        <translation>Инициализация завершена.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="228"/>
@@ -3353,12 +3355,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../main.cpp" line="267"/>
         <source>Preparing GUI.</source>
-        <translation></translation>
+        <translation>Подготовка интерфейса.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="287"/>
         <source>Starting RCon client.</source>
-        <translation></translation>
+        <translation>Запуск RCon клиента.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="300"/>
@@ -3368,82 +3370,82 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../main.cpp" line="309"/>
         <source>Plugin does not support RCon.</source>
-        <translation></translation>
+        <translation>Плагин не поддерживает RCon</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="353"/>
         <source>Initializing IP2C database.</source>
-        <translation></translation>
+        <translation>Инициализация базы данных IP2C.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="361"/>
         <source>Initializing IRC configuration file.</source>
-        <translation></translation>
+        <translation>Инициализация конфигурационной файла IRC.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="379"/>
         <source>Loading translations definitions</source>
-        <translation></translation>
+        <translation>Загрузка переводов</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="384"/>
         <source>Loading translation &quot;%1&quot;.</source>
-        <translation></translation>
+        <translation>Загрузка перевода на язык: &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="388"/>
         <source>Translation loaded.</source>
-        <translation></translation>
+        <translation>Переводы загружены.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="392"/>
         <source>Failed to load translation.</source>
-        <translation></translation>
+        <translation>Невозможно загрузить перевод.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="398"/>
         <source>Initializing configuration file.</source>
-        <translation></translation>
+        <translation>Инициализация конфигурационного файла.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="407"/>
         <source>Could not get an access to the settings directory. Configuration will not be saved.</source>
-        <translation></translation>
+        <translation>Не могу получить доступ к папке настроек. Настройки не будут сохранены.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="426"/>
         <source>Initializing passwords configuration file.</source>
-        <translation></translation>
+        <translation>Инициализация конфигурационного файла паролей.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="439"/>
         <source>Initializing configuration for plugins.</source>
-        <translation></translation>
+        <translation>Инициализация настроек плагинов.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="498"/>
         <source>Available command line parameters:</source>
-        <translation></translation>
+        <translation>Доступные параметры CLI:</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="499"/>
         <source>    --connect protocol://ip[:port] : Attempts to connect to the specified server.</source>
-        <translation></translation>
+        <translation>    --connect protocol://ip[:port] : Пробует подключиться к указанному серверу.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="500"/>
         <source>    --datadir : Sets an explicit search location for IP2C data along with plugins.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../main.cpp" line="501"/>
         <source>    --rcon [plugin] [ip] : Launch the rcon client for the specified ip.</source>
-        <translation></translation>
+        <translation>    --rcon [plugin] [ip] : Запускает RCON клиент для указанного IP.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="502"/>
         <source>    --portable : Starts application in portable mode.</source>
-        <translation></translation>
+        <translation>    --portable : Запускает Doomseeker в портейбл-режиме.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="503"/>
@@ -3451,27 +3453,30 @@ Copyright © 2018 PROPHESSOR
                 Doomseeker and all plugins in JSON format
                 to specified file, then closes the program.
             </source>
-        <translation></translation>
+        <translation>    --version-json [file] : Отображает информацию о версии
+                Doomseeker&apos;а и всех плагинов в JSON формате
+                в указанный файл, затем закрывает программу.
+            </translation>
     </message>
     <message>
         <location filename="../main.cpp" line="529"/>
         <source>Failed to open file.</source>
-        <translation></translation>
+        <translation>Невозможно открыть файл.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="536"/>
         <source>Dumping version info to file in JSON format.</source>
-        <translation></translation>
+        <translation>Дампим информацию о версии в файл в JSON формате.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="542"/>
         <source>No file specified!</source>
-        <translation></translation>
+        <translation>Не указан файл!</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="553"/>
         <source>Starting refreshing thread.</source>
-        <translation></translation>
+        <translation>Начинаю поток обновления.</translation>
     </message>
 </context>
 <context>
@@ -3492,7 +3497,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="113"/>
         <source>Doomseeker - plugin load failure</source>
-        <translation></translation>
+        <translation>Doomseeker - ошибка загрузки плагина</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="121"/>
@@ -3502,7 +3507,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="122"/>
         <source>CTRL+B</source>
-        <translation></translation>
+        <translation>CTRL+B</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="317"/>
@@ -3512,84 +3517,84 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="318"/>
         <source>Update is already in progress.</source>
-        <translation></translation>
+        <translation>Убновление и так в процессе.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="327"/>
         <source>Removing old update packages from local temporary space.</source>
-        <translation></translation>
+        <translation>Удаляю старые версии обновлений пакетов из локального временного хранилища.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="332"/>
         <source>Checking for updates...</source>
-        <translation></translation>
+        <translation>Проверяю на наличие обновлений...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="565"/>
         <source>Senseless refresh operation attempted.</source>
-        <translation></translation>
+        <translation>Произошло бесшумное обновление.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="567"/>
         <source>Doomseeker is unable to proceed with the refresh operation because the following problem has occured:
 
             </source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="572"/>
         <source>Plugins are missing from the &quot;engines/&quot; directory.</source>
-        <translation></translation>
+        <translation>Нет плагинов в папке &quot;engines/&quot;.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="576"/>
         <source>No master servers are enabled in the &quot;Query&quot; menu.</source>
-        <translation></translation>
+        <translation>Нет включённых мастер-серверов в меню &quot;Опрос&quot;.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="580"/>
         <source>Unknown error occured.</source>
-        <translation></translation>
+        <translation>Произошла непредвиденная ошибка.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="584"/>
         <source>Doomseeker - senseless operation</source>
-        <translation></translation>
+        <translation>Doomseeker - безсмысленная операция</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="590"/>
         <source>Total refresh process initialized!</source>
-        <translation></translation>
+        <translation>Запущен процесс общего обновления!</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="598"/>
         <source>Warning: No master servers were enabled for this refresh. Check your Query menu or &quot;engines/&quot; directory. Custom servers will still refresh.</source>
-        <translation></translation>
+        <translation>Внимание: Для этого обновление не включено ни одного мастер-сервера. Проверьте пункт &quot;Опрос&quot; в настройках, или папку &quot;engines/&quot;. Добавленные вручную сервера всё ещё обновляются.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="666"/>
         <source>Auto Updater:</source>
-        <translation></translation>
+        <translation>Автообновление:</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="681"/>
         <source>Abort update.</source>
-        <translation></translation>
+        <translation>Отменить обновление.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="693"/>
         <source>IP2C Update</source>
-        <translation></translation>
+        <translation>Обновление IP2C</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="704"/>
         <source>&amp;IRC</source>
-        <translation></translation>
+        <translation>&amp;IRC</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="705"/>
         <source>CTRL+I</source>
-        <translation></translation>
+        <translation>CTRL+I</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="720"/>
@@ -3599,40 +3604,41 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="721"/>
         <source>CTRL+L</source>
-        <translation></translation>
+        <translation>CTRL+L</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="737"/>
         <source>Servers</source>
-        <translation></translation>
+        <translation>Сервера</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="860"/>
         <location filename="../gui/mainwindow.cpp" line="873"/>
         <source>Master server for %1: %2</source>
-        <translation></translation>
+        <translation>Мастер сервер для %1: %2</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="864"/>
         <source>Error: %1</source>
-        <translation></translation>
+        <translation>Ошибка: %1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="910"/>
         <location filename="../gui/mainwindow.cpp" line="918"/>
         <source>Help error</source>
-        <translation></translation>
+        <translation>Ошибка помощи</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="910"/>
         <source>No help found.</source>
-        <translation></translation>
+        <translation>Помощь не найдена.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="918"/>
         <source>Failed to open URL:
                 %1</source>
-        <translation></translation>
+        <translation>Невозможно открыть URL:
+                %1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="997"/>
@@ -3647,22 +3653,22 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="1015"/>
         <source>Program update detection &amp; download finished with status: [%1] %2</source>
-        <translation></translation>
+        <translation>Скачивание обновления завершилось со статусом: [%1] %2</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1025"/>
         <source>Updates will be installed on next program start.</source>
-        <translation></translation>
+        <translation>Обновления будут установлены при следующем запуске программы.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1032"/>
         <source>Update channel was changed during update process. Discarding update.</source>
-        <translation></translation>
+        <translation>Канал обновлений был изменен во время процесса обновления. Откатываю изменения.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1074"/>
         <source>Query on startup warning: No master servers are enabled in the Query menu.</source>
-        <translation></translation>
+        <translation>Предупреждение опроса серверов при запуске: Не включен ни один мастер-сервер в пункте &quot;Опрос&quot; настроек.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1092"/>
@@ -3676,17 +3682,22 @@ Copyright © 2018 PROPHESSOR
 
                 Please check if there are any files in &quot;engines/&quot; directory.
                 To fix this problem you may try downloading Doomseeker again from the site specified in the Help|About box and reinstalling Doomseeker.</source>
-        <translation></translation>
+        <translation>Doomseeker не может найти ни одного плагина/библиотеки.
+                Программа всё ещё будет работать, но невозможно будет заходить на сервера/запускать игру.
+
+                Пожалуйста, проверьте наличие файлов в папке &quot;engines/&quot;.
+                Для исправления этой проблемы, вы можете попробовать скачать Doomseeker снова с сайта, указанного в окне Помощь|О программе и переустановить его.
+                Примечание переводчика: Это так же может означать неверную компиляцию из исходников.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1143"/>
         <source>Querying...</source>
-        <translation></translation>
+        <translation>Опрашиваю сервера...</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1153"/>
         <source>Done</source>
-        <translation></translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1233"/>
@@ -3717,19 +3728,22 @@ Copyright © 2018 PROPHESSOR
         <location filename="../gui/mainwindow.cpp" line="1306"/>
         <source>Update installation problem:
                 %1</source>
-        <translation></translation>
+        <translation>Возникла проблема при установке обновления:
+                %1</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1310"/>
         <source>Update installation failed.</source>
-        <translation></translation>
+        <translation>Ошибка при установке обновления.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1313"/>
         <source>%1
 
                 Remaining updates have been discarded.</source>
-        <translation></translation>
+        <translation>%1
+
+                Оставшиеся обновления отменены.</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1318"/>
@@ -3737,18 +3751,18 @@ Copyright © 2018 PROPHESSOR
                 %1
 
                 Remaining updates have been discarded.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="1312"/>
         <location filename="../gui/mainwindow.cpp" line="1321"/>
         <source>Doomseeker - Auto Update problem</source>
-        <translation></translation>
+        <translation>Doomseeker - Проблема автообновления</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="750"/>
         <source>Server &amp;Details</source>
-        <translation></translation>
+        <translation>Сервер &amp;Подробности</translation>
     </message>
     <message>
         <location filename="../gui/mainwindow.cpp" line="751"/>
@@ -3758,7 +3772,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/mainwindow.cpp" line="1405"/>
         <source>Finished refreshing. Servers on the list: %1 (+ %2 custom). Players: %3.</source>
-        <translation></translation>
+        <translation>Обновление серверов завершено. Серверов в списке: %1 (+ %2 добавленных вручную). Всего игроков: %3.</translation>
     </message>
 </context>
 <context>
@@ -3766,7 +3780,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="334"/>
         <source>Doomseeker</source>
-        <translation></translation>
+        <translation>Doomseeker</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="335"/>
@@ -3776,7 +3790,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="336"/>
         <source>F5</source>
-        <translation></translation>
+        <translation>F5</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="337"/>
@@ -3791,7 +3805,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="339"/>
         <source>Ctrl+Q</source>
-        <translation></translation>
+        <translation>Ctrl+Q</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="340"/>
@@ -3801,12 +3815,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="341"/>
         <source>I</source>
-        <translation></translation>
+        <translation>I</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="342"/>
         <source>&amp;Wadseeker</source>
-        <translation></translation>
+        <translation>&amp;Wadseeker</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="344"/>
@@ -3816,7 +3830,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="345"/>
         <source>Ctrl+B</source>
-        <translation></translation>
+        <translation>Ctrl+B</translation>
     </message>
     <message>
         <source>&amp;Create server</source>
@@ -3835,17 +3849,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="347"/>
         <source>Ctrl+S</source>
-        <translation></translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="348"/>
         <source>&amp;Log</source>
-        <translation></translation>
+        <translation>&amp;Лог</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="349"/>
         <source>Ctrl+L</source>
-        <translation></translation>
+        <translation>Ctrl+L</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="350"/>
@@ -3855,22 +3869,22 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="351"/>
         <source>F1</source>
-        <translation></translation>
+        <translation>F1</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="352"/>
         <source>&amp;Update IP2C</source>
-        <translation></translation>
+        <translation>&amp;Обновление IP2C</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="353"/>
         <source>&amp;IRC</source>
-        <translation></translation>
+        <translation>&amp;IRC Чат</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="354"/>
         <source>Ctrl+I</source>
-        <translation></translation>
+        <translation>Ctrl+I</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="355"/>
@@ -3880,7 +3894,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="356"/>
         <source>F6</source>
-        <translation></translation>
+        <translation>F6</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="357"/>
@@ -3909,12 +3923,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="362"/>
         <source>New updates are available:</source>
-        <translation></translation>
+        <translation>Доступны новые обновления:</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="363"/>
         <source>Download &amp;&amp; Install</source>
-        <translation></translation>
+        <translation>Скачивание и установка</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="364"/>
@@ -3924,17 +3938,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="366"/>
         <source>Updates have been downloaded:</source>
-        <translation></translation>
+        <translation>Обновления скачаны:</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="367"/>
         <source>Restart &amp;&amp; Install Now</source>
-        <translation></translation>
+        <translation>Перезапустить и установить сейчас</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="368"/>
         <source>Restart &amp;&amp; Install Later</source>
-        <translation></translation>
+        <translation>Перезапустить и установить позже</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_mainwindow.h" line="369"/>
@@ -3976,32 +3990,32 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../serverapi/masterclient.cpp" line="134"/>
         <source>Could not fetch a new server list from the master because not enough time has past.</source>
-        <translation></translation>
+        <translation>Не могу получить новый список серверов с мастер-сервера, так как не прошло достаточно времени.</translation>
     </message>
     <message>
         <location filename="../serverapi/masterclient.cpp" line="139"/>
         <source>Bad response from master server.</source>
-        <translation></translation>
+        <translation>Странный ответ от мастер-сервера.</translation>
     </message>
     <message>
         <location filename="../serverapi/masterclient.cpp" line="144"/>
         <source>Could not fetch a new server list. The protocol you are using is too old. An update may be available.</source>
-        <translation></translation>
+        <translation>Не могу получить новый список серверов. Используемый протокол очень древний. Проверьте наличие обновлений.</translation>
     </message>
     <message>
         <location filename="../serverapi/masterclient.cpp" line="249"/>
         <source>Reloading master server results from cache for %1!</source>
-        <translation></translation>
+        <translation>Обновление результатов мастер-сервера из кеша для %1!</translation>
     </message>
     <message>
         <location filename="../serverapi/masterclient.cpp" line="340"/>
         <source>Master server timeout</source>
-        <translation></translation>
+        <translation>Время ожидания ответа от мастер-сервера истекло</translation>
     </message>
     <message>
         <location filename="../serverapi/masterclient.cpp" line="340"/>
         <source>Connection timeout (%1:%2).</source>
-        <translation></translation>
+        <translation>Время ожидания соединения истекло (%1:%2).</translation>
     </message>
 </context>
 <context>
@@ -4052,7 +4066,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../connectionhandler.cpp" line="221"/>
         <source>Do you want to connect to the server at %1?</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4060,47 +4074,47 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../configuration/doomseekerconfig.cpp" line="77"/>
         <source>DoomseekerConfig.iniSectionForPlugin(): empty plugin name has been specified, returning dummy IniSection.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../configuration/doomseekerconfig.cpp" line="83"/>
         <source>DoomseekerConfig.iniSectionForPlugin(): plugin name is invalid: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../configuration/doomseekerconfig.cpp" line="183"/>
         <source>Setting INI file: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/configuration/ircconfig.cpp" line="144"/>
         <source>Setting IRC INI file: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/configuration/ircconfig.cpp" line="316"/>
         <source>Add plugin&apos;s IRC channel?</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../irc/configuration/ircconfig.cpp" line="317"/>
         <source>Would you like the %1 plugin to add its channel to %2&apos;s auto join?</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugins/pluginloader.cpp" line="93"/>
         <source>Loaded plugin: &quot;%1&quot;!</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugins/pluginloader.cpp" line="97"/>
         <source>Failed to open plugin: %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugins/pluginloader.cpp" line="166"/>
         <source>Failed to locate plugins.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/serverstructs.cpp" line="241"/>
@@ -4138,27 +4152,27 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_rconpassworddialog.h" line="104"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_rconpassworddialog.h" line="105"/>
         <source>Connection</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_rconpassworddialog.h" line="106"/>
         <source>Source Port:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_rconpassworddialog.h" line="107"/>
         <source>Server Address:</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_rconpassworddialog.h" line="108"/>
         <source>Please enter your remote console password.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4166,52 +4180,52 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/remoteconsole.cpp" line="53"/>
         <source>The source port selected has no RCon support.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/remoteconsole.cpp" line="53"/>
         <source>No RCon support</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/remoteconsole.cpp" line="87"/>
         <source>RCon Failure</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/remoteconsole.cpp" line="88"/>
         <source>Failed to connect RCon to server %1:%2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/remoteconsole.cpp" line="99"/>
         <source> - Remote Console</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/remoteconsole.cpp" line="111"/>
         <source>Invalid Password</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/remoteconsole.cpp" line="111"/>
         <source>The password you entered appears to be invalid.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_remoteconsole.h" line="107"/>
         <source>Remote Console</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_remoteconsole.h" line="108"/>
         <source>Disconnect</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_remoteconsole.h" line="109"/>
         <source>Scoreboard</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_remoteconsole.h" line="111"/>
@@ -4234,17 +4248,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../serverapi/server.cpp" line="138"/>
         <source>&lt;&lt; ERROR &gt;&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../serverapi/server.cpp" line="252"/>
         <source>client</source>
-        <translation></translation>
+        <translation>клиент</translation>
     </message>
     <message>
         <location filename="../serverapi/server.cpp" line="285"/>
         <source>Undefined</source>
-        <translation></translation>
+        <translation>Ундефинид (Не определено)</translation>
     </message>
 </context>
 <context>
@@ -4252,7 +4266,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_serverconsole.h" line="52"/>
         <source>Form</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4260,12 +4274,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_serverdetailsdock.h" line="110"/>
         <source>Server Details</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_serverdetailsdock.h" line="111"/>
         <source>&lt;server&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4273,12 +4287,12 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/widgets/serverfilterbuildermenu.cpp" line="47"/>
         <source>Build server filter ...</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/widgets/serverfilterbuildermenu.cpp" line="54"/>
         <source>Show only servers with ping lower than %1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/widgets/serverfilterbuildermenu.cpp" line="58"/>
@@ -4311,7 +4325,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/serverfilterdock.cpp" line="39"/>
         <source>CTRL+F</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_serverfilterdock.h" line="227"/>
@@ -4346,7 +4360,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_serverfilterdock.h" line="233"/>
         <source>Set &apos;0&apos; to disable.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_serverfilterdock.h" line="235"/>
@@ -4549,33 +4563,33 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/serverlist.cpp" line="227"/>
         <source>Unhandled behavior in ServerListHandler::contextMenuTriggered()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/serverlist.cpp" line="257"/>
         <source>(alias of: %1)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/serverlist.cpp" line="263"/>
         <location filename="../gui/serverlist.cpp" line="379"/>
         <source>MISSING</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/serverlist.cpp" line="374"/>
         <source>OPTIONAL</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/serverlist.cpp" line="384"/>
         <source>ALIAS</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/serverlist.cpp" line="226"/>
         <source>Doomseeker - context menu warning</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4583,32 +4597,32 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/models/serverlistrowhandler.cpp" line="254"/>
         <source>&lt;ERROR&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/models/serverlistrowhandler.cpp" line="267"/>
         <source>You are banned from this server!</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/models/serverlistrowhandler.cpp" line="345"/>
         <source>&lt;REFRESHING&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/models/serverlistrowhandler.cpp" line="355"/>
         <source>&lt;NO RESPONSE&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/models/serverlistrowhandler.cpp" line="368"/>
         <source>&lt;Refreshed too soon, wait a while and try again&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/models/serverlistrowhandler.cpp" line="431"/>
         <source>Unkown server response (%1): %2:%3</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4616,7 +4630,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/widgets/serversstatuswidget.cpp" line="66"/>
         <source>Players-Bots Servers</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4624,7 +4638,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../serverapi/message.cpp" line="30"/>
         <source>You have been banned from master server.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4632,22 +4646,22 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../updater/updatechannel.cpp" line="104"/>
         <source>Beta versions have newer features but they are untested. Releases on this update channel are more often and are suggested for users who want newest functionalities and minor bug fixes as soon as they become implemented and available.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updatechannel.cpp" line="114"/>
         <source>Stable versions are released rarely. They cover many changes at once and these changes are more certain to work correctly. Critical bug fixes are also provided through this channel.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updatechannel.cpp" line="132"/>
         <source>Beta</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updatechannel.cpp" line="136"/>
         <source>Stable</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4655,78 +4669,78 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../updater/updateinstaller.cpp" line="81"/>
         <source>Failed to copy the updater executable to a temporary space: &quot;%1&quot; -&gt; &quot;%2&quot;.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="91"/>
         <location filename="../updater/updateinstaller.cpp" line="123"/>
         <source>Ok</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="93"/>
         <source>Nothing to update.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="95"/>
         <source>Update package or script are not found. Check log for details.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="97"/>
         <source>Failed to start updater process.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="99"/>
         <source>Unknown error: %1.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="125"/>
         <source>Unable to read update script.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="127"/>
         <source>No installation directory specified.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="129"/>
         <source>Unable to determine path of updater.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="131"/>
         <source>General failure.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="133"/>
         <source>Unknown process error code: %1.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="143"/>
         <source>Installing update.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="158"/>
         <source>Package directory &quot;%1&quot; doesn&apos;t exist.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="164"/>
         <source>Update was about to be installed but update script &quot;%1&quot; is missing.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="200"/>
         <source>Failed to start updater process: %1 %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4734,22 +4748,22 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../updater/updaterinfoparser.cpp" line="92"/>
         <source>Missing update revision info for package %1.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterinfoparser.cpp" line="120"/>
         <source>Invalid update download URL for package %1: %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterinfoparser.cpp" line="127"/>
         <source>Missing update download URL for package %1.</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../updater/updaterinfoparser.cpp" line="137"/>
         <source>Invalid update script download URL for package %1, %2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4762,17 +4776,17 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="94"/>
         <source>All done. Success.</source>
-        <translation>Завершено успешно</translation>
+        <translation>Завершено успешно.</translation>
     </message>
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="117"/>
         <source>All done. Fail.</source>
-        <translation>Завершено с ошибкой</translation>
+        <translation>Завершено с ошибкой.</translation>
     </message>
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="223"/>
         <source>CRITICAL ERROR: %1</source>
-        <translation></translation>
+        <translation>КРИТИЧЕСКАЯ ОШИБКА: %1</translation>
     </message>
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="238"/>
@@ -4783,7 +4797,7 @@ Copyright © 2018 PROPHESSOR
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="164"/>
         <location filename="../gui/wadseekerinterface.cpp" line="317"/>
         <source>Wadseeker</source>
-        <translation></translation>
+        <translation>Wadseeker</translation>
     </message>
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="340"/>
@@ -4799,28 +4813,28 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="461"/>
         <source>[%1%] Wadseeker</source>
-        <translation></translation>
+        <translation>[%1] Wadseeker</translation>
     </message>
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="506"/>
         <source>Context menu error</source>
-        <translation></translation>
+        <translation>Ошибка контекстного меню</translation>
     </message>
     <message>
         <location filename="../gui/wadseekerinterface.cpp" line="506"/>
         <source>Unknown action selected.</source>
-        <translation></translation>
+        <translation>Выбрано неизвестное дайствие.</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="165"/>
         <source>Seek WAD or multiple WADs, comma (&apos;,&apos;) separated:</source>
-        <translation></translation>
+        <translation>Поиск WAD&apos;а, или WAD&apos;ов, разделенных запятыми (&quot;,&quot;):</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="167"/>
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="173"/>
         <source>URL</source>
-        <translation></translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="169"/>
@@ -4841,7 +4855,7 @@ Copyright © 2018 PROPHESSOR
     <message>
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="179"/>
         <source>ETA</source>
-        <translation></translation>
+        <translation>ETA</translation>
     </message>
     <message>
         <location filename="../../../../debug/src/core/ui_wadseekerinterface.h" line="181"/>
@@ -4883,7 +4897,7 @@ Copyright © 2018 PROPHESSOR
         <location filename="../gui/wadseekershow.cpp" line="52"/>
         <location filename="../gui/wadseekershow.cpp" line="67"/>
         <source>Wadseeker cannot be launched</source>
-        <translation></translation>
+        <translation>Wadseeker не может запуститься</translation>
     </message>
 </context>
 <context>
@@ -4896,18 +4910,18 @@ Copyright © 2018 PROPHESSOR
         <location filename="../gui/widgets/wadseekerwadstable.cpp" line="315"/>
         <location filename="../gui/widgets/wadseekerwadstable.cpp" line="325"/>
         <source>N/A</source>
-        <translation></translation>
+        <translation>Н/Д</translation>
     </message>
     <message>
         <location filename="../gui/widgets/wadseekerwadstable.cpp" line="136"/>
         <location filename="../gui/widgets/wadseekerwadstable.cpp" line="137"/>
         <source>Awaiting URLs</source>
-        <translation></translation>
+        <translation>Ожидание URL&apos;ов</translation>
     </message>
     <message>
         <location filename="../gui/widgets/wadseekerwadstable.cpp" line="198"/>
-        <source>Готово</source>
-        <translation></translation>
+        <source>Done</source>
+        <translation>Готово</translation>
     </message>
     <message>
         <location filename="../gui/widgets/wadseekerwadstable.cpp" line="335"/>
