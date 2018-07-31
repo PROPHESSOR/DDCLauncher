@@ -1,0 +1,6 @@
+syntax: glob
+build/*
+*.orig
+*~
+*.rej
+src/core/gitinfo.h

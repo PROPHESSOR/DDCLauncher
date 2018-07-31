@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IRCDockTabContents</class>
+ <widget class="QWidget" name="IRCDockTabContents">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>670</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTextBrowser" name="txtOutputWidget">
+       <property name="font">
+        <font>
+         <family>Courier New</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="openLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="MemoryLineEdit" name="leCommandLine">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnSend">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnPauseTextArea">
+         <property name="toolTip">
+          <string>Do not scroll text area</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../../media/resources.qrc">
+           <normaloff>:/icons/pause.png</normaloff>:/icons/pause.png</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QListView" name="lvUserList">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier New</family>
+       <pointsize>8</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MemoryLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">gui/widgets/memorylineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../../../media/resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>leCommandLine</sender>
+   <signal>cursorPositionChanged(int,int)</signal>
+   <receiver>IRCDockTabContents</receiver>
+   <slot>resetNicknameCompletion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>29</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>leCommandLine</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>IRCDockTabContents</receiver>
+   <slot>resetNicknameCompletion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>txtOutputWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>IRCDockTabContents</receiver>
+   <slot>showChatContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>474</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>510</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>showChatContextMenu(QPoint)</slot>
+  <slot>resetNicknameCompletion()</slot>
+ </slots>
+</ui>

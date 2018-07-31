@@ -1,0 +1,130 @@
+//------------------------------------------------------------------------------
+// doxygen.dox
+//------------------------------------------------------------------------------
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+// 02110-1301  USA
+//
+//------------------------------------------------------------------------------
+// Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
+//------------------------------------------------------------------------------
+
+/**
+* @mainpage Doomseeker
+*
+* Doomseeker is a server browser application for multiple platforms
+* with support for multiple different Doom game engines in mind. While the
+* program provides the core functionality, it also serves as an engine for
+* plugins that implement actual support for specific engines like
+* Chocolate Doom, Odamex or Zandronum. This document is a reference manual
+* for Doomseeker's Plugin API. If you're interested in developing a plugin
+* for a new engine, we recommend to inspect plugins already available in
+* Doomseeker's repository and use them as a base.
+*
+* Following list orders plugins by subjective complexity:
+*
+* -# Chocolate Doom
+* -# Odamex
+* -# Zandronum
+*
+* Each of these plugins provides examples for different implementations of
+* game server clients, master server clients, execution of "join game"
+* operation, game hosting, IRC channel definition, custom executable support
+* per server basis, and so on.
+*
+* Furthermore, we also have a so called "Fake Plugin" that is used for
+* Doomseeker testing and development purposes and fakes both proper plugin
+* implementation as well as the game master server and game servers.
+*
+* @section mainpage_sowheredoistart So, where do I start?
+*
+* A short startup guide can be found on this page:\n
+* https://doomseeker.drdteam.org/docs/plugins.php
+*
+* Detailed help can be obtained by referring to @ref group_pluginapi reference
+* documentation.
+*
+* @section mainpage_whatispurevirtual What is [pure virtual] and how is it different from C++ virtual?
+*
+* To understand why certain 'virtual' methods in Plugin API are
+* exposed through a homebrew interface instead of C++'s standard
+* 'virtual' keyword, we first need to understand what is %Application
+* Binary Interface (or ABI, for short), why it's important to keep it
+* compatible between releases of Doomseeker, and how and when it
+* breaks.
+*
+* To keep things simple, ABI is how compiled Doomseeker executable and
+* plugin's DLLs talk to each other. Nomenclature, such as 'DLL',
+* differs a bit between OSes, but let's not digress. This section
+* applies to all Operating Systems, be it Windows, Linux or
+* other. Some changes to Doomseeker source code will maintain ABI
+* compatibility, which means that old plugins can talk to new versions
+* of Doomseeker. Some other changes, however, will break the ABI and
+* when old plugin tries to talk to such build of Doomseeker, the whole
+* program may crash. One of the ways to break ABI compatibility is to
+* add a new 'virtual' method to a class that is already implemented by
+* an old version of a plugin. The reason why this happens is
+* excellently described on this page:
+*
+* - https://techbase.kde.org/Policies/Binary_Compatibility_Examples#Add_new_virtuals_to_a_non-leaf_class
+*
+* To allow us to extend existing classes in Doomseeker API with new
+* virtual methods, we produced our own virtualization system. What
+* plugin implementor needs to know is that this involves method
+* pointers and setters for those pointers that need to be called from
+* constructor. This is much simpler than it sounds. To override a
+* <b>[Pure Virtual]</b> or <b>[Virtual]</b> method, just do the
+* following:
+*
+* -# Declare and define method in your implementation as
+*    'private'. It's signature needs to be the same as signature of
+*    the virtual method, so return value and all arguments must be the
+*    same.
+* -# In constructor, call: <code>set_method(&MyImplementation::method);</code>
+* -# If method is just <b>[Virtual]</b> (and not <b>[Pure Virtual]</b>)
+*    you can call the default behavior by calling <code>method_default()</code>.
+*    There's no need to specify the <code>SuperClass::</code> prefix.
+*
+* To see how to do this, inspect implementation of
+* ZandronumRConProtocol. If you'd like to learn more, inspect
+* implementation of its base class: RConProtocol.
+*
+* In Doomseeker, you can encounter following types of virtual methods:
+*
+* - Standard C++ virtual and abstract methods. Override them as
+*   you'd override any other method.
+* - Doomseeker's <b>[Virtual]</b> method that provides default
+*   implementation but can be overwritten.
+* - Doomseeker's <b>[Pure Virtual]</b> method that provides no
+*   default implementation. Unfortunately, the code will
+*   compile even if you don't provide any implementation. Still,
+*   Doomseeker's debug builds will exit with assert()
+*   error if such method is called.
+*
+* More reading on ABI compatibility:
+*
+* * https://techbase.kde.org/Policies/Binary_Compatibility_Issues_With_C++
+*/
+
+/**
+* @defgroup group_pluginapi Plugin API
+* @brief All classes exported by Doomseeker and usable in Plugin API.
+*
+* Please note that while this lists only these classes that are supposed to be
+* used inside plugin code, these classes also declare public methods that are
+* meant to be used from inside Doomseeker core code only.
+* These methods are marked as such in documentation text, and using them
+* inappropriately may lead to undefined behavior.
+*/
