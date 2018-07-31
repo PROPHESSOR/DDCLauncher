@@ -37,7 +37,16 @@
     <item>
      <widget class="QWidget" name="updatesConfirmationWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -136,7 +145,16 @@
     <item>
      <widget class="QWidget" name="updatesDownloadedWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -272,7 +290,7 @@
      <x>0</x>
      <y>0</y>
      <width>796</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="locale">
@@ -303,6 +321,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="menuActionCreateServer"/>
+    <addaction name="menuActionPlayOffline"/>
     <addaction name="menuActionWadseeker"/>
     <addaction name="menuActionUpdateIP2C"/>
     <addaction name="separator"/>
@@ -493,6 +512,18 @@
     <string>&amp;Check for Updates</string>
    </property>
   </action>
+  <action name="menuActionPlayOffline">
+   <property name="icon">
+    <iconset resource="../../../media/resources.qrc">
+     <normaloff>:/icons/person.png</normaloff>:/icons/person.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play offline</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -509,7 +540,6 @@
  </customwidgets>
  <resources>
   <include location="../../../media/resources.qrc"/>
-  <include location="../../../media/resources.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -521,38 +551,6 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>397</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>btnUpdatesDiscard</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindowWnd</receiver>
-   <slot>discardUpdates()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>537</x>
-     <y>57</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>397</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>btnUpdatesDownloadAndInstall</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindowWnd</receiver>
-   <slot>confirmUpdateInstallation()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>431</x>
-     <y>57</y>
     </hint>
     <hint type="destinationlabel">
      <x>397</x>
@@ -589,6 +587,38 @@
     <hint type="destinationlabel">
      <x>792</x>
      <y>105</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnUpdatesDiscard</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowWnd</receiver>
+   <slot>discardUpdates()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>537</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnUpdatesDownloadAndInstall</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindowWnd</receiver>
+   <slot>confirmUpdateInstallation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>299</y>
     </hint>
    </hints>
   </connection>

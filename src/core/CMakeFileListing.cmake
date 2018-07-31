@@ -43,7 +43,8 @@ set(UI_FILES
 	gui/mainwindow.ui
 	gui/missingwadsdialog.ui
 	gui/passworddlg.ui
-	gui/programargshelpdialog.ui
+        gui/playofflinedialog.ui
+        gui/programargshelpdialog.ui
 	gui/rconpassworddialog.ui
 	gui/remoteconsole.ui
 	gui/serverdetailsdock.ui
@@ -135,7 +136,8 @@ set(HEADER_FILES
 	gui/models/serverlistproxymodel.h
 	gui/models/serverlistrowhandler.h
 	gui/passworddlg.h
-	gui/programargshelpdialog.h
+        gui/playofflinedialog.h
+        gui/programargshelpdialog.h
 	gui/rconpassworddialog.h
 	gui/remoteconsole.h
 	gui/serverdetailsdock.h
@@ -361,7 +363,8 @@ set(SOURCE_FILES
 	gui/models/serverlistproxymodel.cpp
 	gui/models/serverlistrowhandler.cpp
 	gui/passworddlg.cpp
-	gui/programargshelpdialog.cpp
+        gui/playofflinedialog.cpp
+        gui/programargshelpdialog.cpp
 	gui/rconpassworddialog.cpp
 	gui/remoteconsole.cpp
 	gui/serverdetailsdock.cpp

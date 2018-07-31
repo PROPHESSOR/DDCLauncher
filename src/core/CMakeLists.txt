@@ -85,13 +85,14 @@ qt4_wrap_ui(doomseekerUI
 	gui/addBuddyDlg.ui
 	gui/copytextdlg.ui
 	gui/createserverdialog.ui
-	gui/demomanager.ui
+        gui/demomanager.ui
 	gui/dockBuddiesList.ui
 	gui/ip2cupdatebox.ui
 	gui/logdock.ui
 	gui/mainwindow.ui
 	gui/passwordDlg.ui
-	gui/rconpassworddialog.ui
+        gui/playofflinedialog.ui
+        gui/rconpassworddialog.ui
 	gui/remoteconsole.ui
 	gui/serverdetailsdock.ui
 	gui/serverfilterdock.ui
@@ -144,14 +145,15 @@ set(DOOMSEEKER_QT_FILES
 	gui/widgets/wadseekerwadstable.h
 	gui/aboutdialog.h
 	gui/copytextdlg.h
-	gui/createserverdialog.h
-	gui/demomanager.h
+        gui/createserverdialog.h
+        gui/demomanager.h
 	gui/dockBuddiesList.h
 	gui/ip2cupdatebox.h
 	gui/logdock.h
 	gui/mainwindow.h
 	gui/passwordDlg.h
-	gui/rconpassworddialog.h
+        gui/playofflinedialog.h
+        gui/rconpassworddialog.h
 	gui/remoteconsole.h
 	gui/serverdetailsdock.h
 	gui/serverfilterdock.h
@@ -271,7 +273,8 @@ set(SOURCE_FILES
 	gui/logdock.cpp
 	gui/mainwindow.cpp
 	gui/passwordDlg.cpp
-	gui/rconpassworddialog.cpp
+        gui/playofflinedialog.cpp
+        gui/rconpassworddialog.cpp
 	gui/remoteconsole.cpp
 	gui/serverdetailsdock.cpp
 	gui/serverfilterdock.cpp
@@ -476,7 +479,7 @@ set(HEADER_FILES
 
 # Translations
 set (TRANSLATIONS_FILES
-    translations/ru_RU.ts
+        translations/ru_RU.ts
 	translations/pl_PL.ts
 )
 
