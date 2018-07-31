@@ -2,23 +2,23 @@
 // serverstructs.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #ifndef __SERVER_STRUCTS_H_
 #define __SERVER_STRUCTS_H_
@@ -28,7 +28,6 @@
 #include <QObject>
 #include <QVariant>
 
-#include "dptr.h"
 #include "global.h"
 
 /**
@@ -47,29 +46,15 @@
  *
  * DMFlag objects can be put into DMFlagsSection collection.
  *
- * DMFlag is bound by the same human-readable name and 'internal' name rules as
- * the DMFlagsSection class. Refer to the documentation of that class to see
- * the details. Remember that it's absolutely forbidden to use QObject::tr() in
- * the 'internal' name. Each DMFlag should have an unique name within
- * its DMFlagsSection.
- *
  * This structure is safe to copy.
  */
 class MAIN_EXPORT DMFlag
 {
 	public:
 		DMFlag();
-		DMFlag(const QString &internalName, unsigned value);
-		DMFlag(const QString &internalName, unsigned value, const QString &name);
+		DMFlag(QString name, unsigned value);
+		COPYABLE_D_POINTERED_DECLARE(DMFlag);
 		virtual ~DMFlag();
-
-		/**
-		 * @brief Uniquely identifiable name within its DMFlagsSection,
-		 *        ex. "Jump is allowed" or "jumpisallowed".
-		 *
-		 * @see DMFlagsSection::internalName().
-		 */
-		const QString &internalName() const;
 
 		/**
 		 * @brief Valid objects have value() greater than zero.
@@ -79,18 +64,17 @@ class MAIN_EXPORT DMFlag
 		bool isValid() const;
 
 		/**
-		 * @brief User-displayable, translateable name of the DMFlag,
-		 *        ex. "Jump is allowed".
+		 * @brief User-displayable name of the DMFlag, ex. "Jump is allowed".
 		 */
-		const QString &name() const;
-
+		const QString& name() const;
 		/**
 		 * @brief Bits that represent this flag (usually just a single '1' bit).
 		 */
 		unsigned value() const;
 
 	private:
-		DPtr<DMFlag> d;
+		class PrivData;
+		PrivData* d;
 };
 
 /**
@@ -98,72 +82,14 @@ class MAIN_EXPORT DMFlag
  * @brief A group of DMFlag objects that can be safely OR'ed
  *        together to form a meaningful value.
  *
- * This object is safe to copy. If you need to clone the section but omit
- * the DMFlag definitions stored within it, use copyEmpty() method instead.
- *
- * DMFlagsSection uses two names - name() for human-readable purposes and
- * internalName() for identification within the system. name() should normally
- * be wrapped in a QObject::tr() call. It's also allowed to only specify the
- * 'internal' name and the human-readable name will be the same. The 'internal'
- * name is expected to stay the same between versions of Doomseeker as it will
- * be used in configuration files that should be usable for extended period
- * of time (years) without being resaved. The human-readable name can be changed
- * at whim.
- *
- * Each section in a plugin should have an unique internalName().
- *
- * The 'internal' name should be as friendly to any underlying Operating System
- * as possible. Using only lower-case letters and digits is enforced. If plugin
- * specifies invalid characters in the 'internal' name, the proper format will
- * be coerced; all invalid characters will be removed and all letters
- * lowercased. The human-readable name(), when not specified explicitly, will
- * use the specified 'internal' name, but will have all original characters
- * intact. What's forbidden is wrapping the 'internal' name in a QObject::tr()
- * call. Unfortunately, Doomseeker has no means to detect whether string is
- * translated or not, so the responsibility to ensure that it isn't falls on the
- * author of the plugin. It is very important to pay attention to this as the
- * plugin may appear to work correctly at first but break in certain cases only,
- * for example when user saves game configurations while using one language
- * translation and tries to load them when using another.
- *
- * Some call examples:
- *
- * @code
- * DMFlagsSection dmflags("dmflags");
- * DMFlagsSection compatFlags("compatflags", tr("Compat. Flags"));
- * @endcode
+ * This object is safe to copy.
  */
 class MAIN_EXPORT DMFlagsSection
 {
 	public:
-		/**
-		 * @brief Matches sections by internalName()
-		 *        and calls removed() on them.
-		 *
-		 * Sections that are emptied are also returned as empty sections.
-		 */
-		static QList<DMFlagsSection> removedBySection(
-			const QList<DMFlagsSection> &original,
-			const QList<DMFlagsSection> &removals);
-
 		DMFlagsSection();
-
-		/**
-		 * @brief Creates DMFlags section with same user-displayable
-		 *        and internal names.
-		 *
-		 * @warning Don't tr() this name!
-		 */
-		DMFlagsSection(const QString &internalName);
-
-		/**
-		 * @brief Creates DMFlags section with different user-displayable
-		 *        and internal names.
-		 *
-		 * @warning Don't tr() the internalName!
-		 */
-		DMFlagsSection(const QString &internalName, const QString &name);
-
+		DMFlagsSection(const QString& name);
+		COPYABLE_D_POINTERED_DECLARE(DMFlagsSection);
 		virtual ~DMFlagsSection();
 
 		/**
@@ -181,30 +107,11 @@ class MAIN_EXPORT DMFlagsSection
 		 * the output of this operation.
 		 */
 		unsigned combineValues() const;
-
-		/**
-		 * @brief Copies section maintaining its properties
-		 *        but removing all flags.
-		 */
-		DMFlagsSection copyEmpty() const;
-
 		/**
 		 * @brief Number of DMFlag objects inside the collection.
 		 */
 		int count() const;
-
-		/**
-		 * @param Name used for internal identification purposes.
-		 *
-		 * This name must be unique within given plugin.
-		 */
-		const QString &internalName() const;
-
-		/**
-		 * @brief Does this section contain any dmflag?
-		 */
 		bool isEmpty() const;
-
 		/**
 		 * @brief User-displayable name of this section,
 		 *        ex. "Compatibility flags".
@@ -226,18 +133,9 @@ class MAIN_EXPORT DMFlagsSection
 			return *this;
 		}
 
-		/**
-		 * @brief Returns a copy of this list with specified DMFlags removed.
-		 *
-		 * Removal is determined basing on DMFlag::value() comparison.
-		 *
-		 * @param removals
-		 *     List of DMFlags to remove.
-		 */
-		DMFlagsSection removed(const DMFlagsSection &removals) const;
-
 	private:
-		DPtr<DMFlagsSection> d;
+		class PrivData;
+		PrivData* d;
 };
 
 /**
@@ -251,7 +149,7 @@ class MAIN_EXPORT GameCVar
 	public:
 		GameCVar();
 		GameCVar(const QString &name, const QString &command);
-		GameCVar(const QString &name, const QString &command, const QVariant &value);
+		COPYABLE_D_POINTERED_DECLARE(GameCVar);
 		virtual ~GameCVar();
 
 		/**
@@ -273,7 +171,7 @@ class MAIN_EXPORT GameCVar
 		bool isValid() const;
 
 		/**
-		 * @brief Nice name to display to user in Create Game dialog and
+		 * @brief Nice name to display to user in Create Server dialog and
 		 *        in other widgets.
 		 */
 		const QString &name() const;
@@ -292,38 +190,8 @@ class MAIN_EXPORT GameCVar
 		int valueInt() const { return value().toInt(); }
 
 	private:
-		DPtr<GameCVar> d;
-};
-
-/**
- * @ingroup group_pluginapi
- * @brief Creates GameCVar set.
- *
- * Override get() method and return a list of GameCVar objects.
- *
- * Order may be dependant on the context in which the objects are
- * required. Refer to documentation of specific provider usages.
- */
-class MAIN_EXPORT GameCVarProvider : public QObject
-{
-	Q_OBJECT;
-
-public:
-	GameCVarProvider();
-	virtual ~GameCVarProvider();
-
-	/**
-	 * @brief Default implementation creates empty set.
-	 *
-	 * @param context
-	 *     Context contents depend on context.
-	 */
-	virtual QList<GameCVar> get(const QVariant &context);
-
-private:
-	Q_DISABLE_COPY(GameCVarProvider);
-
-	DPtr<GameCVarProvider> d;
+		class PrivData;
+		PrivData* d;
 };
 
 /**
@@ -332,8 +200,8 @@ private:
  *
  * The only available constructor will create an invalid object (returns false
  * on isValid()). The proper method of construction is to use provided static
- * builder methods. Either use one of 'mk' methods that are mentioned
- * in StandardGameMode description or build your own mode using ffaGame() or
+ * builder methods. Either use one of 'mk' methods, that are mentioned
+ * in StandardGameMode description, or build your own mode using ffaGame() or
  * teamGame() methods. index() in all cases must either be one of
  * StandardGameMode values or unique within your plugin for given game mode.
  *
@@ -407,6 +275,7 @@ class MAIN_EXPORT GameMode
 		 * @brief Constructs an invalid GameMode object.
 		 */
 		GameMode();
+		COPYABLE_D_POINTERED_DECLARE(GameMode);
 		virtual ~GameMode();
 
 		/**
@@ -431,7 +300,8 @@ class MAIN_EXPORT GameMode
 		bool isValid() const;
 
 	private:
-		DPtr<GameMode> d;
+		class PrivData;
+		PrivData *d;
 
 		GameMode(int index, const QString &name);
 
@@ -450,6 +320,7 @@ class MAIN_EXPORT PWad
 {
 	public:
 		PWad(const QString &name, bool optional=false);
+		COPYABLE_D_POINTERED_DECLARE(PWad);
 		virtual ~PWad();
 
 		/**
@@ -462,7 +333,8 @@ class MAIN_EXPORT PWad
 		const QString& name() const;
 
 	private:
-		DPtr<PWad> d;
+		class PrivData;
+		PrivData* d;
 };
 
 #endif

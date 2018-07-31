@@ -18,7 +18,7 @@
 // 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2011 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2011 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __UNTAR_H__
@@ -42,7 +42,6 @@ class UnTar : public UnArchive
 		bool extract(int file, const QString &where);
 		QString fileNameFromIndex(int file);
 		int findFileEntry(const QString &entryName);
-		QStringList files();
 		bool isValid() { return valid; }
 
 	protected:

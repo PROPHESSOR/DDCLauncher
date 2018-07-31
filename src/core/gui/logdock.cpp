@@ -2,62 +2,53 @@
 // logdock.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
-
-#include "clipboard.h"
 #include "logdock.h"
 #include "log.h"
-#include "ui_logdock.h"
-
-DClass<LogDock> : public Ui::LogDock
-{
-};
-
-DPointered(LogDock)
+#include <QClipboard>
 
 LogDock::LogDock(QWidget* parent) : QDockWidget(parent)
 {
-	d->setupUi(this);
+	setupUi(this);
 	this->toggleViewAction()->setIcon(QIcon(":/icons/log.png"));
 
-	connect(d->btnClear, SIGNAL( clicked() ), this, SLOT( clearContent() ) );
-	connect(d->btnCopy, SIGNAL( clicked() ), this, SLOT( btnCopyClicked() ) );
-}
+	dockWidgetContents->setHintSize(175, 200);
 
-LogDock::~LogDock()
-{
+	connect(btnClear, SIGNAL( clicked() ), this, SLOT( clearContent() ) );
+	connect(btnCopy, SIGNAL( clicked() ), this, SLOT( btnCopyClicked() ) );
 }
 
 void LogDock::appendLogEntry(const QString& entry)
 {
-	d->teContent->moveCursor(QTextCursor::End);
-	d->teContent->insertPlainText(entry);
+	teContent->moveCursor(QTextCursor::End);
+	teContent->insertPlainText(entry);
 }
 
 void LogDock::clearContent()
 {
 	gLog.clearContent();
-	d->teContent->document()->clear();
+	teContent->document()->clear();
 }
 
 void LogDock::btnCopyClicked()
 {
-	Clipboard::setText(d->teContent->document()->toPlainText());
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setText(teContent->document()->toPlainText());
 }

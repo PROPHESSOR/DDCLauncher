@@ -2,23 +2,23 @@
 // scanner.hpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __SCANNER_HPP__
@@ -27,7 +27,6 @@
 #include <QObject>
 #include <QString>
 
-#include "dptr.h"
 #include "global.h"
 
 enum ETokenType
@@ -74,14 +73,12 @@ enum ETokenType
  */
 class MAIN_EXPORT Scanner
 {
-	private:
-		Scanner(const Scanner &other);
-
 	public:
 		class ParserState
 		{
 			public:
 				ParserState();
+				COPYABLE_D_POINTERED_DECLARE(ParserState);
 				virtual ~ParserState();
 
 				const QString& str() const;
@@ -109,7 +106,8 @@ class MAIN_EXPORT Scanner
 				void setScanPos(unsigned int v);
 
 			private:
-				DPtr<ParserState> d;
+				class PrivData;
+				PrivData *d;
 		};
 
 		enum MessageLevel
@@ -178,7 +176,8 @@ class MAIN_EXPORT Scanner
 		void incrementLine();
 
 	private:
-		DPtr<Scanner> d;
+		class PrivData;
+		PrivData *d;
 
 		static void (*messageHandler)(MessageLevel, const char*, va_list);
 };

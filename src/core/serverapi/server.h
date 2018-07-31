@@ -2,23 +2,23 @@
 // server.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __SERVER_H__
@@ -26,7 +26,6 @@
 
 #include "serverapi/polymorphism.h"
 #include "serverapi/serverptr.h"
-#include "dptr.h"
 #include "global.h"
 
 #include <QColor>
@@ -240,14 +239,6 @@ class MAIN_EXPORT Server : public QObject
 		 * by the user in configuration box, and with priority search
 		 * directories set to wherever client and offline executables
 		 * reside, if such executables are available.
-		 *
-		 * Depending on the underlying OS, extra paths may also be added by
-		 * Doomseeker after the user configured directories.
-		 *
-		 * Additional paths appended on Linux:
-		 *
-		 * 1. `/usr/local/share/games/doom/`
-		 * 2. `/usr/share/games/doom/`
 		 */
 		virtual PathFinder wadPathFinder();
 		// END OF VIRTUALS
@@ -378,6 +369,10 @@ class MAIN_EXPORT Server : public QObject
 		 */
 		bool isRandomMapRotation() const;
 		/**
+		 * @brief Can the server be refreshed at the current moment?
+		 */
+		bool isRefreshable() const;
+		/**
 		 * @brief Is the server being refreshed at the current moment?
 		 */
 		bool isRefreshing() const;
@@ -391,16 +386,6 @@ class MAIN_EXPORT Server : public QObject
 		 * ban list provided by the master server.
 		 */
 		bool isSecure() const;
-
-		/**
-		 * @brief Special servers are custom servers or LAN servers.
-		 */
-		bool isSpecial() const;
-
-		/**
-		 * @brief Does this server run a testing version of the game?
-		 */
-		bool isTestingServer() const;
 
 		/**
 		 * @brief IWAD used by this server.
@@ -441,7 +426,7 @@ class MAIN_EXPORT Server : public QObject
 		 */
 		unsigned short maxPlayers() const;
 		/**
-		 * @brief Message of the Day.
+		 * @brief Messafe of the Day.
 		 */
 		const QString& motd() const;
 		/**
@@ -606,21 +591,6 @@ class MAIN_EXPORT Server : public QObject
 		 * @brief Round time limit, expressed in minutes.
 		 */
 		unsigned short timeLimit() const;
-
-		/**
-		 * @brief Milliseconds elapsed since last refresh.
-		 *
-		 * Underlying code uses QElapsedTimer to provide
-		 * unified results that ignore events like daylight savings time change
-		 * or user manipulating with system clock.
-		 *
-		 * @return A number of milliseconds since the completion of the last
-		 *     refresh operation. If server wasn't refreshed yet
-		 *     or is currently refreshing for the first time, then
-		 *     this will return a negative value.
-		 */
-		qint64 timeMsSinceLastRefresh() const;
-
 		/**
 		 * @brief Game skill level, starting from zero.
 		 *
@@ -642,12 +612,6 @@ class MAIN_EXPORT Server : public QObject
 		 */
 		const QString& webSite() const;
 
-		/**
-		 * @brief Does this server come from LAN.
-		 */
-		bool isLan() const;
-		void setLan(bool b);
-
 	signals:
 		/**
 		 * @brief Emitted when refresh process begins for the current server.
@@ -657,8 +621,8 @@ class MAIN_EXPORT Server : public QObject
 		 */
 		void begunRefreshing(ServerPtr server);
 		/**
-		 * @brief Emitted when a refresh has been completed.
-		 *
+		 * @brief Emitted when a refresh has been completed. 
+		 * 
 		 * Be sure to check the response to see if anything has actually
 		 * changed.
 		 *
@@ -671,7 +635,6 @@ class MAIN_EXPORT Server : public QObject
 
 	protected:
 		POLYMORPHIC_SETTER_DECLARE(QString, Server, customDetails, ());
-		QString customDetails_default();
 
 		/**
 		 * @brief <b>[Pure Virtual]</b> Reads response packet.
@@ -694,7 +657,7 @@ class MAIN_EXPORT Server : public QObject
 		/**
 		 * @brief Add PWAD to the list of this server's PWADs.
 		 */
-		void addWad(const PWad& wad);
+		void addWad(const QString& wad);
 		/**
 		 * @brief Clear PWADs list.
 		 */
@@ -740,7 +703,6 @@ class MAIN_EXPORT Server : public QObject
 		 */
 		void setPingIsSet(bool b);
 
-		void setTestingServer(bool b);
 		/**
 		 * @brief Set timeLeft().
 		 */
@@ -761,12 +723,20 @@ class MAIN_EXPORT Server : public QObject
 	private:
 		Q_DISABLE_COPY(Server)
 
+		class PrivData;
+
 		static QString teamNames[];
 
-		DPtr<Server> d;
+		PrivData* d;
 
 		void clearDMFlags();
 
+		/**
+		 * Wrapper function to allow refresher to emit the updated signal.
+		 */
+		void emitUpdated(int response);
+
+		QString customDetails_default();
 		QByteArray createSendRequest_default();
 		Response readRequest_default(const QByteArray &data);
 

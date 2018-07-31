@@ -2,31 +2,30 @@
 // connectionhandler.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2012 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2012 Braden Obrzut <admin@maniacsvault.net>
 //                    "Zalewa" <zalewapl@gmail.com>
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------ 
 
 #ifndef __CONNECTIONHANDLER_H__
 #define __CONNECTIONHANDLER_H__
 
 #include "serverapi/serverptr.h"
-#include "dptr.h"
 #include <QObject>
 
 class CommandLineInfo;
@@ -59,27 +58,39 @@ class ConnectionHandler : public QObject
 	Q_OBJECT
 
 	public:
-		ConnectionHandler(ServerPtr server, QWidget *parentWidget=NULL);
+		ConnectionHandler(ServerPtr server, QWidget *parentWidget=NULL, bool handleResponse=false);
 		~ConnectionHandler();
 
 		void run();
 
 		static ConnectionHandler *connectByUrl(const QUrl &url);
+		/**
+		 *	Generates command line info for specified server.
+		 *
+		 *	@param [out] cli - generated command line
+		 *	@param errorCaption - caption used for QMessageBox in case of an
+		 *		error
+		 *	@param hadMissing - If set to a non-NULL value the pointer will be
+		 *		set to true if Wadseeker downloaded files.
+		 *	@return true on success, false otherwise.
+		 */
+		bool obtainJoinCommandLine(CommandLineInfo& cli,
+			const QString& errorCaption, bool managedDemo,
+			bool *hadMissing=NULL);
+
+	protected:
+		void finish(int response);
+		void refreshToJoin();
+
+	protected slots:
+		void checkResponse(const ServerPtr &server, int response);
 
 	signals:
 		void finished(int response);
 
 	private:
-		DPtr<ConnectionHandler> d;
-
-		void finish(int response);
-		void refreshToJoin();
-		void runCommandLine(const CommandLineInfo &cli);
-
-	private slots:
-		void buildJoinCommandLine();
-		void checkResponse(const ServerPtr &server, int response);
-		void onCommandLineBuildFinished();
+		class PrivData;
+		PrivData *d;
 };
 
 #endif

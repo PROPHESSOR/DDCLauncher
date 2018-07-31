@@ -1,12 +1,10 @@
 /* LzmaDec.h -- LZMA Decoder
-2013-01-18 : Igor Pavlov : Public domain */
+2008-10-04 : Igor Pavlov : Public domain */
 
-#ifndef __LZMA_DEC_H
-#define __LZMA_DEC_H
+#ifndef __LZMADEC_H
+#define __LZMADEC_H
 
-#include "7zTypes.h"
-
-EXTERN_C_BEGIN
+#include "Types.h"
 
 /* #define _LZMA_PROB32 */
 /* _LZMA_PROB32 can increase the speed on some CPUs,
@@ -68,7 +66,13 @@ typedef struct
 
 #define LzmaDec_Construct(p) { (p)->dic = 0; (p)->probs = 0; }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void LzmaDec_Init(CLzmaDec *p);
+#ifdef __cplusplus
+}
+#endif
 
 /* There are two types of LZMA streams:
      0) Stream with end mark. That end mark adds about 6 bytes to compressed size.
@@ -128,7 +132,11 @@ LzmaDec_Allocate* can return:
   SZ_ERROR_MEM         - Memory allocation error
   SZ_ERROR_UNSUPPORTED - Unsupported properties
 */
-   
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 SRes LzmaDec_AllocateProbs(CLzmaDec *p, const Byte *props, unsigned propsSize, ISzAlloc *alloc);
 void LzmaDec_FreeProbs(CLzmaDec *p, ISzAlloc *alloc);
 
@@ -222,6 +230,8 @@ SRes LzmaDecode(Byte *dest, SizeT *destLen, const Byte *src, SizeT *srcLen,
     const Byte *propData, unsigned propSize, ELzmaFinishMode finishMode,
     ELzmaStatus *status, ISzAlloc *alloc);
 
-EXTERN_C_END
+#ifdef __cplusplus
+}
+#endif
 
 #endif

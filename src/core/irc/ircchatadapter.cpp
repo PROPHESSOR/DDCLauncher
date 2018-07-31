@@ -2,20 +2,20 @@
 // ircchatadapter.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -45,7 +45,7 @@ IRCChatAdapter::~IRCChatAdapter()
 
 void IRCChatAdapter::doSendMessage(const QString& message, IRCAdapterBase* pOrigin)
 {
-	// If network is null and we can still send messages this might be a bug
+	// If network is null and we can still send messages this might be a bug 
 	// in the application.
 	if (pNetwork == NULL)
 	{
@@ -121,17 +121,17 @@ void IRCChatAdapter::sendChatMessage(const QString& message)
 {
 	// Here we will split too long messages to make sure they don't
 	// exceed the 512 character limit as stated in RFC 1459.
-
+	
 	// NOTE: Messages are echoed back through IRCRequestParser
-
+	
 	QString ircCall = QString("/PRIVMSG %1 ").arg(recipientName);
 	int maxLength = IRCClient::SAFE_MESSAGE_LENGTH - ircCall.toUtf8().length();
 	QStringList wordLines = message.split("\n");
-
+	
 	foreach(QString line, wordLines)
 	{
 		QStringList words = line.split(" ");
-
+		
 		while (!words.isEmpty())
 		{
 			QString sentence = extractMessageLine(words, maxLength);

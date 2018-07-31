@@ -7,20 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>285</height>
+    <height>300</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -41,9 +32,6 @@
         <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="IconLabel" name="lblDirectoryWarning" native="true"/>
      </item>
     </layout>
    </item>
@@ -189,16 +177,7 @@ p, li { white-space: pre-wrap; }
    <item>
     <widget class="QWidget" name="widgetTimeouts_2" native="true">
      <layout class="QFormLayout" name="formLayout_2">
-      <property name="leftMargin">
-       <number>1</number>
-      </property>
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <property name="rightMargin">
-       <number>1</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>1</number>
       </property>
       <item row="0" column="0">
@@ -342,16 +321,6 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>IconLabel</class>
-   <extends>QWidget</extends>
-   <header>gui/widgets/iconlabel.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
- <resources>
-  <include location="../../../../media/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

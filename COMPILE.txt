@@ -1,18 +1,9 @@
-Quick Start
-===========
-
 Doomseeker has the following dependencies:
-* Qt4 or Qt5:
-** Qt4 - Version 4.5 or later, requires the QtCore, QtGui, QtNetwork and QtXml modules.
-** Qt5 - QtCore, QtGui, QtLinguistTools, QtMultimedia, QtNetwork and QtXml modules.
-* Optionally zlib and libbz2
+* Qt - Version 4.5 or later, requires the QtCore, QtGui, and QtNetwork modules.
+* zlib
 
 You will also need CMake to generate the Makefile and/or project files.
-Supported compilers are GCC and, on Windows, MSVC. For compiling on
-Windows see COMPILE.Windows.txt.
-
-On Ubuntu the Qt packages required are qtbase5-dev, qtmultimedia5-dev, and qttools5-dev.
-You may also inspect Dockerfile to see what is being installed exactly.
+Supported compilers are GCC and MSVC.
 
 Linux compilation instructions:
 
@@ -21,68 +12,3 @@ cd build
 cmake ..
 make
 sudo make install
-
-----------------------------------------
-
-Quick Build for Redistribution
-==============================
-
-Assuming we are in "./doomseeker-src" directory, which is the
-root directory of this repo.
-
-mkdir ../build
-cd ../build
-cmake \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=/usr \
-  -DCMAKE_SKIP_RPATH=true \
-  ../doomseeker-src
-QT_HASH_SEED=1 make -j `nproc`
-
-----------------------------------------
-
-Deterministic Builds
-====================
-
-Qt Tools
---------
-
-Qt tools produce random output due to use of QHash, which orders its elements
-using a randomized seed. The seed can be forced with QT_HASH_SEED env. variable.
-It is sufficient to set it for make, but always set it to the same value:
-
-  QT_HASH_SEED=1 make
-
-https://stackoverflow.com/q/38926392
-
-Install Prefix
---------------
-
-Install prefix, set by CMAKE_INSTALL_PREFIX path, is passed
-as a #define to the built executable. If your build is meant
-for distribution, it is important to set CMAKE_INSTALL_PREFIX
-to /usr. Here are some examples:
-
-  cmake -DCMAKE_INSTALL_PREFIX=/usr
-  cmake -DCMAKE_INSTALL_PREFIX=/usr/local
-
-The resulting 'doomseeker' executable will differ depending
-on this #define.
-
-----------------------------------------
-
-Building against Qt4
-====================
-
-FORCE_QT4 option, when set to true, will enable compiling with Qt4.
-
-  cmake -DFORCE_QT4=true
-
-
-----------------------------------------
-Copyright (C) 2010 The Doomseeker Team
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.  This file is offered as-is,
-without any warranty.

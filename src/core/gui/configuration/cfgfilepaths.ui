@@ -11,16 +11,7 @@
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -46,9 +37,6 @@
      </property>
      <attribute name="horizontalHeaderHighlightSections">
       <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderMinimumSectionSize">
-      <number>18</number>
      </attribute>
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
@@ -88,20 +76,12 @@
        <property name="text">
         <string>Add</string>
        </property>
-       <property name="icon">
-        <iconset resource="../../../../media/resources.qrc">
-         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
-       </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnRemoveWadPath">
        <property name="text">
         <string>Remove</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../media/resources.qrc">
-         <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
        </property>
       </widget>
      </item>
@@ -124,8 +104,6 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../../../media/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

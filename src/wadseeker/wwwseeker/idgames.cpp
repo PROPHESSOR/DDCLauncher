@@ -120,7 +120,7 @@ void Idgames::extractAndEmitLinks(QByteArray& pageData, const QUrl& pageUrl)
 		{
 			directUrls << link.url;
 		}
-
+		
 		emit fileLinksFound(d->seekedFile.name(), directUrls);
 	}
 
@@ -211,8 +211,6 @@ void Idgames::networkRequestFinished()
 
 	QByteArray pageData = d->currentRequest->readAll();
 	QUrl pageUrl = d->currentRequest->url();
-	QUrl redirectUrl = d->currentRequest->attribute(
-		QNetworkRequest::RedirectionTargetAttribute).toUrl();
 
 	emit siteFinished(pageUrl);
 
@@ -226,18 +224,7 @@ void Idgames::networkRequestFinished()
 	}
 	else
 	{
-		if (!redirectUrl.isEmpty() && redirectUrl != pageUrl)
-		{
-			if (redirectUrl.isRelative())
-			{
-				redirectUrl = pageUrl.resolved(redirectUrl);
-			}
-			startNetworkQuery(redirectUrl);
-		}
-		else
-		{
-			extractAndEmitLinks(pageData, pageUrl);
-		}
+		extractAndEmitLinks(pageData, pageUrl);
 	}
 }
 
@@ -263,7 +250,7 @@ void Idgames::startNetworkQuery(const QUrl& url)
 {
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setRawHeader("User-Agent", d->userAgent.toUtf8());
+	request.setRawHeader("User-Agent", d->userAgent.toAscii());
 
 	QNetworkReply* pReply = d->nam->get(request);
 	d->currentRequest = pReply;

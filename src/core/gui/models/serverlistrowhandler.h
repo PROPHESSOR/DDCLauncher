@@ -2,20 +2,20 @@
 // serverlistrowhandler.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -24,15 +24,14 @@
 #define __SERVER_LIST_ROW_HANDLER_H_
 
 #include "serverapi/serverptr.h"
-#include "dptr.h"
+#include <QHostAddress>
 #include <QObject>
+#include <QStandardItem>
+#include <QString>
 
 class GameCVar;
 class Server;
 class ServerListModel;
-class QHostAddress;
-class QPixmap;
-class QStandardItem;
 
 class ServerListRowHandler : public QObject
 {
@@ -45,6 +44,7 @@ class ServerListRowHandler : public QObject
 		 *  SG_NORMAL servers will be always on the top of the list, after them
 		 *  will be SG_WAIT servers, etc.
 		 *
+		 *  @b WARNING:
 		 *	Exception: custom servers will always be on top of the list
 		 *	and will be sorted inside their own group independentedly.
 		 */
@@ -87,11 +87,12 @@ class ServerListRowHandler : public QObject
 		void setCountryFlag();
 		void setRefreshing();
 
-		int updateServer();
+		int updateServer(int response);
 
-		static ServerPtr serverFromList(const ServerListModel* parentModel, int rowIndex);
+		static ServerPtr serverFromList(ServerListModel* parentModel, int rowIndex);
 	private:
-		DPtr<ServerListRowHandler> d;
+		class PrivData;
+		PrivData *d;
 
 		void emptyItem(QStandardItem*);
 
@@ -109,6 +110,8 @@ class ServerListRowHandler : public QObject
 		void fillServerPointerColumn();
 
 		void prepareHeaders();
+		//ServerGroup 			serverGroup(int row);
+
 
 		void setBackgroundColor();
 

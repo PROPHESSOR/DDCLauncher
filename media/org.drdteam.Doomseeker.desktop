@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=Doomseeker
-Comment=Internet Doom server browser.
-Exec=doomseeker
-Icon=doomseeker
-Terminal=false
-Categories=Game;Amusement;

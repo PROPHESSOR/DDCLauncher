@@ -2,26 +2,25 @@
 // ircchanneladapter.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "ircchanneladapter.h"
-#include "irc/configuration/ircconfig.h"
 #include "irc/ircglobal.h"
 #include "irc/ircmessageclass.h"
 #include "irc/ircnetworkadapter.h"
@@ -38,7 +37,7 @@ IRCChannelAdapter::~IRCChannelAdapter()
 {
 	if (this->pNetwork != NULL)
 	{
-		sendMessage("/part " + this->recipientName + " " + gIRCConfig.personal.quitMessage);
+		sendMessage("/part " + this->recipientName + " " + tr("Doomseeker End Of Line"));
 	}
 
 	delete users;
@@ -81,13 +80,13 @@ void IRCChannelAdapter::emitChatMessage(const QString& sender, const QString& co
 {
 	// Ensure that all nickname artifacts are preserved.
 	const IRCUserInfo* pUserInfo = users->user(sender);
-
+	
 	QString actualSenderName = sender;
 	if (pUserInfo != NULL)
 	{
 		actualSenderName = pUserInfo->prefixedName();
 	}
-
+	
 	// Check if content has our nickname.
 	// (do not play sounds for our own messages)
 	const QString& myNickname = pNetwork->myNickname();
@@ -96,7 +95,7 @@ void IRCChannelAdapter::emitChatMessage(const QString& sender, const QString& co
 	{
 		emit myNicknameUsed();
 	}
-
+	
 	IRCChatAdapter::emitChatMessage(actualSenderName, content);
 }
 
@@ -112,7 +111,7 @@ bool IRCChannelAdapter::isOperator(const QString& nickname) const
 	{
 		return pUser->isOp();
 	}
-
+	
 	return false;
 }
 
@@ -159,12 +158,12 @@ void IRCChannelAdapter::userChangesNickname(const QString& oldNickname, const QS
 	if (hasUser(oldNickname))
 	{
 		IRCUserInfo oldName = users->userCopy(oldNickname);
-
+	
 		users->changeNick(oldNickname, newNickname);
 		emit nameRemoved(oldName);
 		emit nameAdded(users->userCopy(newNickname));
 
-		emit messageWithClass(tr("%1 is now known as %2").arg(oldNickname, newNickname),
+		emit messageWithClass(tr("%1 is now known as %2").arg(oldNickname, newNickname), 
 			IRCMessageClass::ChannelAction);
 	}
 }
@@ -173,7 +172,7 @@ void IRCChannelAdapter::userJoins(const QString& nickname, const QString& fullSi
 {
 	appendNameToCachedList(nickname);
 
-	emit messageWithClass(tr("User %1 [%2] has joined the channel.").arg(nickname, fullSignature),
+	emit messageWithClass(tr("User %1 [%2] has joined the channel.").arg(nickname, fullSignature), 
 		IRCMessageClass::ChannelAction);
 }
 
@@ -190,17 +189,17 @@ void IRCChannelAdapter::userLeaves(const QString& nickname, const QString& farew
 	switch (quitType)
 	{
 		case IRCChatAdapter::ChannelPart:
-			emit messageWithClass(tr("User %1 has left the channel. (PART: %2)").arg(nickname, farewellMessage),
+			emit messageWithClass(tr("User %1 has left the channel. (PART: %2)").arg(nickname, farewellMessage), 
 				IRCMessageClass::ChannelAction);
 			break;
-
+			
 		case IRCChatAdapter::NetworkKill:
-			emit messageWithClass(tr("Connection for user %1 has been killed. (KILL: %2)").arg(nickname, farewellMessage),
+			emit messageWithClass(tr("Connection for user %1 has been killed. (KILL: %2)").arg(nickname, farewellMessage), 
 				IRCMessageClass::NetworkAction);
 			break;
 
 		case IRCChatAdapter::NetworkQuit:
-			emit messageWithClass(tr("User %1 has quit the network. (QUIT: %2)").arg(nickname, farewellMessage),
+			emit messageWithClass(tr("User %1 has quit the network. (QUIT: %2)").arg(nickname, farewellMessage), 
 				IRCMessageClass::NetworkAction);
 			break;
 

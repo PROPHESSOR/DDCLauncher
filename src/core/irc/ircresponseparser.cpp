@@ -2,20 +2,20 @@
 // ircresponseparser.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -29,14 +29,14 @@
 #include "irc/constants/ircresponsetype.h"
 #include "irc/ircctcpparser.h"
 #include "irc/ircglobal.h"
+#include "irc/ircglobalmessages.h"
 #include "irc/ircmessageclass.h"
 #include "irc/ircnetworkadapter.h"
 #include "irc/ircuserinfo.h"
 #include "log.h"
-#include "patternlist.h"
-#include "strings.hpp"
+#include "strings.h"
 
-DClass<IRCResponseParser>
+class IRCResponseParser::PrivData
 {
 	public:
 		IRCNetworkAdapter *network;
@@ -46,15 +46,15 @@ DClass<IRCResponseParser>
 		QStringList params;
 };
 
-DPointered(IRCResponseParser)
-
 IRCResponseParser::IRCResponseParser(IRCNetworkAdapter *network)
 {
+	d = new PrivData();
 	d->network = network;
 }
 
 IRCResponseParser::~IRCResponseParser()
 {
+	delete d;
 }
 
 IRCResponseParser::FlagModes IRCResponseParser::getFlagMode(char c)
@@ -70,11 +70,6 @@ IRCResponseParser::FlagModes IRCResponseParser::getFlagMode(char c)
 		default:
 			return FlagModeError;
 	}
-}
-
-bool IRCResponseParser::isPrefixIgnored() const
-{
-	return d->network->ignoredUsersPatterns().isExactMatchAny(d->prefix);
 }
 
 QString IRCResponseParser::joinAndTrimColonIfNecessary(const QStringList& strList) const
@@ -93,7 +88,7 @@ IRCResponseParseResult IRCResponseParser::parse(const QString& message)
 	QString prefix = prefixRegExp.cap(1);
 	QString remainder = formattedMessage.mid(prefix.length());
 
-	d->prefix = Strings::triml(prefix, ":").trimmed();
+	d->prefix = Strings::triml(prefix, ":");
 
 	// Obtain message sender from the prefix.
 	int indexExclamation = prefix.indexOf('!');
@@ -134,16 +129,6 @@ IRCResponseParseResult IRCResponseParser::parseMessage()
 			break;
 		}
 
-		case IRCResponseType::RPLAway:
-		{
-			d->params.takeFirst(); // Own nick.
-			QString nickname = d->params.takeFirst();
-			QString reason = joinAndTrimColonIfNecessary(d->params);
-			emit printToNetworksCurrentChatBox(tr("User %1 is away: %2").arg(nickname, reason),
-				IRCMessageClass::NetworkAction);
-			break;
-		}
-
 		case IRCResponseType::RPLWhoIsUser:
 		{
 			// First param is unnecessary
@@ -156,57 +141,6 @@ IRCResponseParseResult IRCResponseParser::parseMessage()
 			QString realName = joinAndTrimColonIfNecessary(d->params);
 
 			emit whoIsUser(nickname, user, hostName, realName);
-			break;
-		}
-
-		case IRCResponseType::RPLWhoIsRegnick:
-		case IRCResponseType::RPLWhoIsServer:
-		case IRCResponseType::RPLWhoIsOperator:
-		case IRCResponseType::RPLWhoIsHost:
-		case IRCResponseType::RPLWhoIsModes:
-		case IRCResponseType::RPLWhoIsSpecial:
-		case IRCResponseType::RPLWhoIsBot:
-		case IRCResponseType::RPLWhoIsSecure:
-		case IRCResponseType::RPLWhoIsActually:
-		case IRCResponseType::RPLEndOfWhoIs:
-		{
-			d->params.takeFirst(); // Own nick.
-			emit printToNetworksCurrentChatBox(d->params.join(" "), IRCMessageClass::NetworkAction);
-			break;
-		}
-
-		case IRCResponseType::RPLWhoIsIdle:
-		{
-			d->params.takeFirst(); // Own nick.
-			QString nick = d->params.takeFirst();
-			int secondsIdle = d->params.takeFirst().toInt();
-			emit userIdleTime(nick, secondsIdle);
-			if (d->params.first().toInt() != 0)
-			{
-				int joinedOn = d->params.takeFirst().toInt();
-				emit userNetworkJoinDateTime(nick, QDateTime::fromTime_t(joinedOn));
-			}
-			break;
-		}
-
-		case IRCResponseType::RPLWhoIsChannels:
-		{
-			d->params.takeFirst(); // Own nick.
-			QString nick = d->params.takeFirst();
-			QString channels = joinAndTrimColonIfNecessary(d->params);
-			emit printToNetworksCurrentChatBox(tr("%1 is on channels: %2").arg(nick, channels),
-				IRCMessageClass::NetworkAction);
-			break;
-		}
-
-		case IRCResponseType::RPLWhoIsAccount:
-		{
-			d->params.takeFirst(); // Own nick.
-			QString nick = d->params.takeFirst();
-			QString account = d->params.takeFirst();
-			QString message = joinAndTrimColonIfNecessary(d->params);
-			emit printToNetworksCurrentChatBox(QString("%1 %2 %3").arg(nick, message, account),
-				IRCMessageClass::NetworkAction);
 			break;
 		}
 
@@ -236,25 +170,6 @@ IRCResponseParseResult IRCResponseParser::parseMessage()
 			QDateTime date = QDateTime::fromMSecsSinceEpoch(timestampSeconds * 1000);
 			QString msg = tr("Topic set by %1 on %2.").arg(who, date.toString("yyyy-MM-dd hh:mm:ss"));
 			emit printWithClass(msg, channel, IRCMessageClass(IRCMessageClass::ChannelAction));
-			break;
-		}
-
-		case IRCResponseType::RPLChannelUrl:
-		{
-			d->params.takeFirst(); // Own nickname.
-			QString channel = d->params.takeFirst();
-			QString url = joinAndTrimColonIfNecessary(d->params);
-			emit printWithClass(tr("URL: %1").arg(url), channel, IRCMessageClass::ChannelAction);
-			break;
-		}
-
-		case IRCResponseType::RPLCreationTime:
-		{
-			d->params.takeFirst(); // Own nickname.
-			QString channel = d->params.takeFirst();
-			QString time = joinAndTrimColonIfNecessary(d->params);
-			emit printWithClass(tr("Created time: %1").arg(time), channel,
-				IRCMessageClass::ChannelAction);
 			break;
 		}
 
@@ -362,20 +277,6 @@ IRCResponseParseResult IRCResponseParser::parseMessage()
 			break;
 		}
 
-		case IRCResponseType::ERRErroneousNickname:
-		{
-			// Own nickname.
-			d->params.takeFirst();
-			QString badNick = d->params.takeFirst();
-			QString msg = tr("Erroneous nickname: %1").arg(badNick);
-			if (d->params.join(" ").compare(":Erroneous nickname", Qt::CaseInsensitive) != 0)
-			{
-				msg += tr(" (%1)").arg(joinAndTrimColonIfNecessary(d->params));
-			}
-			emit printToNetworksCurrentChatBox(msg, IRCMessageClass::Error);
-			break;
-		}
-
 		case IRCResponseType::ERRNicknameInUse:
 		{
 			// Drop the first param.
@@ -387,32 +288,12 @@ IRCResponseParseResult IRCResponseParser::parseMessage()
 			break;
 		}
 
-		case IRCResponseType::ERRChannelIsFull:
-		case IRCResponseType::ERRInviteOnlyChan:
-		case IRCResponseType::ERRBannedFromChan:
-		case IRCResponseType::ERRBadChannelKey:
-		case IRCResponseType::ERRBadChannelMask:
-		case IRCResponseType::ERRNoChanModes:
-		case IRCResponseType::ERRCannotSendToChan:
 		case IRCResponseType::ERRChanOpPrivIsNeeded:
 		{
 			d->params.takeFirst(); // User
 			QString channel = d->params.takeFirst();
 			QString reason = joinAndTrimColonIfNecessary(d->params);
-			switch (enumType)
-			{
-			case IRCResponseType::ERRChannelIsFull:
-			case IRCResponseType::ERRInviteOnlyChan:
-			case IRCResponseType::ERRBannedFromChan:
-			case IRCResponseType::ERRBadChannelKey:
-				emit printToNetworksCurrentChatBox(tr("%1: %2").arg(channel, reason),
-					IRCMessageClass::Error);
-				break;
-			default:
-				emit printWithClass(reason, channel, IRCMessageClass::ChannelAction);
-				break;
-			}
-
+			emit printWithClass(reason, channel, IRCMessageClass(IRCMessageClass::ChannelAction));
 			break;
 		}
 
@@ -545,10 +426,6 @@ IRCResponseParseResult IRCResponseParser::parseMessage()
 
 void IRCResponseParser::parsePrivMsgOrNotice()
 {
-	if (isPrefixIgnored())
-	{
-		return;
-	}
 	QString recipient = d->params.takeFirst();
 	if (!IRCGlobal::isChannelName(recipient))
 	{
@@ -577,7 +454,7 @@ void IRCResponseParser::parsePrivMsgOrNotice()
 				emit printWithClass(ctcp.printable(), QString(), IRCMessageClass::Ctcp);
 				break;
 			case IRCCtcpParser::DisplayThroughGlobalMessage:
-				emit printToNetworksCurrentChatBox(ctcp.printable(), IRCMessageClass::Ctcp);
+				ircGlobalMsg.emitMessageWithClass(ctcp.printable(), IRCMessageClass::Ctcp, d->network);
 				break;
 			case IRCCtcpParser::DontShow:
 				break;
@@ -599,7 +476,7 @@ void IRCResponseParser::parsePrivMsgOrNotice()
 		}
 		else if (responseType == IRCResponseType::Notice)
 		{
-			emit print(tr("[%1]: %2").arg(d->sender, content), recipient);
+			emit print(QString("[%1]: %2").arg(d->sender, content), QString());
 		}
 		else
 		{
@@ -615,7 +492,7 @@ void IRCResponseParser::parseUserModeMessage(const QString& channel, QString fla
 	// Of course add/subtract characters are not counted here.
 
 	// The first character should always define the flagMode.
-	FlagModes flagMode = getFlagMode(flagsString[0].toLatin1());
+	FlagModes flagMode = getFlagMode(flagsString[0].toAscii());
 
 	if (flagMode == FlagModeError)
 	{
@@ -627,7 +504,7 @@ void IRCResponseParser::parseUserModeMessage(const QString& channel, QString fla
 
 	for (int i = 1; i < flagsString.size(); ++i)
 	{
-		char flagChar = flagsString[i].toLatin1();
+		char flagChar = flagsString[i].toAscii();
 
 		FlagModes tmpFlagMode = getFlagMode(flagChar);
 		if (tmpFlagMode == FlagModeError)

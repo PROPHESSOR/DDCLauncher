@@ -2,20 +2,20 @@
 // refresher.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -106,15 +106,21 @@ class Refresher : public QObject
 
 		Refresher();
 
-		void concludeRefresh();
 		bool isAnythingToRefresh() const;
 		Server* findRefreshingServer(const QHostAddress& address, unsigned short port);
+		bool hasFreeServerRefreshSlots() const;
 
 		void purgeNullServers();
 
 		void readPendingDatagram();
 
-		void startNewServerRefresh();
+		/**
+		 * @brief Returns true if there are any master clients or non-custom
+		 * servers registered.
+		 */
+		bool shouldBlockRefreshingProcess() const;
+
+		void startNewServerRefreshesIfFreeSlots();
 		void resendCurrentServerRefreshesIfTimeout();
 
 		// TODO: Constify 'address' and 'packet' args.
@@ -135,7 +141,7 @@ class Refresher : public QObject
 
 	private slots:
 		void attemptTimeoutMasters();
-		void masterFinishedRefreshing();
+		void masterFinishedRefreshing(MasterClient* pMaster);
 		void readAllPendingDatagrams();
 		void sendMasterQueries();
 		void sendServerQueries();

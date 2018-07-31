@@ -2,20 +2,20 @@
 // apprunner.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -25,7 +25,7 @@
 #include "gui/standardserverconsole.h"
 #include "serverapi/message.h"
 #include "log.h"
-#include "strings.hpp"
+#include "strings.h"
 #include <QProcess>
 
 bool CommandLineInfo::isValid() const
@@ -45,7 +45,7 @@ void AppRunner::cleanArguments(QStringList& args)
 	}
 }
 
-#ifdef Q_OS_MAC
+#ifdef Q_WS_MAC
 QString AppRunner::findBundleBinary(const QFileInfo &file)
 {
 	// Scan the plist file for where the real binary is in a bundle.  We have
@@ -89,7 +89,7 @@ Message AppRunner::runExecutable(const CommandLineInfo& cmdInfo)
 
 	int result;
 
-	#ifdef Q_OS_MAC
+	#ifdef Q_WS_MAC
 	if( cmdInfo.executable.isBundle() )
 	{
 		result = QProcess::startDetached(cmdInfo.executable.absoluteFilePath() + AppRunner::findBundleBinary(cmdInfo.executable), args, cmdInfo.applicationDir.absolutePath());

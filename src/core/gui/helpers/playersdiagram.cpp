@@ -2,49 +2,42 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "playersdiagram.h"
-
 #include "serverapi/playerslist.h"
 #include "serverapi/server.h"
-#include "datapaths.h"
 #include "log.h"
-#include "strings.hpp"
-#include <QDir>
 #include <QPainter>
-#include <QResource>
 #include <cassert>
 
-QImage PlayersDiagram::openImage;
-QImage PlayersDiagram::openSpecImage;
-QImage PlayersDiagram::botImage;
-QImage PlayersDiagram::playerImage;
-QImage PlayersDiagram::spectatorImage;
-
-const QString PlayersDiagram::DEFAULT_STYLE = "blocks";
-QString PlayersDiagram::currentlyLoadedStyle;
+const char* PlayersDiagram::slotStyles[NUM_SLOTSTYLES] = { "marines", "blocks" };
+const QImage* PlayersDiagram::openImage = NULL;
+const QImage* PlayersDiagram::openSpecImage = NULL;
+const QImage* PlayersDiagram::botImage = NULL;
+const QImage* PlayersDiagram::playerImage = NULL;
+const QImage* PlayersDiagram::spectatorImage = NULL;
 
 PlayersDiagram::PlayersDiagram(ServerCPtr server)
-: server(server)
+: server(server), tmp(NULL)
 {
-	if(openImage.isNull())
+	if(openImage == NULL)
 	{
 		return;
 	}
@@ -55,37 +48,19 @@ PlayersDiagram::PlayersDiagram(ServerCPtr server)
 
 PlayersDiagram::~PlayersDiagram()
 {
+	if(tmp != NULL)
+		delete tmp;
 }
 
-QList<PlayersDiagramStyle> PlayersDiagram::availableSlotStyles()
+const QImage* PlayersDiagram::colorizePlayer(const QImage *image, const QColor &color)
 {
-	QList<PlayersDiagramStyle> list;
-
-	// Built-ins.
-	list << PlayersDiagramStyle("numeric", tr("Numeric"));
-	list << PlayersDiagramStyle("blocks", tr("Blocks"));
-
-	// Extra.
-	QStringList knownNames;
-	foreach (QDir dir, stylePaths())
+	if(tmp != NULL)
 	{
-		QStringList extraSlots = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-		foreach (QString slotsName, extraSlots)
-		{
-			if (!knownNames.contains(slotsName, Qt::CaseInsensitive))
-			{
-				knownNames << slotsName;
-				list << PlayersDiagramStyle(slotsName);
-			}
-		}
+		delete tmp;
 	}
+	tmp = new QImage(*image);
 
-	return list;
-}
-
-QImage PlayersDiagram::colorizePlayer(QImage image, const QColor &color)
-{
-	QVector<QRgb> colors = image.colorTable();
+	QVector<QRgb> colors = tmp->colorTable();
 	QColor destinationColor = color.toHsv();
 	for(int i = 0; i < colors.size(); ++i)
 	{
@@ -102,9 +77,21 @@ QImage PlayersDiagram::colorizePlayer(QImage image, const QColor &color)
 		destinationColor.setHsv(hue, saturation, QColor(colors[i]).toHsv().value());
 		colors[i] = destinationColor.rgb();
 	}
-	image.setColorTable(colors);
+	tmp->setColorTable(colors);
 
-	return image;
+	return tmp;
+}
+
+void PlayersDiagram::deleteImages()
+{
+	if(openImage != NULL)
+	{
+		delete openImage;
+		delete openSpecImage;
+		delete botImage;
+		delete playerImage;
+		delete spectatorImage;
+	}
 }
 
 void PlayersDiagram::draw()
@@ -113,10 +100,10 @@ void PlayersDiagram::draw()
 	if(server->numTotalSlots() == 0)
 		return;
 
-	diagram = QPixmap(server->numTotalSlots() * playerImage.width(), playerImage.height());
+	diagram = QPixmap(server->numTotalSlots() * playerImage->width(), playerImage->height());
 	diagram.fill(Qt::transparent);
 
-	slotSize = playerImage.width();
+	slotSize = playerImage->width();
 	position = diagram.width() - slotSize;
 	painter = new QPainter(&diagram);
 
@@ -151,7 +138,7 @@ void PlayersDiagram::drawTeam(PlayerType playerType, int team, int howMany)
 {
 	if (howMany > 0)
 	{
-		QImage baseImage;
+		const QImage* baseImage;
 
 		switch(playerType)
 		{
@@ -168,58 +155,42 @@ void PlayersDiagram::drawTeam(PlayerType playerType, int team, int howMany)
 				return;
 		}
 
-		const QImage picture = colorizePlayer(baseImage, QColor(server->teamColor(team)));
+		const QImage* picture = colorizePlayer(baseImage, QColor(server->teamColor(team)));
 		drawPictures(picture, howMany);
 	}
 }
 
-void PlayersDiagram::drawPictures(const QImage &image, int howMany)
+void PlayersDiagram::drawPictures(const QImage* image, int howMany)
 {
+	assert(image != NULL);
 	for (; howMany > 0; --howMany)
 	{
-		painter->drawImage(position, 0, image);
+		painter->drawImage(position, 0, *image);
 		position -= slotSize;
 	}
 }
 
-bool PlayersDiagram::isNumericStyle(const QString &style)
+bool PlayersDiagram::isStyleNumberValid(int style)
 {
-	return style == "numeric";
+	return style >= NUM_SLOTSTYLES || style < 0;
 }
 
-void PlayersDiagram::loadImages(const QString &style)
+void PlayersDiagram::loadImages(int style)
 {
-	if (style == currentlyLoadedStyle)
-		return;
-	if (isNumericStyle(style))
-		return;
+	deleteImages();
 
-	openImage = loadImage(style, "open");
-	openSpecImage = loadImage(style, "specopen");
-	botImage = loadImage(style, "bot");
-	playerImage = loadImage(style, "player");
-	spectatorImage = loadImage(style, "spectator");
-	currentlyLoadedStyle = style;
-}
+	if(isStyleNumberValid(style))
+	{
+		style = 0;
+	}
 
-QImage PlayersDiagram::loadImage(const QString &style, const QString &name)
-{
-	QImage image;
-	if (style != DEFAULT_STYLE)
-	{
-		QString resourcePath;
-		foreach(const QString &dir, stylePaths())
-		{
-			image = QImage(Strings::combinePaths(dir, style + "/" + name + ".png"));
-			if (!image.isNull())
-				return image;
-		}
-	}
-	if (image.isNull())
-	{
-		image = QImage(":/slots/" + DEFAULT_STYLE + "/" + name);
-	}
-	return image;
+	QString filepath(":/slots/");
+	filepath += slotStyles[style];
+	openImage = new QImage(filepath + "/open");
+	openSpecImage = new QImage(filepath + "/specopen");
+	botImage = new QImage(filepath + "/bot");
+	playerImage = new QImage(filepath + "/player");
+	spectatorImage = new QImage(filepath + "/spectator");
 }
 
 void PlayersDiagram::obtainPlayerNumbers()
@@ -240,9 +211,4 @@ void PlayersDiagram::obtainPlayerNumbers()
 		numBotsOnTeam[i] = players.numBotsOnTeam(i);
 		numHumansOnTeam[i] = players.numHumansOnTeam(i);
 	}
-}
-
-QStringList PlayersDiagram::stylePaths()
-{
-	return gDefaultDataPaths->staticDataSearchDirs("theme/slots");
 }

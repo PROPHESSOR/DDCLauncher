@@ -26,7 +26,7 @@
 #include <cassert>
 #include <QDebug>
 
-DClass<IniSection>
+class IniSection::PrivData
 {
 	public:
 		QString name;
@@ -37,21 +37,24 @@ DClass<IniSection>
 		Ini* pIni;
 };
 
-DPointered(IniSection)
+COPYABLE_D_POINTERED_DEFINE(IniSection);
 
 IniSection::IniSection()
 {
+	d = new PrivData();
 	d->pIni = NULL;
 }
 
 IniSection::IniSection(Ini* pIni, const QString& sectionName)
 {
+	d = new PrivData();
 	d->pIni = pIni;
 	d->name = sectionName;
 }
 
 IniSection::~IniSection()
 {
+	delete d;
 }
 
 IniVariable IniSection::createSetting(const QString& name, const QVariant& data)

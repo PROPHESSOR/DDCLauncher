@@ -2,20 +2,20 @@
 // doomseekerconfig.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -24,7 +24,6 @@
 #define __DOOMSEEKERCONFIG_H__
 
 #include "customservers.h"
-#include "dptr.h"
 #include "gui/entity/serverlistfilterinfo.h"
 #include "serverapi/buddyinfo.h"
 #include <QScopedPointer>
@@ -40,7 +39,6 @@ class Ini;
 class EnginePlugin;
 class FileAlias;
 class FileSearchPath;
-struct QuerySpeed;
 class SettingsProviderQt;
 
 /**
@@ -68,7 +66,7 @@ class DoomseekerConfig
 			bool bGroupServersWithPlayersAtTheTopOfTheList;
 			bool bIP2CountryAutoUpdate;
 			bool bLookupHosts;
-			bool bMarkServersWithBuddies;
+			bool bMainWindowMaximized;
 			bool bQueryAutoRefreshDontIfActive;
 			bool bQueryAutoRefreshEnabled;
 			bool bQueryBeforeLaunch;
@@ -77,35 +75,45 @@ class DoomseekerConfig
 			bool bTellMeWhereAreTheWADsWhenIHoverCursorOverWADSColumn;
 			QVector<BuddyInfo> buddiesList;
 			bool bUseTrayIcon;
-			QString buddyServersColor;
 			QVector<CustomServerInfo> customServers;
 			QString customServersColor;
-			QString lanServersColor;
 			QString localization;
+			unsigned ip2CountryDatabaseMaximumAge;
+			QString ip2CountryUrl;
 			QString mainWindowState;
-			QByteArray mainWindowGeometry;
+			unsigned mainWindowWidth;
+			unsigned mainWindowHeight;
+			int mainWindowX;
+			int mainWindowY;
 			unsigned queryAutoRefreshEverySeconds;
+			unsigned queryBatchSize;
+			unsigned queryBatchDelay;
+			unsigned queryTimeout;
+			unsigned queryTries;
 			QString previousCreateServerConfigDir;
 			QString previousCreateServerExecDir;
 			QString previousCreateServerWadDir;
 			QString serverListColumnState;
 			int serverListSortIndex;
 			int serverListSortDirection;
-			QString slotStyle;
+			int slotStyle;
 			QList<FileSearchPath> wadPaths;
 
 			DoomseekerCfg();
 			~DoomseekerCfg();
 
+			/**
+			 *	@brief Will return false if at least one of them is out of
+			 *	bounds.
+			 *
+			 *	This will ensure that window remains accessible.
+			 */
+			bool areMainWindowSizeSettingsValid(int maxValidX, int maxValidY) const;
+
 			QList<ColumnSort> additionalSortColumns() const;
 			void setAdditionalSortColumns(const QList<ColumnSort> &val);
 
-			void enableFreedoomInstallation(const QString &dir);
-
-			const QuerySpeed &querySpeed() const;
-			void setQuerySpeed(const QuerySpeed &val);
-
-			QList<FileAlias> wadAliases() const;
+			QList<FileAlias> wadAliases();
 			void setWadAliases(const QList<FileAlias> &val);
 
 			QStringList wadPathsOnly() const;
@@ -122,7 +130,8 @@ class DoomseekerConfig
 			void save(IniSection& section);
 
 			private:
-				DPtr<DoomseekerCfg> d;
+				class PrivData;
+				PrivData *d;
 		};
 
 		class AutoUpdates
@@ -154,7 +163,7 @@ class DoomseekerConfig
 			 * - Key - package name.
 			 * - Value - package revision.
 			 */
-			QMap<QString, QString> lastKnownUpdateRevisions;
+			QMap<QString, unsigned long long> lastKnownUpdateRevisions;
 			UpdateMode updateMode;
 			/**
 			 * @brief Pass this to UpdateChannel::fromName() .
@@ -184,9 +193,7 @@ class DoomseekerConfig
 			public:
 			static const QString SECTION_NAME;
 
-			bool bAlwaysUseDefaultSites;
 			bool bSearchInIdgames;
-			bool bSearchInWadArchive;
 			QString colorMessageCriticalError;
 			QString colorMessageError;
 			QString colorMessageNotice;
@@ -271,8 +278,6 @@ class DoomseekerConfig
 		 *	or read the new one.
 		 */
 		bool setIniFile(const QString& filePath);
-
-		QList<FileSearchPath> combinedWadseekPaths() const;
 
 
 	private:

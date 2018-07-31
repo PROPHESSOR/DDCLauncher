@@ -21,12 +21,11 @@
 // Copyright (C) 2011 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "http.h"
-#include "protocols/networkreply.h"
 #include "wwwseeker/htmlparser.h"
 
 #include <QFileInfo>
 
-Http::Http(const NetworkReply* pReply)
+Http::Http(const QNetworkReply* pReply)
 {
 	this->pReply = pReply;
 }
@@ -47,7 +46,7 @@ QString Http::attachmentName() const
 
 	// Now we need to extract the filename from the INI-like list.
 	// HtmlParser already has appropriate method.
-	HtmlParser parser(attachmentInfo.toUtf8());
+	HtmlParser parser(attachmentInfo.toAscii());
 	return parser.htmlValue("filename").trimmed();
 }
 

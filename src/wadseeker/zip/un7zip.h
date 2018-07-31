@@ -18,7 +18,7 @@
 // 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __UN7ZIP_H__
@@ -32,9 +32,10 @@
 
 extern "C"
 {
-#include "7z.h"
+#include "Archive/7z/7zHeader.h"
+#include "Archive/7z/7zExtract.h"
+#include "Archive/7z/7zIn.h"
 #include "7zCrc.h"
-#include "7zTypes.h"
 }
 
 class SZByteStream
@@ -64,7 +65,6 @@ class Un7Zip : public UnArchive
 		bool extract(int file, const QString &where);
 		QString fileNameFromIndex(int file);
 		int findFileEntry(const QString &entryName);
-		QStringList files();
 		bool isValid() { return valid; }
 
 	protected:

@@ -2,20 +2,20 @@
 // serverlistproxymodel.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2011 "Zalewa" <zalewapl@gmail.com>
@@ -24,12 +24,13 @@
 #define __SERVERLISTPROXYMODEL_H__
 
 #include "serverapi/serverptr.h"
-#include "dptr.h"
+#include <QModelIndex>
 #include <QSortFilterProxyModel>
 
 class ServerListFilterInfo;
-class ServerList;
+class ServerListHandler;
 class Server;
+
 
 class ColumnSort
 {
@@ -58,7 +59,7 @@ class ServerListProxyModel : public QSortFilterProxyModel
 	Q_OBJECT
 
 	public:
-		ServerListProxyModel(ServerList* serverListHandler);
+		ServerListProxyModel(ServerListHandler* serverListHandler);
 		~ServerListProxyModel();
 
 		void addAdditionalColumnSorting(int column, Qt::SortOrder order);
@@ -89,7 +90,9 @@ class ServerListProxyModel : public QSortFilterProxyModel
 		bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const;
 
 	private:
-		DPtr<ServerListProxyModel> d;
+		class PrivData;
+
+		PrivData* d;
 
 		int compareColumnSortData(QVariant& var1, QVariant& var2, int column) const;
 		bool lessThan(const QModelIndex& left, const QModelIndex& right) const;

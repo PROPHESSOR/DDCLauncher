@@ -8,46 +8,40 @@
 	<file>icons/ascending.png</file>
 	<file>icons/audio-speaker.png</file>
 	<file>icons/buddies.png</file>
-	<file>icons/chat.png</file>
 	<file>icons/color-fill.png</file>
-	<file>icons/create-server.png</file>
 	<file>icons/descending.png</file>
 	<file>icons/diskette.png</file>
 	<file>icons/doomseeker_plus.png</file>
+	<file>icons/download.png</file>
+	<file>icons/emblem-web.png</file>
 	<file>icons/exclamation.png</file>
-	<file>icons/exclamation_16.png</file>
-	<file alias="icons/exclamation_16@2x.png">icons/exclamation.png</file>
 	<file>icons/filter.png</file>
-	<file>icons/get-wad.png</file>
-	<file>icons/internet-web-browser.png</file>
+	<file>icons/irc.png</file>
 	<file>icons/irc_channel.png</file>
 	<file>icons/joystick.png</file>
 	<file>icons/log.png</file>
-	<file>icons/magnifier.png</file>
 	<file>icons/media-record.png</file>
 	<file>icons/media-playback-start.png</file>
-	<file>icons/minus.png</file>
 	<file>icons/network-connect-3.png</file>
 	<file>icons/ok.png</file>
 	<file>icons/padlock.png</file>
 	<file>icons/pause.png</file>
-	<file>icons/pencil.png</file>
 	<file>icons/person.png</file>
-	<file>icons/plus.png</file>
 	<file>icons/preferences-system-4.png</file>
-	<file>icons/refresh.png</file>
 	<file>icons/server_details.png</file>
-	<file>icons/utilities-file-archiver-2.png</file>
 	<file alias="shield.png">icons/shield.png</file>
-	<file alias="t.png">icons/t.png</file>
 	<file>icons/view-refresh-2.png</file>
 	<file>icons/x.png</file>
-	<file alias="slots/blocks/open">slotstyles/blocks/open.png</file>
-	<file alias="slots/blocks/specopen">slotstyles/blocks/specopen.png</file>
+	<file alias="slots/blocks/open">slotstyles/blocks/openslot.png</file>
+	<file alias="slots/blocks/specopen">slotstyles/blocks/openspecslot.png</file>
 	<file alias="slots/blocks/bot">slotstyles/blocks/bot.png</file>
 	<file alias="slots/blocks/player">slotstyles/blocks/player.png</file>
 	<file alias="slots/blocks/spectator">slotstyles/blocks/spectator.png</file>
-	<file alias="flags/ALB">flags/ALB.png</file> <!-- Albania -->
+	<file alias="slots/marines/open">slotstyles/marines/openslot.png</file>
+	<file alias="slots/marines/specopen">slotstyles/marines/openspecslot.png</file>
+	<file alias="slots/marines/bot">slotstyles/marines/bot.png</file>
+	<file alias="slots/marines/player">slotstyles/marines/player.png</file>
+	<file alias="slots/marines/spectator">slotstyles/marines/spectator.png</file>
 	<file alias="flags/ARE">flags/ARE.png</file> <!-- United Arab Emirates -->
 	<file alias="flags/ARG">flags/ARG.png</file> <!-- Argentina -->
 	<file alias="flags/ARM">flags/ARM.png</file> <!-- Armenia -->
@@ -55,8 +49,6 @@
 	<file alias="flags/AUT">flags/AUT.png</file> <!-- Austria -->
 	<file alias="flags/BEL">flags/BEL.png</file> <!-- Belgium -->
 	<file alias="flags/BGR">flags/BGR.png</file> <!-- Bulgaria -->
-	<file alias="flags/BHS">flags/BHS.png</file> <!-- Bahamas -->
-	<file alias="flags/BIH">flags/BIH.png</file> <!-- Bosnia and Herzegovina -->
 	<file alias="flags/BOL">flags/BOL.png</file> <!-- Bolivia -->
 	<file alias="flags/BRA">flags/BRA.png</file> <!-- Brazil -->
 	<file alias="flags/BLR">flags/BLR.png</file> <!-- Belarus (Bialorus) -->
@@ -64,16 +56,13 @@
 	<file alias="flags/CHE">flags/CHE.png</file> <!-- Switzerland -->
 	<file alias="flags/CHL">flags/CHL.png</file> <!-- Chile -->
 	<file alias="flags/CHN">flags/CHN.png</file> <!-- China -->
-	<file alias="flags/CIV">flags/CIV.png</file> <!-- Ivory Coast -->
 	<file alias="flags/COL">flags/COL.png</file> <!-- Colombia -->
 	<file alias="flags/CRI">flags/CRI.png</file> <!-- Costa Rica -->
 	<file alias="flags/CS" >flags/CS.png</file>  <!-- Serbia and Montenegro -->
 	<file alias="flags/CZE">flags/CZE.png</file> <!-- Czech Republic -->
 	<file alias="flags/DEU">flags/DEU.png</file> <!-- Germany -->
 	<file alias="flags/DNK">flags/DNK.png</file> <!-- Denmark -->
-	<file alias="flags/DOM">flags/DOM.png</file> <!-- Dominican Republic -->
 	<file alias="flags/DZA">flags/DZA.png</file> <!-- Algeria -->
-	<file alias="flags/ECU">flags/ECU.png</file> <!-- Ecuador -->
 	<file alias="flags/EGY">flags/EGY.png</file> <!-- Egypt -->
 	<file alias="flags/EST">flags/EST.png</file> <!-- Estonia -->
 	<file alias="flags/ESP">flags/ESP.png</file> <!-- Spain -->
@@ -84,17 +73,12 @@
 	<file alias="flags/GEO">flags/GEO.png</file> <!-- Georgia -->
 	<file alias="flags/GRC">flags/GRC.png</file> <!-- Greece -->
 	<file alias="flags/GTM">flags/GTM.png</file> <!-- Guatemala -->
-	<file alias="flags/GUY">flags/GUY.png</file> <!-- Guyana -->
 	<file alias="flags/HKG">flags/HKG.png</file> <!-- Hong Kong -->
 	<file alias="flags/HND">flags/HND.png</file> <!-- Honduras -->
 	<file alias="flags/HRV">flags/HRV.png</file> <!-- Croatia -->
 	<file alias="flags/HUN">flags/HUN.png</file> <!-- Hungary -->
-	<file alias="flags/IDN">flags/IDN.png</file> <!-- Indonesia -->
-	<file alias="flags/IMN">flags/IMN.png</file> <!-- Isle of Man -->
 	<file alias="flags/IND">flags/IND.png</file> <!-- India -->
 	<file alias="flags/IRL">flags/IRL.png</file> <!-- Ireland -->
-	<file alias="flags/IRN">flags/IRN.png</file> <!-- Iran -->
-	<file alias="flags/IRQ">flags/IRQ.png</file> <!-- Iraq -->
 	<file alias="flags/ISL">flags/ISL.png</file> <!-- Iceland -->
 	<file alias="flags/ISR">flags/ISR.png</file> <!-- Israel -->
 	<file alias="flags/ITA">flags/ITA.png</file> <!-- Italy -->
@@ -104,14 +88,12 @@
 	<file alias="flags/KGZ">flags/KGZ.png</file> <!-- Kyrgyzstan -->
 	<file alias="flags/KOR">flags/KOR.png</file> <!-- Republic of Korea -->
 	<file alias="flags/KWT">flags/KWT.png</file> <!-- Kuwait -->
-	<file alias="flags/LBN">flags/LBN.png</file> <!-- Lebanon -->
 	<file alias="flags/LTU">flags/LTU.png</file> <!-- Lithuania -->
 	<file alias="flags/LUX">flags/LUX.png</file> <!-- Luxembourg -->
 	<file alias="flags/LVA">flags/LVA.png</file> <!-- Latvia -->
 	<file alias="flags/MAR">flags/MAR.png</file> <!-- Morocco -->
 	<file alias="flags/MDA">flags/MDA.png</file> <!-- Moldova -->
 	<file alias="flags/MEX">flags/MEX.png</file> <!-- Mexico -->
-	<file alias="flags/MKD">flags/MKD.png</file> <!-- Macedonia -->
 	<file alias="flags/MYS">flags/MYS.png</file> <!-- Malaysia -->
 	<file alias="flags/MOZ">flags/MOZ.png</file> <!-- Mozambique -->
 	<file alias="flags/NCL">flags/NCL.png</file> <!-- New Caledonia -->
@@ -120,8 +102,6 @@
 	<file alias="flags/NLD">flags/NLD.png</file> <!-- Netherlands -->
 	<file alias="flags/NOR">flags/NOR.png</file> <!-- Norway -->
 	<file alias="flags/NZL">flags/NZL.png</file> <!-- New Zealand -->
-	<file alias="flags/OMN">flags/OMN.png</file> <!-- Oman -->
-	<file alias="flags/PAK">flags/PAK.png</file> <!-- Pakistan -->
 	<file alias="flags/PAN">flags/PAN.png</file> <!-- Panama -->
 	<file alias="flags/PER">flags/PER.png</file> <!-- Peru -->
 	<file alias="flags/PHL">flags/PHL.png</file> <!-- Philippines -->
@@ -131,7 +111,6 @@
 	<file alias="flags/PRY">flags/PRY.png</file> <!-- Paraguay -->
 	<file alias="flags/QAT">flags/QAT.png</file> <!-- Qatar -->
 	<file alias="flags/ROM">flags/ROM.png</file> <!-- Romania -->
-	<file alias="flags/ROU">flags/ROM.png</file> <!-- Romania -->
 	<file alias="flags/RUS">flags/RUS.png</file> <!-- Russian Federation -->
 	<file alias="flags/SAU">flags/SAU.png</file> <!-- Saudi Arabia -->
 	<file alias="flags/SGP">flags/SGP.png</file> <!-- Singapore -->
@@ -147,15 +126,12 @@
 	<file alias="flags/UKR">flags/UKR.png</file> <!-- Ukraine -->
 	<file alias="flags/URY">flags/URY.png</file> <!-- Uruguay -->
 	<file alias="flags/USA">flags/USA.png</file> <!-- USA -->
-	<file alias="flags/UZB">flags/UZB.png</file> <!-- Uzbekistan -->
 	<file alias="flags/VEN">flags/VEN.png</file> <!-- Venezuela -->
-	<file alias="flags/VNM">flags/VNM.png</file> <!-- Vietnam -->
-	<file alias="flags/YEM">flags/YEM.png</file> <!-- Yemen -->
 	<file alias="flags/ZAF">flags/ZAF.png</file> <!-- South Africa -->
 	<file alias="flags/lan-small">flags/lan-small.png</file>
 	<file alias="flags/localhost-small">flags/localhost-small.png</file>
 	<file alias="flags/unknown-small">flags/unknown-small.png</file>
 
-	<file>IpToCountry.dat</file>
+	<file>IpToCountry.csv</file>
 </qresource>
 </RCC>

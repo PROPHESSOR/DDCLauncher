@@ -2,20 +2,20 @@
 // enginezandronumconfigbox.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
@@ -23,19 +23,12 @@
 
 #include "enginezandronumconfigbox.h"
 #include "zandronumengineplugin.h"
-#include "ini/ini.h"
 #include "plugins/engineplugin.h"
 
-#include <QCheckBox>
 #include <QFileDialog>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLayout>
-#include <QLineEdit>
-#include <QPushButton>
 
-EngineZandronumConfigBox::EngineZandronumConfigBox(EnginePlugin* plugin, IniSection& cfg, QWidget* parent)
-: EngineConfigPage(plugin, cfg, parent)
+EngineZandronumConfigBox::EngineZandronumConfigBox(const EnginePlugin* plugin, IniSection& cfg, QWidget* parent) 
+: EngineConfigurationBaseBox(plugin, cfg, parent)
 {
 	// Create the testing box, we might as well do this in code.
 	groupTesting = new QGroupBox();
@@ -74,8 +67,8 @@ void EngineZandronumConfigBox::btnBrowseTestingPathClicked()
 
 void EngineZandronumConfigBox::readSettings()
 {
-	EngineConfigPage::readSettings();
-
+	EngineConfigurationBaseBox::readSettings();
+	
 	IniSection& config = *ZandronumEnginePlugin::staticInstance()->data()->pConfig;
 
 	groupTesting->setChecked(config["EnableTesting"]);
@@ -85,10 +78,10 @@ void EngineZandronumConfigBox::readSettings()
 
 void EngineZandronumConfigBox::saveSettings()
 {
-	EngineConfigPage::saveSettings();
+	EngineConfigurationBaseBox::saveSettings();
 
 	QString strVal;
-
+	
 	IniSection& config = *ZandronumEnginePlugin::staticInstance()->data()->pConfig;
 
 	config["EnableTesting"] = groupTesting->isChecked();

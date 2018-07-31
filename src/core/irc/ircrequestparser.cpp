@@ -2,20 +2,20 @@
 // ircrequestparser.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 
@@ -26,12 +26,13 @@
 #include "irc/ircclient.h"
 #include "irc/ircctcpparser.h"
 #include "irc/ircglobal.h"
+#include "irc/ircglobalmessages.h"
 #include "irc/ircmessageclass.h"
 #include "irc/ircnetworkadapter.h"
 #include "irc/ircuserinfo.h"
 #include <QStringList>
 
-DClass<IRCRequestParser>
+class IRCRequestParser::PrivData
 {
 	public:
 		IRCAdapterBase *adapter;
@@ -40,15 +41,15 @@ DClass<IRCRequestParser>
 		QStringList tokens;
 };
 
-DPointered(IRCRequestParser)
-
 IRCRequestParser::IRCRequestParser()
 {
+	d = new PrivData();
 	d->adapter = NULL;
 }
 
 IRCRequestParser::~IRCRequestParser()
 {
+	delete d;
 }
 
 IRCNetworkAdapter *IRCRequestParser::network()
@@ -109,10 +110,6 @@ IRCRequestParser::IRCRequestParseResult IRCRequestParser::buildOutput()
 		d->output = QString("%1 :%2").arg(d->message, d->tokens.join(" "));
 		return QuitCommand;
 	}
-	else if (d->message == "AWAY")
-	{
-		d->output = QString("%1 :%2").arg(d->message, d->tokens.join(" "));
-	}
 	else if (d->message == "PART")
 	{
 		if (d->tokens.isEmpty())
@@ -169,7 +166,7 @@ IRCRequestParser::IRCRequestParseResult IRCRequestParser::buildOutput()
 						network()->printWithClass(ctcp.printable(), QString(), IRCMessageClass::Ctcp);
 						break;
 					case IRCCtcpParser::DisplayThroughGlobalMessage:
-						network()->printToCurrentChatBox(ctcp.printable(), IRCMessageClass::Ctcp);
+						ircGlobalMsg.emitMessageWithClass(ctcp.printable(), IRCMessageClass::Ctcp, d->adapter);
 						break;
 					case IRCCtcpParser::DontShow:
 						break;

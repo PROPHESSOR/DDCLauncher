@@ -2,20 +2,20 @@
 // ircconfig.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -34,7 +34,7 @@
 class SettingsProviderQt;
 
 /**
- *	@brief This Singleton holds most of Doomseeker IRC configuration in memory.
+ *	@brief This Singleton holds entire Doomseeker configuration in memory.
  *
  *	The first time it is instantiated the cfg variables are set to default
  *	values. Then they can be either read from or saved to a .ini file.
@@ -61,7 +61,6 @@ class IRCConfig
 			QFont userListFont;
 			QString userListSelectedTextColor;
 			QString userListSelectedBackgroundColor;
-			bool windowAlertOnImportantChatEvent;
 
 			AppearanceCfg();
 
@@ -79,6 +78,7 @@ class IRCConfig
 
 			void load(IniSection& section);
 			void save(IniSection& section);
+
 		};
 
 		class PersonalCfg
@@ -89,8 +89,6 @@ class IRCConfig
 			QString alternativeNickname;
 			QString fullName;
 			QString nickname;
-			QString quitMessage;
-			QString userName;
 
 			PersonalCfg();
 
@@ -99,6 +97,33 @@ class IRCConfig
 
 			void load(IniSection& section);
 			void save(IniSection& section);
+		};
+
+		/**
+		 *	@brief Complexity of data here requires to create a section
+		 *	for each network.
+		 *
+		 *	Please note that IRCNetworkEntity::description values
+		 *	must be unique.
+		 */
+		class NetworksDataCfg
+		{
+			public:
+			static const QString SECTIONS_NAMES_PREFIX;
+
+			IRCNetworkEntity lastUsedNetwork;
+			QVector<IRCNetworkEntity> networks;
+
+			QVector<IRCNetworkEntity> autojoinNetworks() const;
+			void networksSortedByDescription(QVector<IRCNetworkEntity>& outVector);
+			void load(Ini& ini);
+			void save(Ini& ini);
+
+			private:
+				void clearNetworkSections(Ini& ini);
+
+				void loadNetwork(const IniSection& iniSection, IRCNetworkEntity& network);
+				void saveNetwork(IniSection& iniSection, const IRCNetworkEntity& network);
 		};
 
 		class SoundsCfg
@@ -133,10 +158,19 @@ class IRCConfig
 
 		AppearanceCfg appearance;
 		GeneralCfg general;
+		NetworksDataCfg networks;
 		PersonalCfg personal;
 		SoundsCfg sounds;
 
 		Ini* ini() { return this->pIni.data(); }
+
+		/**
+		 *	@brief Returns true if at least one network has autojoin
+		 *	enabled.
+		 *
+		 *	NetworksDataCfg::lastUsedNetwork is not considered here.
+		 */
+		bool isAutojoinNetworksEnabled() const;
 
 		/**
 		 *	@brief Reads settings from ini file. This file must be
@@ -170,8 +204,6 @@ class IRCConfig
 
 		IRCConfig();
 		~IRCConfig();
-
-		void loadNetworksFromPlugins();
 };
 
 #endif

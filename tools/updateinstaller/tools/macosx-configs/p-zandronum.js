@@ -1,8 +1,7 @@
 {
     "name" : "p-zandronum",
     "files" : [
-        "Contents/MacOS/engines/libzandronum.so",
-        "Contents/MacOS/translations/zandronum_pl_PL.qm"
+        "Contents/MacOS/engines/libzandronum.so"
     ],
     "updater-binary" : "Contents/MacOS/updater",
     "main-binary" : "Contents/MacOS/doomseeker"

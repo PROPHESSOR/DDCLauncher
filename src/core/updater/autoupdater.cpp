@@ -2,20 +2,20 @@
 // autoupdater.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
@@ -29,16 +29,16 @@
 #include "updater/updaterscriptparser.h"
 #include "datapaths.h"
 #include "log.h"
-#include "strings.hpp"
+#include "strings.h"
 #include "version.h"
+#include <wadseeker/protocols/fixednetworkaccessmanager.h>
 #include <QByteArray>
 #include <QDebug>
-#include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QTemporaryFile>
 #include <cassert>
 
-DClass<AutoUpdater>
+class AutoUpdater::PrivData
 {
 	public:
 		/// All scripts are merged to create one big script for all packages.
@@ -51,35 +51,32 @@ DClass<AutoUpdater>
 		UpdateChannel channel;
 		UpdatePackage currentlyDownloadedPackage;
 		QStringList downloadedPackagesFilenames;
-		AutoUpdater::ErrorCode errorCode;
-		QMap<QString, QList<QString> > ignoredPackagesRevisions;
+		ErrorCode errorCode;
+		QMap<QString, QList<unsigned long long> > ignoredPackagesRevisions;
 		QList<UpdatePackage> newUpdatePackages;
 		QList<UpdatePackage> packagesInDownloadQueue;
 		QTemporaryFile* pCurrentPackageFile;
-		QNetworkAccessManager* pNam;
+		FixedNetworkAccessManager* pNam;
 		QNetworkReply* pNetworkReply;
 };
-
-DPointered(AutoUpdater)
-
 //////////////////////////////////////////////////////////////////////////////
 
 const QString AutoUpdater::PLUGIN_PREFIX = "p-";
-const QString AutoUpdater::MAIN_PROGRAM_PACKAGE_NAME = "doomseeker-core";
-const QString AutoUpdater::QT_PACKAGE_NAME = "qt";
-const QString AutoUpdater::WADSEEKER_PACKAGE_NAME = "wadseeker";
-const QString AutoUpdater::UPDATER_INFO_URL_BASE = "https://doomseeker.drdteam.org/updates/";
+const QString AutoUpdater::MAIN_PROGRAM_PACKAGE_NAME = "doomseeker";
+// This can be set to different values depending on target platform.
+const QString AutoUpdater::UPDATER_INFO_URL_BASE = "http://doomseeker.drdteam.org/updates/";
 
 AutoUpdater::AutoUpdater(QObject* pParent)
 : QObject(pParent)
 {
+	d = new PrivData();
 	d->bDownloadAndInstallRequireConfirmation = false;
 	d->bPackageDownloadStarted = false;
 	d->bIsRunning = false;
 	d->bStarted = false;
 	d->errorCode = EC_Ok;
 	d->pCurrentPackageFile = NULL;
-	d->pNam = new QNetworkAccessManager();
+	d->pNam = new FixedNetworkAccessManager();
 	d->pNetworkReply = NULL;
 }
 
@@ -97,6 +94,7 @@ AutoUpdater::~AutoUpdater()
 	}
 	d->pNam->disconnect();
 	d->pNam->deleteLater();
+	delete d;
 }
 
 void AutoUpdater::abort()
@@ -175,11 +173,6 @@ void AutoUpdater::emitOverallProgress(const QString& message)
 		assert(current >= 0 && "AutoUpdater::emitOverallProgress()");
 	}
 	emit overallProgress(current, total, message);
-}
-
-void AutoUpdater::emitStatusMessage(const QString &message)
-{
-	emit statusMessage(message);
 }
 
 AutoUpdater::ErrorCode AutoUpdater::errorCode() const
@@ -265,16 +258,16 @@ void AutoUpdater::onPackageDownloadFinish()
 {
 	if (d->pNetworkReply->error() == QNetworkReply::NoError)
 	{
-		emitStatusMessage(tr("Finished downloading package \"%1\".")
-			.arg(d->currentlyDownloadedPackage.displayName));
+		gLog << tr("Finished downloading package \"%1\".")
+			.arg(d->currentlyDownloadedPackage.displayName);
 		startPackageScriptDownload(d->currentlyDownloadedPackage);
 	}
 	else
 	{
-		emitStatusMessage(tr("Network error when downloading package \"%1\": [%2] %3")
+		gLog << tr("Network error when downloading package \"%1\": [%2] %3")
 			.arg(d->currentlyDownloadedPackage.displayName)
 			.arg(d->pNetworkReply->error())
-			.arg(d->pNetworkReply->errorString()));
+			.arg(d->pNetworkReply->errorString());
 		finishWithError(EC_PackageDownloadProblem);
 	}
 }
@@ -294,8 +287,8 @@ void AutoUpdater::onPackageScriptDownloadFinish()
 {
 	if (d->pNetworkReply->error() == QNetworkReply::NoError)
 	{
-		emitStatusMessage(tr("Finished downloading package script \"%1\".")
-			.arg(d->currentlyDownloadedPackage.displayName));
+		gLog << tr("Finished downloading package script \"%1\".")
+			.arg(d->currentlyDownloadedPackage.displayName);
 		QByteArray xmlData = d->pNetworkReply->readAll();
 		QDomDocument xmlDoc = adjustUpdaterScriptXml(xmlData);
 		if (xmlDoc.isNull())
@@ -311,17 +304,17 @@ void AutoUpdater::onPackageScriptDownloadFinish()
 		}
 		else
 		{
-			emitStatusMessage(tr("All packages downloaded. Building updater script."));
+			gLog << tr("All packages downloaded. Building updater script.");
 			ErrorCode result = saveUpdaterScript();
 			finishWithError(result);
 		}
 	}
 	else
 	{
-		emitStatusMessage(tr("Network error when downloading package script \"%1\": [%2] %3")
+		gLog << tr("Network error when downloading package script \"%1\": [%2] %3")
 			.arg(d->currentlyDownloadedPackage.displayName)
 			.arg(d->pNetworkReply->error())
-			.arg(d->pNetworkReply->errorString()));
+			.arg(d->pNetworkReply->errorString());
 		finishWithError(EC_PackageDownloadProblem);
 	}
 }
@@ -347,7 +340,7 @@ void AutoUpdater::onUpdaterInfoDownloadFinish()
 			d->newUpdatePackages = packagesList;
 			if (d->bDownloadAndInstallRequireConfirmation)
 			{
-				emitStatusMessage(tr("Requesting update confirmation."));
+				gLog << tr("Requesting update confirmation.");
 				emitOverallProgress(tr("Confirm"));
 				emit downloadAndInstallConfirmationRequested();
 			}
@@ -359,11 +352,11 @@ void AutoUpdater::onUpdaterInfoDownloadFinish()
 		else
 		{
 			// Nothing to update.
-			emitStatusMessage(tr("No new program updates detected."));
+			gLog << tr("No new program updates detected.");
 			if (filter.wasAnyUpdatePackageIgnored())
 			{
-				emitStatusMessage(tr("Some update packages were ignored. To install them "
-					"select \"Check for updates\" option from \"Help\" menu."));
+				gLog << tr("Some update packages were ignored. To install them "
+					"select \"Check for updates\" option from \"Help\" menu.");
 			}
 			finishWithError(EC_Ok);
 		}
@@ -397,7 +390,7 @@ void AutoUpdater::setChannel(const UpdateChannel& updateChannel)
 	d->channel = updateChannel;
 }
 
-void AutoUpdater::setIgnoreRevisions(const QMap<QString, QList<QString> >& packagesRevisions)
+void AutoUpdater::setIgnoreRevisions(const QMap<QString, QList<unsigned long long> >& packagesRevisions)
 {
 	d->ignoredPackagesRevisions = packagesRevisions;
 }
@@ -433,7 +426,7 @@ void AutoUpdater::start()
 	}
 	d->bIsRunning = true;
 	QNetworkRequest request;
-	request.setRawHeader("User-Agent", Version::userAgent().toUtf8());
+	request.setRawHeader("User-Agent", Version::userAgent().toAscii());
 	request.setUrl(mkVersionDataFileUrl());
 	QNetworkReply* pReply = d->pNam->get(request);
 	// The updater info file should always be very small and
@@ -493,7 +486,7 @@ void AutoUpdater::startPackageDownload(const UpdatePackage& pkg)
 	d->downloadedPackagesFilenames << fileInfo.fileName();
 
 	QNetworkRequest request;
-	request.setRawHeader("User-Agent", Version::userAgent().toUtf8());
+	request.setRawHeader("User-Agent", Version::userAgent().toAscii());
 	request.setUrl(url);
 	QNetworkReply* pReply = d->pNam->get(request);
 	d->currentlyDownloadedPackage = pkg;
@@ -522,7 +515,7 @@ void AutoUpdater::startPackageScriptDownload(const UpdatePackage& pkg)
 		pkg.downloadScriptUrl.toString());
 
 	QNetworkRequest request;
-	request.setRawHeader("User-Agent", Version::userAgent().toUtf8());
+	request.setRawHeader("User-Agent", Version::userAgent().toAscii());
 	request.setUrl(url);
 	QNetworkReply* pReply = d->pNam->get(request);
 	d->currentlyDownloadedPackage = pkg;

@@ -2,23 +2,23 @@
 // zandronummasterclient.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net> (skulltagmasterclient.cpp)
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net> (skulltagmasterclient.cpp)
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include <QBuffer>
@@ -53,7 +53,6 @@
 
 ZandronumMasterClient::ZandronumMasterClient() : MasterClient()
 {
-	set_masterBanHelp(&ZandronumMasterClient::masterBanHelp);
 }
 
 QByteArray ZandronumMasterClient::createServerListRequest()
@@ -63,13 +62,6 @@ QByteArray ZandronumMasterClient::createServerListRequest()
 	int out = 12;
 	HUFFMAN_Encode(challenge, challengeOut, 6, &out);
 	return QByteArray(reinterpret_cast<char*> (challengeOut), out);
-}
-
-QString ZandronumMasterClient::masterBanHelp() const
-{
-	return tr("You may contact Zandronum staff about this through "
-		"IRC: <b>irc.zandronum.com #zandronum</b> or on "
-		"the forum: <a href=\"https://zandronum.com/forum\">https://zandronum.com/forum.</a>");
 }
 
 const EnginePlugin* ZandronumMasterClient::plugin() const

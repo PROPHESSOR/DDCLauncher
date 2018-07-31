@@ -1,8 +1,7 @@
 {
     "name" : "p-zandronum",
     "files" : [
-        "engines/libzandronum.dll",
-        "translations/zandronum_pl_PL.qm"
+        "engines/libzandronum.dll"
     ],
     "updater-binary" : "updater.exe",
     "main-binary" : "doomseeker.exe"

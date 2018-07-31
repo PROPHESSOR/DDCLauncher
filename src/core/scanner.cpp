@@ -2,23 +2,23 @@
 // scanner.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include <cstdlib>
@@ -27,10 +27,10 @@
 
 #include "scanner.h"
 
-DClass<Scanner>
+class Scanner::PrivData
 {
 	public:
-		Scanner::ParserState nextState, prevState, state;
+		ParserState		nextState, prevState, state;
 
 		char*			data;
 		unsigned int	length;
@@ -44,22 +44,6 @@ DClass<Scanner>
 
 		QString			scriptIdentifier;
 };
-
-DClass<Scanner::ParserState>
-{
-	public:
-		QString str;
-		unsigned int number;
-		double decimal;
-		bool boolean;
-		char token;
-		unsigned int tokenLine;
-		unsigned int tokenLinePosition;
-		unsigned int scanPos;
-};
-
-DPointered(Scanner::ParserState);
-DPointered(Scanner)
 
 void (*Scanner::messageHandler)(MessageLevel, const char*, va_list) = NULL;
 
@@ -100,6 +84,7 @@ static const char* const TokenNames[TK_NumSpecialTokens] =
 
 Scanner::Scanner(const char* data, int length)
 {
+	d = new PrivData();
 	d->line = 1;
 	d->lineStart = 0;
 	d->logicalPosition = 0;
@@ -119,6 +104,7 @@ Scanner::Scanner(const char* data, int length)
 Scanner::~Scanner()
 {
 	delete[] d->data;
+	delete d;
 }
 
 // Here's my answer to the preprocessor screwing up line numbers. What we do is
@@ -153,9 +139,9 @@ void Scanner::checkForMeta()
 			}
 			if(fileLength > 0 && lineLength > 0)
 			{
-				setScriptIdentifier(QString::fromUtf8(d->data+metaStart, fileLength));
-				QString lineNumber = QString::fromUtf8(d->data+metaStart+fileLength+1, lineLength);
-				d->line = atoi(lineNumber.toUtf8().constData());
+				setScriptIdentifier(QString::fromAscii(d->data+metaStart, fileLength));
+				QString lineNumber = QString::fromAscii(d->data+metaStart+fileLength+1, lineLength);
+				d->line = atoi(lineNumber.toAscii().constData());
 				d->lineStart = d->scanPos;
 			}
 		}
@@ -348,7 +334,7 @@ bool Scanner::nextString()
 	if(end-start > 0)
 	{
 		d->nextState.setScanPos(d->scanPos);
-		QString thisString = QString::fromUtf8(d->data+start, end-start);
+		QString thisString = QString::fromAscii(d->data+start, end-start);
 		if(quoted)
 			unescape(thisString);
 		d->nextState.setStr(thisString);
@@ -431,7 +417,7 @@ bool Scanner::nextToken(bool autoExpandState)
 				{
 					d->scanPos++;
 					d->nextState.setToken(cur == '<' ? TK_ShiftLeftEq : TK_ShiftRightEq);
-
+					
 				}
 				else
 					d->nextState.setToken(cur == '<' ? TK_ShiftLeft : TK_ShiftRight);
@@ -696,7 +682,7 @@ void Scanner::scriptMessage(MessageLevel level, const char* error, ...) const
 	}
 
 	char* newMessage = new char[strlen(error) + d->scriptIdentifier.length() + 25];
-	sprintf(newMessage, "%s:%d:%d:%s: %s\n", d->scriptIdentifier.toUtf8().constData(), currentLine(), currentLinePos(), messageLevel, error);
+	sprintf(newMessage, "%s:%d:%d:%s: %s\n", d->scriptIdentifier.toAscii().constData(), currentLine(), currentLinePos(), messageLevel, error);
 	va_list list;
 	va_start(list, error);
 	if(messageHandler)
@@ -785,13 +771,29 @@ const QString& Scanner::unescape(QString &str)
 	return str;
 }
 ////////////////////////////////////////////////////////////////////////////////
+class Scanner::ParserState::PrivData
+{
+	public:
+		QString str;
+		unsigned int number;
+		double decimal;
+		bool boolean;
+		char token;
+		unsigned int tokenLine;
+		unsigned int tokenLinePosition;
+		unsigned int scanPos;
+};
+
+COPYABLE_D_POINTERED_INNER_DEFINE(Scanner::ParserState, ParserState);
 
 Scanner::ParserState::ParserState()
 {
+	d = new PrivData();
 }
 
 Scanner::ParserState::~ParserState()
 {
+	delete d;
 }
 
 const QString &Scanner::ParserState::str() const

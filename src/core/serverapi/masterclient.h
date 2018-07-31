@@ -2,23 +2,23 @@
 // masterclient.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __MASTERSERVER_H__
@@ -28,9 +28,7 @@
 #include <QHostAddress>
 #include <QList>
 
-#include "dptr.h"
 #include "global.h"
-#include "polymorphism.h"
 #include "serverapi/serverptr.h"
 
 class Message;
@@ -96,23 +94,8 @@ class MAIN_EXPORT MasterClient : public QObject
 		 * to set this to false.
 		 */
 		bool isTimeouted() const;
-
-		/**
-		 * @brief [Virtual] Help message displayed to the user when
-		 * ban is detected.
-		 *
-		 * Doomseeker displays a "you're banned from this master
-		 * server" message when RESPONSE_BANNED is returned by
-		 * readResponse(). By redefining this method, your plugin may
-		 * show additional help message next to the usual
-		 * one. Normally, you'd have this return some kind of staff
-		 * contact info. Basic HTML is supported in the display.
-		 *
-		 * Default implementation returns an empty string.
-		 */
-		QString masterBanHelp() const;
-
 		void notifyResponse(Response response);
+		int numPlayers() const;
 		int numServers() const;
 		ServerPtr operator[] (int index) const;
 
@@ -185,11 +168,6 @@ class MAIN_EXPORT MasterClient : public QObject
 
 	protected:
 		/**
-		 * @brief Address of the master server.
-		 */
-		QHostAddress address() const;
-
-		/**
 		 * @brief Produce contents of server list request packet that is sent
 		 *        to the master server.
 		 *
@@ -202,14 +180,6 @@ class MAIN_EXPORT MasterClient : public QObject
 		 * Clears the server list.
 		 */
 		void emptyServerList();
-
-		POLYMORPHIC_SETTER_DECLARE_CONST(QString, MasterClient, masterBanHelp, ());
-		QString masterBanHelp_default() const;
-
-		/**
-		 * @brief Network port of the master server.
-		 */
-		unsigned short port() const;
 
 		bool preparePacketCache(bool write);
 
@@ -233,9 +203,8 @@ class MAIN_EXPORT MasterClient : public QObject
 		virtual void timeoutRefreshEx();
 
 	private:
-		DPtr<MasterClient> d;
-
-		void emitBannedMessage();
+		class PrivData;
+		PrivData* d;
 };
 
 #endif /* __MASTERSERVER_H__ */

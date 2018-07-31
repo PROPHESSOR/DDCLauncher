@@ -2,20 +2,20 @@
 // gameclientrunner.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -39,7 +39,7 @@
 #include <QScopedPointer>
 #include <QStringList>
 
-DClass<ServerConnectParams>
+class ServerConnectParams::PrivData
 {
 	public:
 		QString connectPassword;
@@ -47,25 +47,29 @@ DClass<ServerConnectParams>
 		QString inGamePassword;
 };
 
-DPointered(ServerConnectParams)
-
 ServerConnectParams::ServerConnectParams()
 {
+	d = new PrivData();
 }
 
 ServerConnectParams::ServerConnectParams(const ServerConnectParams& other)
 {
-	d = other.d;
+	d = new PrivData();
+	*d = *other.d;
 }
 
 ServerConnectParams& ServerConnectParams::operator=(const ServerConnectParams& other)
 {
-	d = other.d;
+	if (this != &other)
+	{
+		*d = *other.d;
+	}
 	return *this;
 }
 
 ServerConnectParams::~ServerConnectParams()
 {
+	delete d;
 }
 
 const QString& ServerConnectParams::connectPassword() const
@@ -108,16 +112,13 @@ void ServerConnectParams::setInGamePassword(const QString& val)
 }
 
 
-DClass<GameClientRunner>
+class GameClientRunner::PrivData
 {
 	public:
-		QString argBexLoading;
 		QString argConnect;
 		QString argConnectPassword;
-		QString argDehLoading;
 		QString argInGamePassword;
 		QString argIwadLoading;
-		QString argOptionalWadLoading;
 		QString argPort;
 		QString argPwadLoading;
 		QString argDemoRecord;
@@ -127,46 +128,27 @@ DClass<GameClientRunner>
 		ServerConnectParams connectParams;
 		CommandLineInfo* cli;
 		JoinError joinError;
-		QList<PWad> missingPwads;
+		QStringList missingPwads;
 		PathFinder pathFinder;
 		ServerPtr server;
 
-		void (GameClientRunner::*addConnectCommand)();
 		void (GameClientRunner::*addExtra)();
-		void (GameClientRunner::*addGamePaths)();
-		void (GameClientRunner::*addInGamePassword)();
 		void (GameClientRunner::*addIwad)();
-		void (GameClientRunner::*addModFiles)(const QStringList &);
-		void (GameClientRunner::*addPassword)();
 		void (GameClientRunner::*createCommandLineArguments)();
 };
 
-DPointered(GameClientRunner)
-
-POLYMORPHIC_DEFINE(void, GameClientRunner, addConnectCommand, (), ());
 POLYMORPHIC_DEFINE(void, GameClientRunner, addExtra, (), ());
-POLYMORPHIC_DEFINE(void, GameClientRunner, addGamePaths, (), ());
-POLYMORPHIC_DEFINE(void, GameClientRunner, addInGamePassword, (), ());
 POLYMORPHIC_DEFINE(void, GameClientRunner, addIwad, (), ());
-POLYMORPHIC_DEFINE(void, GameClientRunner, addModFiles, (const QStringList &files), (files));
-POLYMORPHIC_DEFINE(void, GameClientRunner, addPassword, (), ());
 POLYMORPHIC_DEFINE(void, GameClientRunner, createCommandLineArguments, (), ());
 
 GameClientRunner::GameClientRunner(ServerPtr server)
 {
-	set_addConnectCommand(&GameClientRunner::addConnectCommand_default);
-	set_addGamePaths(&GameClientRunner::addGamePaths_default);
+	d = new PrivData();
 	set_addExtra(&GameClientRunner::addExtra_default);
-	set_addInGamePassword(&GameClientRunner::addInGamePassword_default);
 	set_addIwad(&GameClientRunner::addIwad_default);
-	set_addModFiles(&GameClientRunner::addModFiles_default);
-	set_addPassword(&GameClientRunner::addPassword_default);
 	set_createCommandLineArguments(&GameClientRunner::createCommandLineArguments_default);
-	d->argBexLoading = "-deh";
 	d->argConnect = "-connect";
-	d->argDehLoading = "-deh";
 	d->argIwadLoading = "-iwad";
-	d->argOptionalWadLoading = "-file"; // Assume one does not have this feature.
 	d->argPort = "-port";
 	d->argPwadLoading = "-file";
 	d->argDemoRecord = "-record";
@@ -176,9 +158,10 @@ GameClientRunner::GameClientRunner(ServerPtr server)
 
 GameClientRunner::~GameClientRunner()
 {
+	delete d;
 }
 
-void GameClientRunner::addConnectCommand_default()
+void GameClientRunner::addConnectCommand()
 {
 	QString address = QString("%1:%2").arg(d->server->address().toString()).arg(d->server->port());
 	args() << argForConnect() << address;
@@ -197,7 +180,7 @@ void GameClientRunner::addDemoRecordCommand()
 	args() << argForDemoRecord() << demoName();
 }
 
-void GameClientRunner::addGamePaths_default()
+void GameClientRunner::addGamePaths()
 {
 	GamePaths paths = gamePaths();
 	if (!paths.isValid())
@@ -224,11 +207,11 @@ void GameClientRunner::addGamePaths_default()
 		return;
 	}
 
-	setExecutable(paths.clientExe);
-	setWorkingDir(applicationDir.path());
+	d->cli->executable = paths.clientExe;
+	d->cli->applicationDir = applicationDir;
 }
 
-void GameClientRunner::addInGamePassword_default()
+void GameClientRunner::addInGamePassword()
 {
 	if (!argForInGamePassword().isNull())
 	{
@@ -239,10 +222,6 @@ void GameClientRunner::addInGamePassword_default()
 		gLog << tr("BUG: Plugin doesn't specify argument for in-game "
 			"password, but the server requires such password.");
 	}
-}
-
-void GameClientRunner::addExtra_default()
-{
 }
 
 void GameClientRunner::addIwad_default()
@@ -260,22 +239,13 @@ void GameClientRunner::addWads()
 		if (!isIwadFound())
 		{
 			d->joinError.setMissingIwad(d->server->iwad());
-			d->joinError.setType(JoinError::MissingWads);
 		}
 		d->joinError.setMissingWads(d->missingPwads);
-		foreach(const PWad &wad, d->missingPwads)
-		{
-			// Only error if there are required missing wads
-			if(!wad.isOptional())
-			{
-				d->joinError.setType(JoinError::MissingWads);
-				break;
-			}
-		}
+		d->joinError.setType(JoinError::MissingWads);
 	}
 }
 
-void GameClientRunner::addPassword_default()
+void GameClientRunner::addPassword()
 {
 	if (!argForConnectPassword().isNull())
 	{
@@ -290,69 +260,23 @@ void GameClientRunner::addPassword_default()
 
 void GameClientRunner::addPwads()
 {
-	QStringList paths;
 	for (int i = 0; i < d->server->numWads(); ++i)
 	{
 		QString pwad = findWad(d->server->wad(i).name());
-		if (pwad.isEmpty())
+		if (pwad.isEmpty() && !d->server->wad(i).isOptional())
 		{
-			markPwadAsMissing(d->server->wad(i));
+			markPwadAsMissing(d->server->wad(i).name());
 		}
 		else
 		{
-			paths << pwad;
+			args() << argForPwadLoading() << pwad;
 		}
 	}
-	addModFiles(paths);
-}
-
-void GameClientRunner::addModFiles_default(const QStringList &files)
-{
-	foreach (const QString &file, files)
-	{
-		args() << fileLoadingPrefix(file) << file;
-	}
-}
-
-void GameClientRunner::addModFiles_prefixOnce(const QStringList &files)
-{
-	QMap<QString, QStringList> groups;
-	foreach (const QString &file, files)
-	{
-		QString prefix = fileLoadingPrefix(file);
-		groups[prefix] << file;
-	}
-	foreach (const QString &prefix, groups.keys())
-	{
-		args() << prefix;
-		foreach (const QString &file, groups[prefix])
-		{
-			args() << file;
-		}
-	}
-}
-
-QString GameClientRunner::fileLoadingPrefix(const QString &file) const
-{
-	if (file.toLower().endsWith(".deh"))
-	{
-		return argForDehLoading();
-	}
-	else if (file.toLower().endsWith(".bex"))
-	{
-		return argForBexLoading();
-	}
-	return argForPwadLoading();
 }
 
 QStringList& GameClientRunner::args()
 {
 	return d->cli->args;
-}
-
-const QString& GameClientRunner::argForBexLoading() const
-{
-	return d->argBexLoading;
 }
 
 const QString& GameClientRunner::argForConnect() const
@@ -365,11 +289,6 @@ const QString& GameClientRunner::argForConnectPassword() const
 	return d->argConnectPassword;
 }
 
-const QString& GameClientRunner::argForDehLoading() const
-{
-	return d->argDehLoading;
-}
-
 const QString& GameClientRunner::argForInGamePassword() const
 {
 	return d->argInGamePassword;
@@ -378,11 +297,6 @@ const QString& GameClientRunner::argForInGamePassword() const
 const QString& GameClientRunner::argForIwadLoading() const
 {
 	return d->argIwadLoading;
-}
-
-const QString& GameClientRunner::argForOptionalWadLoading() const
-{
-	return d->argOptionalWadLoading;
 }
 
 const QString& GameClientRunner::argForPort() const
@@ -408,6 +322,11 @@ bool GameClientRunner::canDownloadWadsInGame() const
 const QString& GameClientRunner::connectPassword() const
 {
 	return d->connectParams.connectPassword();
+}
+
+void GameClientRunner::createCommandLineArguments_default_()
+{
+    createCommandLineArguments_default();
 }
 
 void GameClientRunner::createCommandLineArguments_default()
@@ -499,6 +418,10 @@ GameClientRunner::GamePaths GameClientRunner::gamePaths()
 		return GamePaths();
 	}
 	result.workingDir = exeFile->workingDirectory(msg);
+
+	GameExeRetriever exeRetriever = GameExeRetriever(*d->server->plugin()->gameExe());
+	result.offlineExe = pathToOfflineExe(msg);
+
 	return result;
 }
 
@@ -534,7 +457,7 @@ const QString& GameClientRunner::iwadPath() const
 	return d->cachedIwadPath;
 }
 
-void GameClientRunner::markPwadAsMissing(const PWad& pwadName)
+void GameClientRunner::markPwadAsMissing(const QString& pwadName)
 {
 	d->missingPwads << pwadName;
 }
@@ -542,6 +465,12 @@ void GameClientRunner::markPwadAsMissing(const PWad& pwadName)
 PathFinder& GameClientRunner::pathFinder()
 {
 	return d->pathFinder;
+}
+
+QString GameClientRunner::pathToOfflineExe(Message &msg)
+{
+	GameExeRetriever exeRetriever = GameExeRetriever(*d->server->plugin()->gameExe());
+	return exeRetriever.pathToOfflineExe(msg);
 }
 
 const QString& GameClientRunner::pluginName() const
@@ -554,11 +483,6 @@ ServerConnectParams& GameClientRunner::serverConnectParams()
 	return d->connectParams;
 }
 
-void GameClientRunner::setArgForBexLoading(const QString& arg)
-{
-	d->argBexLoading = arg;
-}
-
 void GameClientRunner::setArgForConnect(const QString& arg)
 {
 	d->argConnect = arg;
@@ -569,11 +493,6 @@ void GameClientRunner::setArgForConnectPassword(const QString& arg)
 	d->argConnectPassword = arg;
 }
 
-void GameClientRunner::setArgForDehLoading(const QString& arg)
-{
-	d->argDehLoading = arg;
-}
-
 void GameClientRunner::setArgForInGamePassword(const QString& arg)
 {
 	d->argInGamePassword = arg;
@@ -582,11 +501,6 @@ void GameClientRunner::setArgForInGamePassword(const QString& arg)
 void GameClientRunner::setArgForIwadLoading(const QString& arg)
 {
 	d->argIwadLoading = arg;
-}
-
-void GameClientRunner::setArgForOptionalWadLoading(const QString& arg)
-{
-	d->argOptionalWadLoading = arg;
 }
 
 void GameClientRunner::setArgForPort(const QString& arg)
@@ -602,21 +516,6 @@ void GameClientRunner::setArgForPwadLoading(const QString& arg)
 void GameClientRunner::setArgForDemoRecord(const QString& arg)
 {
 	d->argDemoRecord = arg;
-}
-
-void GameClientRunner::setExecutable(const QString &path)
-{
-	d->cli->executable = path;
-}
-
-void GameClientRunner::setWorkingDir(const QString &path)
-{
-	d->cli->applicationDir = path;
-}
-
-JoinError GameClientRunner::joinError() const
-{
-	return d->joinError;
 }
 
 void GameClientRunner::setJoinError(const JoinError& e)

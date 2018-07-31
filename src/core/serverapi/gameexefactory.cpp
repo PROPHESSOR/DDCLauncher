@@ -2,20 +2,20 @@
 // gameexefactory.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2013 "Zalewa" <zalewapl@gmail.com>
@@ -24,61 +24,59 @@
 
 #include "plugins/engineplugin.h"
 #include "serverapi/exefile.h"
-#include "serverapi/gamefile.h"
 
-DClass<GameExeFactory>
+class GameExeFactory::PrivData
 {
 public:
 	EnginePlugin* plugin;
 
-	QList<ExeFilePath> (GameExeFactory::*additionalExecutables)(int) const;
-	GameFileList (GameExeFactory::*gameFiles)() const;
+	ExeFile* (GameExeFactory::*offline)();
+	ExeFile* (GameExeFactory::*server)();
 };
-
-DPointered(GameExeFactory)
 
 GameExeFactory::GameExeFactory(EnginePlugin* plugin)
 {
+	d = new PrivData();
 	d->plugin = plugin;
 
-	set_additionalExecutables(&GameExeFactory::additionalExecutables_default);
-	set_gameFiles(&GameExeFactory::gameFiles_default);
+	set_offline(&GameExeFactory::offline_default);
+	set_server(&GameExeFactory::server_default);
 }
 
 GameExeFactory::~GameExeFactory()
 {
+	delete d;
 }
 
-POLYMORPHIC_DEFINE_CONST(QList<ExeFilePath>, GameExeFactory, additionalExecutables, (int execType), (execType));
-POLYMORPHIC_DEFINE_CONST(GameFileList, GameExeFactory, gameFiles, (), ());
+POLYMORPHIC_DEFINE(ExeFile*, GameExeFactory, offline, (), ());
+POLYMORPHIC_DEFINE(ExeFile*, GameExeFactory, server, (), ());
 
-EnginePlugin* GameExeFactory::plugin() const
+EnginePlugin* GameExeFactory::plugin()
 {
 	return d->plugin;
 }
 
-QList<ExeFilePath> GameExeFactory::additionalExecutables_default(int execType) const
+ExeFile* GameExeFactory::offline_default()
 {
-	return QList<ExeFilePath>();
+	ExeFile *f = new ExeFile();
+	f->setProgramName(d->plugin->data()->name);
+	f->setExeTypeName(tr("offline"));
+	f->setConfigKey("BinaryPath");
+	return f;
 }
 
-GameFileList GameExeFactory::gameFiles_default() const
+ExeFile* GameExeFactory::server_default()
 {
-	GameFile tmplate = GameFile().setSearchSuffixes(d->plugin->data()->gameFileSearchSuffixes);
-	GameFileList list;
+	ExeFile *f = new ExeFile();
+	f->setProgramName(d->plugin->data()->name);
+	f->setExeTypeName(tr("server"));
 	if (d->plugin->data()->clientOnly)
 	{
-		list << GameFile(tmplate).setConfigName("BinaryPath").setNiceName(tr("game"))
-			.setFileName(d->plugin->data()->clientExeName)
-			.setExecutable(GameFile::Cso);
+		f->setConfigKey("BinaryPath");
 	}
 	else
 	{
-		list << GameFile(tmplate).setConfigName("BinaryPath").setNiceName(tr("client"))
-			.setFileName(d->plugin->data()->clientExeName)
-			.setExecutable(GameFile::Offline | GameFile::Client);
-		list << GameFile(tmplate).setConfigName("ServerBinaryPath").setNiceName(tr("server"))
-			.setFileName(d->plugin->data()->serverExeName).setExecutable(GameFile::Server);
+		f->setConfigKey("ServerBinaryPath");
 	}
-	return list;
+	return f;
 }

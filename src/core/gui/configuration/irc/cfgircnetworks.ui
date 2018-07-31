@@ -11,16 +11,7 @@
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
@@ -63,20 +54,12 @@
        <property name="text">
         <string>Add</string>
        </property>
-       <property name="icon">
-        <iconset resource="../../../../../media/resources.qrc">
-         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
-       </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnEdit">
        <property name="text">
         <string>Edit</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../../media/resources.qrc">
-         <normaloff>:/icons/pencil.png</normaloff>:/icons/pencil.png</iconset>
        </property>
       </widget>
      </item>
@@ -85,28 +68,12 @@
        <property name="text">
         <string>Remove</string>
        </property>
-       <property name="icon">
-        <iconset resource="../../../../../media/resources.qrc">
-         <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
-       </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Channel/network quit message:</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="leQuitMessage"/>
-   </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../../../../media/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

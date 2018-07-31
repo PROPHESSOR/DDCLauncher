@@ -6,30 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>470</height>
+    <width>400</width>
+    <height>386</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-     </property>
-     <property name="formAlignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -40,11 +28,8 @@
      </item>
      <item row="0" column="1">
       <widget class="ColorButton" name="btnDefaultTextColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -57,11 +42,8 @@
      </item>
      <item row="1" column="1">
       <widget class="ColorButton" name="btnChannelActionColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -74,11 +56,8 @@
      </item>
      <item row="2" column="1">
       <widget class="ColorButton" name="btnNetworkActionColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -91,11 +70,8 @@
      </item>
      <item row="3" column="1">
       <widget class="ColorButton" name="btnCtcpColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -111,11 +87,8 @@
      </item>
      <item row="4" column="1">
       <widget class="ColorButton" name="btnErrorColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -128,11 +101,8 @@
      </item>
      <item row="5" column="1">
       <widget class="ColorButton" name="btnBackgroundColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -145,11 +115,8 @@
      </item>
      <item row="6" column="1">
       <widget class="ColorButton" name="btnUrlColor">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -161,14 +128,7 @@
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="FontButton" name="btnMainFont">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
+      <widget class="FontButton" name="btnMainFont"/>
      </item>
     </layout>
    </item>
@@ -185,9 +145,6 @@
       <string>User list</string>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
-      <property name="formAlignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
@@ -196,14 +153,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="FontButton" name="btnUserListFont">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
+       <widget class="FontButton" name="btnUserListFont"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_10">
@@ -214,11 +164,8 @@
       </item>
       <item row="1" column="1">
        <widget class="ColorButton" name="btnUserListSelectedTextColor">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -231,11 +178,8 @@
       </item>
       <item row="2" column="1">
        <widget class="ColorButton" name="btnUserListSelectedBackgroundColor">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -249,13 +193,6 @@
      </property>
      <property name="text">
       <string>Enable timestamps</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="cbWindowAlertOnImportantEvent">
-     <property name="text">
-      <string>Window/task bar alert on important event (private msg, callsign)</string>
      </property>
     </widget>
    </item>

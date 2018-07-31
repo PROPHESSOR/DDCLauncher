@@ -2,20 +2,20 @@
 // serverlistview.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -24,12 +24,9 @@
 #include "gui/widgets/serverlistview.h"
 
 #include "configuration/doomseekerconfig.h"
-#include "gui/models/serverlistcolumn.h"
-#include "refresher/refresher.h"
 #include <QDebug>
 #include <QHeaderView>
 #include <QItemDelegate>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QSortFilterProxyModel>
 #include <QTextDocument>
@@ -103,13 +100,9 @@ ServerListView::ServerListView(QWidget* parent) : QTableView(parent)
 {
 	// Prevent the fat rows problem.
 	verticalHeader()->setDefaultSectionSize(fontMetrics().height() + 6);
-#if QT_VERSION >= 0x050000
-	verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-#else
-	verticalHeader()->setResizeMode(QHeaderView::Fixed);
-#endif
 	setShowGrid(gConfig.doomseeker.bDrawGridInServerTable);
 
+	bAllowAllRowsRefresh = true;
 	setItemDelegate(new CustomItemDelegate());
 }
 
@@ -121,14 +114,14 @@ void ServerListView::mouseReleaseEvent(QMouseEvent* event)
 		case Qt::MidButton:
 			if (index.isValid())
 			{
-				emit middleMouseClicked(index, event->pos());
+				emit middleMouseClick(index, event->pos());
 			}
 			break;
 
 		case Qt::RightButton:
 			if (index.isValid())
 			{
-				emit rightMouseClicked(index, event->pos());
+				emit rightMouseClick(index, event->pos());
 			}
 			break;
 
@@ -154,44 +147,21 @@ void ServerListView::mouseDoubleClickEvent(QMouseEvent* event)
 	}
 }
 
-void ServerListView::setupTableProperties()
+void ServerListView::updateRowVisuals(int row)
 {
-	setIconSize(QSize(26, 15));
-	// Some flags that can't be set from the Designer.
-	horizontalHeader()->setSortIndicatorShown(true);
-	horizontalHeader()->setHighlightSections(false);
-
-	setMouseTracking(true);
-
-	setupTableColumnWidths();
+	resizeRowToContents(row);
 }
 
-void ServerListView::setupTableColumnWidths()
+void ServerListView::updateAllRows()
 {
-	QString &headerState = gConfig.doomseeker.serverListColumnState;
-	if(headerState.isEmpty())
+	if (bAllowAllRowsRefresh)
 	{
-		for (int i = 0; i < ServerListColumnId::NUM_SERVERLIST_COLUMNS; ++i)
+		QSortFilterProxyModel* pModel = static_cast<QSortFilterProxyModel*>(model());
+		int rowCount = pModel->sourceModel()->rowCount();
+
+		for (int i = 0; i < rowCount; ++i)
 		{
-			ServerListColumn* columns = ServerListColumns::columns;
-			setColumnWidth(i, columns[i].width);
-			setColumnHidden(i, columns[i].bHidden);
-			if(!columns[i].bResizable)
-			{
-#if QT_VERSION >= 0x050000
-				horizontalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
-#else
-				horizontalHeader()->setResizeMode(i, QHeaderView::Fixed);
-#endif
-			}
+			updateRowVisuals(i);
 		}
 	}
-	else
-		horizontalHeader()->restoreState(QByteArray::fromBase64(headerState.toUtf8()));
-
-#if QT_VERSION >= 0x050000
-	horizontalHeader()->setSectionsMovable(true);
-#else
-	horizontalHeader()->setMovable(true);
-#endif
 }

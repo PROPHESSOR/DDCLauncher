@@ -2,20 +2,20 @@
 // ircuserprefix.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
@@ -38,30 +38,34 @@ class IRCModePrefix
 };
 
 
-DClass<IRCUserPrefix>
+class IRCUserPrefix::PrivData
 {
 	public:
 		QList<IRCModePrefix> map;
 };
 
-DPointered(IRCUserPrefix)
-
 IRCUserPrefix::IRCUserPrefix()
 {
+	d = new PrivData();
 }
 
 IRCUserPrefix::IRCUserPrefix(const IRCUserPrefix &other)
 {
-	d = other.d;
+	d = new PrivData();
+	*d = *other.d;
 }
 
 IRCUserPrefix::~IRCUserPrefix()
 {
+	delete d;
 }
 
 IRCUserPrefix &IRCUserPrefix::operator=(const IRCUserPrefix &other)
 {
-	d = other.d;
+	if (this != &other)
+	{
+		*d = *other.d;
+	}
 	return *this;
 }
 
@@ -74,7 +78,7 @@ QString IRCUserPrefix::cleanNickname(const QString &nickname) const
 {
 	if (!nickname.isEmpty())
 	{
-		if (hasPrefix(nickname[0].toLatin1()))
+		if (hasPrefix(nickname[0].toAscii()))
 		{
 			return nickname.mid(1);
 		}
@@ -126,9 +130,9 @@ char IRCUserPrefix::modeFromNickname(const QString &nickname) const
 {
 	if (!nickname.isEmpty())
 	{
-		if (hasPrefix(nickname[0].toLatin1()))
+		if (hasPrefix(nickname[0].toAscii()))
 		{
-			return modeForPrefix(nickname[0].toLatin1());
+			return modeForPrefix(nickname[0].toAscii());
 		}
 	}
 	return 0;

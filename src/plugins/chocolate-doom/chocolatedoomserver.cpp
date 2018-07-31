@@ -2,28 +2,27 @@
 // chocolatedoomserver.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "chocolatedoomserver.h"
 
 #include "chocolatedoomgamehost.h"
-#include "chocolatedoomgameinfo.h"
 #include "chocolatedoomgamerunner.h"
 #include "chocolatedoomengineplugin.h"
 #include "global.h"
@@ -86,68 +85,33 @@ Server::Response ChocolateDoomServer::readRequest(const QByteArray &data)
 	gameMission = READINT8(&in[pos++]);
 	setName(QString(&in[pos]));
 
-	interpretIwad(gameMission, game);
-	return RESPONSE_GOOD;
-}
-
-void ChocolateDoomServer::interpretIwad(int mission, int gameMode)
-{
-	using namespace ChocolateDoom;
-
-	switch(mission)
+	switch(game)
 	{
-	case doom:
-		if (gameMode == shareware)
-		{
+		default:
+		case 0: //shareware
 			setIwad("doom1.wad");
-		}
-		else
-		{
+			break;
+		case 1: //registered
+		case 3: //retail
 			setIwad("doom.wad");
-		}
-		break;
-	case doom2:
-		setIwad("doom2.wad");
-		break;
-	case pack_tnt:
-		setIwad("tnt.wad");
-		break;
-	case pack_plut:
-		setIwad("plutonia.wad");
-		break;
-	case pack_chex:
-		setIwad("chex.wad");
-		break;
-	case pack_hacx:
-		setIwad("hacx.wad");
-		break;
-	case heretic:
-		if (gameMode == shareware)
-		{
-			setIwad("heretic1.wad");
-		}
-		else
-		{
-			setIwad("heretic.wad");
-		}
-		break;
-	case hexen:
-		setIwad("hexen.wad");
-		break;
-	case strife:
-		if (gameMode == shareware)
-		{
-			setIwad("strife0.wad");
-		}
-		else
-		{
-			setIwad("strife1.wad");
-		}
-		break;
-	default:
-		setIwad("");
-		break;
+			break;
+		case 2: //commercial
+			switch(gameMission)
+			{
+				default:
+				case 1:
+					setIwad("doom2.wad");
+					break;
+				case 2:
+					setIwad("tnt.wad");
+					break;
+				case 3:
+					setIwad("plutonia.wad");
+					break;
+			}
+			break;
 	}
+	return RESPONSE_GOOD;
 }
 
 QByteArray ChocolateDoomServer::createSendRequest()

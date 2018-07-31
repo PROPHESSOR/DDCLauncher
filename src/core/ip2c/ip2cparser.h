@@ -2,23 +2,23 @@
 // ip2cparser.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #ifndef __IP2CPARSER_H__
 #define __IP2CPARSER_H__
@@ -28,29 +28,55 @@
 #include <QThread>
 
 /**
- * Compacted database file format, version 2:
- * (all strings are null terminated)
- * Header:
- * @code
- * TYPE			LENGTH		DESCRIPTION
- * -----------------------------------------------------
- * unsigned long	4			'I' 'P' '2' 'C' bytes
- * unsigned short	2			Version (equal to 2)
- * @endcode
+ *	Class accepts text database from:
+ * 	http://software77.net/geo-ip
+ *	The first time the text database is read it is compacted into a smaller
+ *	format and stored on the drive.
+ *	@see convertAndSaveDatabase()
  *
- * Block repeated until EOF:
- * @code
- * TYPE			LENGTH		DESCRIPTION
- * -----------------------------------------------------
- * string			N/A		Country full name, UTF-8
- * string			N/A		Country abbreviation (3 letters version)
- * unsigned long	4			Number of IP Blocks (N_IP_BLOCKS)
  *
- * -- BLOCK: repeated N_IP_BLOCKS times.
- * unsigned long	4			Beginning of an IP range
- * unsigned long	4			End of an IP range
- * -- END OF BLOCK
- * @endcode
+ *	Compacted database file format, version 1:
+ *	(all strings are null terminated)
+ *	Header:
+ *	@code
+ *	TYPE			LENGTH		DESCRIPTION
+ *  -----------------------------------------------------
+ *	unsigned long	4			'I' 'P' '2' 'C' bytes
+ *	unsigned short	2			Version (equal to 1)
+ *	@endcode
+ *
+ *	Block repeated until EOF:
+ *	@code
+ *	TYPE			LENGTH		DESCRIPTION
+ *  -----------------------------------------------------
+ *	unsigned long	4			Beginning of an IP range
+ *	unsigned long	4			End of an IP range
+ *	string			N/A			Country name abbreviation
+ *	@endcode
+ *
+ *	Compacted database file format, version 2:
+ *	(all strings are null terminated)
+ *	Header:
+ *	@code
+ *	TYPE			LENGTH		DESCRIPTION
+ *  -----------------------------------------------------
+ *	unsigned long	4			'I' 'P' '2' 'C' bytes
+ *	unsigned short	2			Version (equal to 2)
+ *	@endcode
+ *
+ *	Block repeated until EOF:
+ *	@code
+ *	TYPE			LENGTH		DESCRIPTION
+ *  -----------------------------------------------------
+ *	string			N/A			Country full name
+ *	string			N/A			Country abbreviation
+ *	unsigned long	4			Number of IP Blocks (N_IP_BLOCKS)
+
+ *  -- BLOCK: repeated N_IP_BLOCKS times.
+ *	unsigned long	4			Beginning of an IP range
+ *	unsigned long	4			End of an IP range
+ *	-- END OF BLOCK
+ *	@endcode
  */
 class IP2CParser : public QObject
 {
@@ -137,8 +163,31 @@ class IP2CParser : public QObject
 
 		QMutex thisLock;
 
+
+		/**
+		 *	Converts downloaded text database to a compacted binary file.
+		 *	The name of the new file is IP2C::file.
+		 */
+		bool convertAndSaveDatabase(QByteArray& downloadedData, const QString& outFilePath);
+
+		/**
+		 *	Converts previously created by readTextDatabase() countries hash
+		 *	table into an output data that can be saved into a file.
+		 */
+		void convertCountriesIntoBinaryData(const Countries& countries, QByteArray& output);
+
 		bool doReadDatabase(const QString& filePath);
+
+		bool readDatabaseVersion1(const QByteArray& dataArray);
 		bool readDatabaseVersion2(const QByteArray& dataArray);
+
+		/**
+		 *	Called by convertAndSaveDatabase().
+		 *	@param textDatabase - contents of the file, this will be modified
+		 *		by this function.
+		 *	@param [out] countries - returned hash table of countries.
+		 */
+		void readTextDatabase(QByteArray& textDatabase, Countries& countries);
 
 	protected slots:
 		void parsingThreadFinished();

@@ -2,20 +2,20 @@
 // pathfinder.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -26,14 +26,13 @@
 #include "pathfinder/caseinsensitivefsfileseeker.h"
 #include "pathfinder/casesensitivefsfileseeker.h"
 #include "pathfinder/filesearchpath.h"
-#include "datapaths.h"
 #include "log.h"
-#include "strings.hpp"
+#include "strings.h"
 #include <QDir>
 #include <QFileInfo>
 #include <cstdlib>
 
-DClass<PathFinderResult>
+class PathFinderResult::PrivData
 {
 	public:
 		QStringList foundFiles;
@@ -41,15 +40,17 @@ DClass<PathFinderResult>
 };
 
 
-DPointered(PathFinderResult)
+COPYABLE_D_POINTERED_DEFINE(PathFinderResult);
 
 
 PathFinderResult::PathFinderResult()
 {
+	d = new PrivData();
 }
 
 PathFinderResult::~PathFinderResult()
 {
+	delete d;
 }
 
 QStringList& PathFinderResult::foundFiles()
@@ -74,40 +75,26 @@ const QStringList& PathFinderResult::missingFiles() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-DClass<PathFinder>
+class PathFinder::PrivData
 {
 	public:
 		QList<FileSearchPath> searchPaths;
-
-		QString resolveDir(const QString &dir)
-		{
-			QFileInfo fileInfo(dir);
-			if(fileInfo.isSymLink())
-				fileInfo = QFileInfo(fileInfo.symLinkTarget());
-
-			if(fileInfo.isBundle())
-				return fileInfo.absoluteFilePath() + "/Contents/MacOS";
-			else
-			{
-				if(fileInfo.isFile())
-					return fileInfo.absoluteDir().absolutePath();
-				else
-					return fileInfo.absoluteFilePath();
-			}
-		}
 };
 
 
-DPointered(PathFinder)
+COPYABLE_D_POINTERED_DEFINE(PathFinder);
 
 
 PathFinder::PathFinder()
 {
-	d->searchPaths = gConfig.combinedWadseekPaths();
+	d = new PrivData();
+	d->searchPaths = gConfig.doomseeker.wadPaths;
+	d->searchPaths << gConfig.wadseeker.targetDirectory;
 }
 
 PathFinder::PathFinder(const QStringList& paths)
 {
+	d = new PrivData();
 	foreach (const QString& path, paths)
 	{
 		d->searchPaths << path;
@@ -116,41 +103,25 @@ PathFinder::PathFinder(const QStringList& paths)
 
 PathFinder::~PathFinder()
 {
-}
-
-PathFinder PathFinder::genericPathFinder(const QStringList &suffixes)
-{
-	QStringList paths;
-#if defined(Q_OS_WIN32)
-	paths << "." << ".."
-		<< gDefaultDataPaths->workingDirectory()
-		<< gDefaultDataPaths->workingDirectory() + "/.."
-		<< DataPaths::programFilesDirectory(DataPaths::x64)
-		<< DataPaths::programFilesDirectory(DataPaths::x86);
-#else
-	paths << "/usr/bin" << "/usr/local/bin" << "/usr/share/bin"
-		<< "/usr/games/" << "/usr/local/games/"
-		<< "/usr/share/games/" << gDefaultDataPaths->workingDirectory() << ".";
-#endif
-	QStringList pathsCopy(paths);
-	foreach (const QString &path, pathsCopy)
-	{
-		foreach (const QString &suffix, suffixes)
-		{
-			paths << Strings::combinePaths(path, suffix);
-		}
-	}
-	return PathFinder(paths);
+	delete d;
 }
 
 void PathFinder::addPrioritySearchDir(const QString& dir)
 {
-	d->searchPaths.prepend(d->resolveDir(dir));
-}
+	QFileInfo fileInfo(dir);
+	if(fileInfo.isSymLink())
+		fileInfo = QFileInfo(fileInfo.symLinkTarget());
 
-void PathFinder::addSearchDir(const QString &dir)
-{
-	d->searchPaths << d->resolveDir(dir);
+#ifdef Q_OS_MAC
+	if(fileInfo.isBundle())
+		d->searchPaths.prepend(fileInfo.absoluteFilePath() + "/Contents/MacOS");
+	else
+#endif
+	if(fileInfo.isFile())
+		d->searchPaths.prepend(fileInfo.absoluteDir().absolutePath());
+	else
+		d->searchPaths.prepend(fileInfo.absoluteFilePath());
+	
 }
 
 QString PathFinder::findFile(const QString& fileName) const

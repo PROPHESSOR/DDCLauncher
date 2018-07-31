@@ -2,20 +2,20 @@
 // masterresponder.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2013 "Zalewa" <zalewapl@gmail.com>
@@ -96,9 +96,9 @@ QList<QByteArray> MasterResponder::buildResponsePackets()
 		}
 		QString currentPort = QString::number(server->port());
 		QString tmp = packet + ";" + currentPort;
-		if (tmp.toUtf8().length() > maxPortsListsLength)
+		if (tmp.toAscii().length() > maxPortsListsLength)
 		{
-			portsLists.append(packet.toUtf8());
+			portsLists.append(packet.toAscii());
 			packet = currentPort;
 		}
 		else
@@ -106,14 +106,14 @@ QList<QByteArray> MasterResponder::buildResponsePackets()
 			packet = tmp;
 		}
 	}
-	portsLists.append(packet.toUtf8());
+	portsLists.append(packet.toAscii());
 	// Now that we have the number of packets, we can prepend
 	// that number to each packet.
 	QList<QByteArray> result;
 	foreach (const QByteArray& portsList, portsLists)
 	{
 		QString number = QString::number(portsLists.size()) + ";";
-		result.append(number.toUtf8() + portsList);
+		result.append(number.toAscii() + portsList);
 	}
 	return result;
 }

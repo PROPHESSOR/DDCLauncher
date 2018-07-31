@@ -2,23 +2,23 @@
 // vavoomengineplugin.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include "plugins/engineplugin.h"
@@ -37,7 +37,7 @@ VavoomEnginePlugin::VavoomEnginePlugin()
 
 	init("Vavoom", vavoom_xpm,
 		EP_Author, "The Doomseeker Team",
-		EP_Version, PLUGIN_VERSION,
+		EP_Version, 9,
 
 		EP_AllowsURL,
 		EP_AllowsEmail,
@@ -46,18 +46,16 @@ VavoomEnginePlugin::VavoomEnginePlugin()
 		EP_AllowsRConPassword,
 		EP_AllowsMOTD,
 		EP_DefaultServerPort, 26000,
-		EP_MasterClient, new VavoomMasterClient(),
+		EP_HasMasterServer,
 		EP_DefaultMaster, "altdeath.com:26001",
-		EP_ServerExeName, "vavoom-dedicated",
-		EP_ClientExeName, "vavoom",
-		EP_GameFileSearchSuffixes, "vavoom",
+		EP_GameModes, VavoomGameInfo::gameModes(),
 		EP_Done
 	);
 }
 
-QList<GameMode> VavoomEnginePlugin::gameModes() const
+MasterClient *VavoomEnginePlugin::masterClient() const
 {
-	return VavoomGameInfo::gameModes();
+	return new VavoomMasterClient();
 }
 
 ServerPtr VavoomEnginePlugin::mkServer(const QHostAddress &address, unsigned short port) const

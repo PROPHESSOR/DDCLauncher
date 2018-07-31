@@ -2,31 +2,27 @@
 // ircnetworkentity.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "ircnetworkentity.h"
 
-#include "irc/chatnetworknamer.h"
-#include "patternlist.h"
-#include <QVariantMap>
-
-DClass<IRCNetworkEntity>
+class IRCNetworkEntity::PrivData
 {
 	public:
 		QString address;
@@ -34,17 +30,17 @@ DClass<IRCNetworkEntity>
 		QStringList autojoinCommands;
 		bool bAutojoinNetwork;
 		QString description;
-		PatternList ignoredUsers;
 		QString nickservCommand;
 		QString nickservPassword;
 		QString password;
 		unsigned short port;
 };
 
-DPointered(IRCNetworkEntity)
+COPYABLE_D_POINTERED_DEFINE(IRCNetworkEntity);
 
 IRCNetworkEntity::IRCNetworkEntity()
 {
+	d = new PrivData();
 	d->bAutojoinNetwork = false;
 	d->port = 6667;
 	d->nickservCommand = "/msg nickserv identify %1";
@@ -52,6 +48,7 @@ IRCNetworkEntity::IRCNetworkEntity()
 
 IRCNetworkEntity::~IRCNetworkEntity()
 {
+	delete d;
 }
 
 const QString &IRCNetworkEntity::address() const
@@ -84,11 +81,6 @@ bool IRCNetworkEntity::isAutojoinNetwork() const
 	return d->bAutojoinNetwork;;
 }
 
-bool IRCNetworkEntity::isValid() const
-{
-	return !description().isEmpty();
-}
-
 const QString &IRCNetworkEntity::description() const
 {
 	return d->description;
@@ -102,16 +94,6 @@ const QString &IRCNetworkEntity::nickservCommand() const
 const QString &IRCNetworkEntity::nickservPassword() const
 {
 	return d->nickservPassword;
-}
-
-bool IRCNetworkEntity::operator<(const IRCNetworkEntity& other) const
-{
-	return description().toLower().trimmed() < other.description().toLower().trimmed();
-}
-
-bool IRCNetworkEntity::operator==(const IRCNetworkEntity& other) const
-{
-	return address() == other.address() && port() == other.port();
 }
 
 const QString &IRCNetworkEntity::password() const
@@ -147,7 +129,7 @@ void IRCNetworkEntity::setAutojoinNetwork(bool v)
 
 void IRCNetworkEntity::setDescription(const QString &v)
 {
-	d->description = ChatNetworkNamer::convertToValidName(v);
+	d->description = v;
 }
 
 void IRCNetworkEntity::setNickservCommand(const QString &v)
@@ -170,45 +152,3 @@ void IRCNetworkEntity::setPort(unsigned short v)
 	d->port = v;
 }
 
-const PatternList &IRCNetworkEntity::ignoredUsers() const
-{
-	return d->ignoredUsers;
-}
-
-void IRCNetworkEntity::setIgnoredUsers(const PatternList &val)
-{
-	d->ignoredUsers = val;
-}
-
-IRCNetworkEntity IRCNetworkEntity::deserializeQVariant(const QVariant &var)
-{
-	QVariantMap map = var.toMap();
-	IRCNetworkEntity result;
-	result.setAddress(map["address"].toString());
-	result.setAutojoinChannels(map["autoJoinChannels"].toStringList());
-	result.setAutojoinCommands(map["autoJoinCommands"].toStringList());
-	result.setAutojoinNetwork(map["autoJoinNetwork"].toBool());
-	result.setDescription(map["description"].toString());
-	result.setIgnoredUsers(PatternList::deserializeQVariant(map["ignoredUsers"]));
-	result.setNickservCommand(map["nickservCommand"].toString());
-	result.setNickservPassword(map["nickservPassword"].toString());
-	result.setPassword(map["password"].toString());
-	result.setPort(map["port"].toInt());
-	return result;
-}
-
-QVariant IRCNetworkEntity::serializeQVariant() const
-{
-	QVariantMap map;
-	map["address"] = address();
-	map["autoJoinChannels"] = autojoinChannels();
-	map["autoJoinCommands"] = autojoinCommands();
-	map["autoJoinNetwork"] = isAutojoinNetwork();
-	map["description"] = description();
-	map["ignoredUsers"] = ignoredUsers().serializeQVariant();
-	map["nickservCommand"] = nickservCommand();
-	map["nickservPassword"] = nickservPassword();
-	map["password"] = password();
-	map["port"] = port();
-	return map;
-}

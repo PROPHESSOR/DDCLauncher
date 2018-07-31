@@ -5,21 +5,21 @@ find_package(Threads REQUIRED)
 include(GenerateCppResourceFile)
 
 if (UNIX)
-	add_definitions(-Wall -Wconversion)
+	add_definitions(-Wall -Werror -Wconversion)
 endif()
+
+include(UsePkgConfig)
+pkgconfig(gtk+-2.0 GTK2_INCLUDE_DIR GTK2_LINK_DIR GTK2_LINK_FLAGS GTK2_CFLAGS)
 
 if (UNIX AND NOT APPLE)
 	set(LINUX TRUE)
 endif()
 
 if (LINUX)
-	find_package(PkgConfig)
-	pkg_search_module(GTK2 gtk+-2.0)
-
 	include_directories(${GTK2_INCLUDE_DIR})
 	add_definitions(${GTK2_CFLAGS})
 	add_library(updatergtk SHARED UpdateDialogGtk.cpp UpdateDialogGtk.h)
-	target_link_libraries(updatergtk ${GTK2_LIBRARIES})
+	target_link_libraries(updatergtk ${GTK2_LINK_FLAGS})
 endif()
 
 add_definitions(-DTIXML_USE_STL)
@@ -134,12 +134,11 @@ if (SIGN_UPDATER)
 	add_custom_command(TARGET updater POST_BUILD COMMAND sign-updater.bat updater.exe)
 endif()
 
-# [BL] Clear CMake warning about use of LOCATION property
+get_property(EXE_LOCATION TARGET updater PROPERTY LOCATION)
 add_custom_command(TARGET updater POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:updater> ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${EXE_LOCATION} ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/
 )
 
 if (WIN32)
-	install(TARGETS updater RUNTIME DESTINATION .)
-	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE DESTINATION . RENAME LICENSE.updater.txt)
+    install(TARGETS updater RUNTIME DESTINATION .)
 endif()

@@ -2,20 +2,20 @@
 // doomseekerconfigurationdialog.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -26,6 +26,7 @@
 #include "gui/configuration/cfgautoupdates.h"
 #include "gui/configuration/cfgcustomservers.h"
 #include "gui/configuration/cfgfilepaths.h"
+#include "gui/configuration/cfgip2country.h"
 #include "gui/configuration/cfgquery.h"
 #include "gui/configuration/cfgserverpasswords.h"
 #include "gui/configuration/cfgwadalias.h"
@@ -33,16 +34,13 @@
 #include "gui/configuration/cfgwadseekergeneral.h"
 #include "gui/configuration/cfgwadseekeridgames.h"
 #include "gui/configuration/cfgwadseekersites.h"
-#include "gui/configuration/engineconfigpage.h"
+#include "gui/configuration/engineconfigurationbasebox.h"
 #include "gui/mainwindow.h"
 #include "plugins/engineplugin.h"
-#include "plugins/pluginloader.h"
 #include "updater/updatechannel.h"
 #include "application.h"
 #include "log.h"
 #include "qtmetapointer.h"
-#include <QStandardItem>
-#include <QTreeView>
 
 DoomseekerConfigurationDialog::DoomseekerConfigurationDialog(QWidget* parent)
 : ConfigurationDialog(parent)
@@ -51,24 +49,24 @@ DoomseekerConfigurationDialog::DoomseekerConfigurationDialog(QWidget* parent)
 	this->bCustomServersChanged = false;
 }
 
-QStandardItem* DoomseekerConfigurationDialog::addConfigPage(QStandardItem* rootItem, ConfigPage* configPage, int position)
+QStandardItem* DoomseekerConfigurationDialog::addConfigurationBox(QStandardItem* rootItem, ConfigurationBaseBox* pConfigurationBox, int position)
 {
-	QStandardItem* pItem = ConfigurationDialog::addConfigPage(rootItem, configPage, position);
+	QStandardItem* pItem = ConfigurationDialog::addConfigurationBox(rootItem, pConfigurationBox, position);
 
 	if (pItem != NULL)
 	{
-		connect(configPage, SIGNAL( appearanceChanged() ),
+		connect(pConfigurationBox, SIGNAL( appearanceChanged() ), 
 			SLOT( appearanceChangedSlot() ) );
 	}
-
+	
 	return pItem;
 }
 
-bool DoomseekerConfigurationDialog::addEngineConfiguration(ConfigPage* configPage)
+bool DoomseekerConfigurationDialog::addEngineConfiguration(ConfigurationBaseBox* pConfigurationBox)
 {
 	if (enginesRoot != NULL)
 	{
-		return addConfigPage(enginesRoot, configPage);
+		return addConfigurationBox(enginesRoot, pConfigurationBox);
 	}
 	return false;
 }
@@ -80,28 +78,28 @@ void DoomseekerConfigurationDialog::appearanceChangedSlot()
 
 void DoomseekerConfigurationDialog::appendFilePathsConfigurationBoxes()
 {
-	QStandardItem *itemFilePaths = addConfigPage(NULL, new CFGFilePaths(this));
-	addConfigPage(itemFilePaths, new CFGWadAlias(this));
+	QStandardItem *itemFilePaths = addConfigurationBox(NULL, new CFGFilePaths(this));
+	addConfigurationBox(itemFilePaths, new CFGWadAlias(this));
 }
 
 void DoomseekerConfigurationDialog::appendWadseekerConfigurationBoxes()
 {
 	QStandardItem* wadseekerRoot = addLabel(NULL, tr("Wadseeker"));
-	wadseekerRoot->setIcon(QIcon(":/icons/get-wad.png"));
+	wadseekerRoot->setIcon(QIcon(":/icons/download.png"));
+	
+	ConfigurationBaseBox* pConfigBox = NULL;
 
-	ConfigPage* configPage = NULL;
+	pConfigBox = new CFGWadseekerAppearance(this);
+	addConfigurationBox(wadseekerRoot, pConfigBox);
 
-	configPage = new CFGWadseekerAppearance(this);
-	addConfigPage(wadseekerRoot, configPage);
+	pConfigBox = new CFGWadseekerGeneral(this);
+	addConfigurationBox(wadseekerRoot, pConfigBox);
 
-	configPage = new CFGWadseekerGeneral(this);
-	addConfigPage(wadseekerRoot, configPage);
+	pConfigBox = new CFGWadseekerSites(this);
+	addConfigurationBox(wadseekerRoot, pConfigBox);
 
-	configPage = new CFGWadseekerSites(this);
-	addConfigPage(wadseekerRoot, configPage);
-
-	configPage = new CFGWadseekerIdgames(this);
-	addConfigPage(wadseekerRoot, configPage);
+	pConfigBox = new CFGWadseekerIdgames(this);
+	addConfigurationBox(wadseekerRoot, pConfigBox);
 }
 
 void DoomseekerConfigurationDialog::doSaveSettings()
@@ -122,27 +120,33 @@ void DoomseekerConfigurationDialog::initOptionsList()
 	enginesRoot = addLabel(NULL, tr("Engines"));
 	enginesRoot->setIcon(QIcon(":/icons/joystick.png"));
 
-	ConfigPage* configPage = NULL;
+	ConfigurationBaseBox* pConfigBox = NULL;
 
-	configPage = new CFGAppearance(this);
-	addConfigPage(NULL, configPage);
+	pConfigBox = new CFGAppearance(this);
+	addConfigurationBox(NULL, pConfigBox);
 
-	configPage = new CFGAutoUpdates(this);
-	addConfigPage(NULL, configPage);
+	// Add only if supported on target platform.
+	#ifdef WITH_AUTOUPDATES
+		pConfigBox = new CFGAutoUpdates(this);
+		addConfigurationBox(NULL, pConfigBox);
+	#endif
 
-	configPage = new CFGCustomServers(this);
-	addConfigPage(NULL, configPage);
-	customServersCfgBox = configPage;
+	pConfigBox = new CFGCustomServers(this);
+	addConfigurationBox(NULL, pConfigBox);
+	customServersCfgBox = pConfigBox;
 
-	configPage = new CFGServerPasswords(this);
-	addConfigPage(NULL, configPage);
+	pConfigBox = new CFGServerPasswords(this);
+	addConfigurationBox(NULL, pConfigBox);
 
-	configPage = new CFGQuery(this);
-	addConfigPage(NULL, configPage);
+	pConfigBox = new CFGIP2Country(this);
+	addConfigurationBox(NULL, pConfigBox);
+
+	pConfigBox = new CFGQuery(this);
+	addConfigurationBox(NULL, pConfigBox);
 
 	appendFilePathsConfigurationBoxes();
 	appendWadseekerConfigurationBoxes();
-
+	
 	optionsTree()->expandAll();
 }
 
@@ -155,18 +159,18 @@ void DoomseekerConfigurationDialog::openConfiguration(const EnginePlugin *openPl
 
 	for(unsigned i = 0; i < gPlugins->numPlugins(); ++i)
 	{
-		EnginePlugin* pPluginInfo = gPlugins->info(i);
+		const EnginePlugin* pPluginInfo = gPlugins->info(i);
 
 		// Create the config box.
-		ConfigPage* configPage = pPluginInfo->configuration(&configDialog);
-		configDialog.addEngineConfiguration(configPage);
+		ConfigurationBaseBox* pConfigurationBox = pPluginInfo->configuration(&configDialog);
+		configDialog.addEngineConfiguration(pConfigurationBox);
 	}
 
 	bool bLookupHostsSettingBefore = gConfig.doomseeker.bLookupHosts;
 	DoomseekerConfig::AutoUpdates::UpdateMode updateModeBefore = gConfig.autoUpdates.updateMode;
 	UpdateChannel updateChannelBefore = UpdateChannel::fromName(gConfig.autoUpdates.updateChannelName);
 	// Stop the auto refresh timer during configuration.
-	mw->stopAutoRefreshTimer();
+	mw->autoRefreshTimer.stop();
 
 	if(openPlugin)
 		configDialog.showPluginConfiguration(openPlugin);
@@ -196,13 +200,13 @@ void DoomseekerConfigurationDialog::showPluginConfiguration(const EnginePlugin *
 	for(int i = 0;i < enginesRoot->rowCount();++i)
 	{
 		QStandardItem *page = enginesRoot->child(i);
-		QtMetaPointer metaPointer = page->data(Qt::UserRole).value<QtMetaPointer>();
+		QtMetaPointer metaPointer = qVariantValue<QtMetaPointer>(page->data());
 		void* pointer = metaPointer;
-		EngineConfigPage *engineConfig = (EngineConfigPage*)pointer;
+		EngineConfigurationBaseBox *engineConfig = (EngineConfigurationBaseBox*)pointer;
 
 		if(engineConfig->plugin() == plugin)
 		{
-			showConfigPage(engineConfig);
+			switchToItem(page->index());
 		}
 	}
 }

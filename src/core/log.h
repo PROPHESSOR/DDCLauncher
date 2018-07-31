@@ -2,20 +2,20 @@
 // log.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -25,7 +25,6 @@
 
 #define gLog Log::instance
 
-#include "dptr.h"
 #include "global.h"
 #include <QMutex>
 #include <QObject>
@@ -58,28 +57,28 @@ class MAIN_EXPORT Log : public QObject
 		const QString& content() const;
 
 		/**
-		 * @brief If true all new entries will also be printed to stderr.
-		 *
-		 * Otherwise entries are stored only in the logContent member.
-		 * Default is true.
+		 *	Works like printf() from stdio. After the output string is
+		 *	constructed it is passed to addEntry() where additional formatting
+		 *	is applied.
 		 */
-		bool isPrintingToStderr() const;
-		void setPrintingToStderr(bool b);
+		void logPrintf(const char* str, ...);
 
 		/**
-		 * @brief If true all new entries will also be printed to stderr.
+		 *	Works like printf() from stdio. After the output string is
+		 *	constructed it is displayed AS IS, without any additional
+		 *	formatting.
+		 */
+		void logUnformattedPrintf(const char* str, ...);
+
+		/**
+		 * @brief If true all new entries will also be printed to stdout.
 		 *
 		 * Otherwise entries are stored only in the logContent member.
 		 * Default is true.
-		 *
-		 * @deprecated Use isPrintingToStderr().
 		 */
 		bool isPrintingToStdout() const;
-		/**
-		 * @deprecated Use setPrintingToStderr().
-		 */
-		void setPrintingToStdout(bool b);
 
+		void setPrintingToStdout(bool b);
 		void setTimestampsEnabled(bool b);
 
 		/**
@@ -117,8 +116,10 @@ class MAIN_EXPORT Log : public QObject
 		void newEntry(const QString& entry);
 
 	private:
-		DPtr<Log> d;
+		class PrivData;
+		PrivData *d;
 
+		int doLogPrintf(char* output, unsigned outputSize, const char* str, va_list argList);
 };
 
 #endif

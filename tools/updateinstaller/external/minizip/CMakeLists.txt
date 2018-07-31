@@ -32,38 +32,25 @@ add_library(minizip
  ${HEADERS}
 )
 
-# [BL] Doomseeker has copies of libbz2 and libz so we should use the ones we
-# built instead of the binary blobs.
-if (MSVC)
-	add_dependencies(minizip ZLIB::ZLIBMT)
-	target_link_libraries(minizip ZLIB::ZLIBMT bz2_mt)
-else ()
-	if (ZLIB_INTERNAL)
-		add_dependencies(minizip ${ZLIB_LIBRARY})
-	endif ()
-	if (BZIP2_INTERNAL)
-		add_dependencies(minizip ${BZIP2_LIBRARY})
-	endif ()
-	target_link_libraries(minizip ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
-endif ()
-
-#if (UNIX)
+if (UNIX)
 	# on Mac, link to libbz2 dynamically, on Linux
 	# we link statically to libbz2 so that an updater binary
 	# build on Debian (where the packaged libbz2 has a SONAME of "libbz2.so.1.0"
 	# works on Fedora/openSUSE (where no libbz2.so.1.0 symlink exists)
-	#
+	# 
 	# see http://stackoverflow.com/questions/1835489/linking-an-application-to-libbz2-so-1-rather-than-libbz2-so-1-0
 	#
-#	set(BZ2_LIB_NAME bz2)
-#	if (NOT APPLE)
-#		set(BZ2_LIB_NAME bz2.a)
-#	endif()
+	set(BZ2_LIB_NAME bz2)
+	if (NOT APPLE)
+		set(BZ2_LIB_NAME bz2.a)
+	endif()
 
-#	target_link_libraries(minizip z ${BZ2_LIB_NAME})
-#else()
-#	target_link_libraries(minizip
-#		"${CMAKE_CURRENT_SOURCE_DIR}/../zlib/prebuilt/zlib_static.lib"
-#		"${CMAKE_CURRENT_SOURCE_DIR}/../bzip2/libbz2_static.lib"
-#	)
-#endif()
+	target_link_libraries(minizip z ${BZ2_LIB_NAME})
+else()
+	target_link_libraries(minizip
+		"${CMAKE_CURRENT_SOURCE_DIR}/../zlib/prebuilt/zlib_static.lib"
+		"${CMAKE_CURRENT_SOURCE_DIR}/../bzip2/libbz2_static.lib"
+	)
+endif()
+
+

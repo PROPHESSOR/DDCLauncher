@@ -25,45 +25,51 @@
 #include "ini/settingsprovider.h"
 #include "ini/settingsproviderqt.h"
 #include "log.h"
-#include "strings.hpp"
+#include "strings.h"
 
 #include <cassert>
 
-DClass<Ini>
+class Ini::PrivData
 {
 	public:
 		SettingsProvider* provider;
 };
 
-DPointered(Ini)
-
 Ini::Ini(SettingsProvider* provider)
 {
+	d = new PrivData();
 	d->provider = provider;
 }
 
 Ini::~Ini()
 {
+	delete d;
+}
+
+IniSection Ini::createSection(const QString& name)
+{
+	if (name.isEmpty())
+	{
+		return IniSection();
+	}
+
+	return IniSection(this, name);
 }
 
 IniVariable Ini::createSetting(const QString& sectionName, const QString& name, const QVariant& data)
 {
-	IniSection s = section(sectionName);
-	if (s.isNull())
+	IniSection section = createSection(sectionName);
+	if (section.isNull())
 	{
 		return IniVariable();
 	}
 
-	return s.createSetting(name, data);
+	return section.createSetting(name, data);
 }
 
 void Ini::deleteSection(const QString& sectionName)
 {
-	foreach (const QString &key, d->provider->allKeys())
-	{
-		if (key.startsWith(sectionName + "/", Qt::CaseInsensitive))
-			removeKey(key);
-	}
+	removeKey(sectionName);
 }
 
 void Ini::deleteSetting(const QString& sectionName, const QString& settingName)
@@ -81,6 +87,16 @@ void Ini::removeKey(const QString& key)
 	d->provider->remove(key);
 }
 
+IniSection Ini::retrieveSection(const QString& name)
+{
+	if (name.isEmpty())
+	{
+		return IniSection();
+	}
+
+	return IniSection(this, name);
+}
+
 IniVariable Ini::retrieveSetting(const QString& sectionName, const QString& variableName)
 {
 	IniSection section = this->section(sectionName);
@@ -94,12 +110,7 @@ IniVariable Ini::retrieveSetting(const QString& sectionName, const QString& vari
 
 IniSection Ini::section(const QString& name)
 {
-	if (name.isEmpty())
-	{
-		return IniSection();
-	}
-
-	return IniSection(this, name);
+	return createSection(name);
 }
 
 QVector<IniSection> Ini::sectionsArray(const QString& regexPattern)

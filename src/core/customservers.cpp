@@ -2,20 +2,20 @@
 // customservers.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -54,12 +54,12 @@ void CustomServers::decodeConfigEntries(const QString& str, QList<CustomServerIn
 			if (entryList.size() == 3)
 			{
 				CustomServerInfo customServerInfo;
-				customServerInfo.engine = QUrl::fromPercentEncoding(entryList[0].toUtf8());
+				customServerInfo.engine = QUrl::fromPercentEncoding(entryList[0].toAscii());
 
 				int engineIndex = gPlugins->pluginIndexFromName(customServerInfo.engine);
 				customServerInfo.engineIndex = engineIndex;
 
-				customServerInfo.host = QUrl::fromPercentEncoding(entryList[1].toUtf8());
+				customServerInfo.host = QUrl::fromPercentEncoding(entryList[1].toAscii());
 
 				bool ok = false;
 				int port = QString(entryList[2]).toInt(&ok);
@@ -83,17 +83,17 @@ void CustomServers::decodeConfigEntries(const QString& str, QList<CustomServerIn
 	} // end of for
 }
 
-QList<ServerPtr> CustomServers::readConfig()
+void CustomServers::readConfig(QObject* receiver, const char* slotUpdated, const char* slotBegunRefreshing)
 {
-	return setServers(gConfig.doomseeker.customServers.toList());
+	QList<CustomServerInfo> customServerInfoList = gConfig.doomseeker.customServers.toList();
+	setServers(customServerInfoList, receiver, slotUpdated, slotBegunRefreshing);
 }
 
-QList<ServerPtr> CustomServers::setServers(const QList<CustomServerInfo>& serverDefs)
+void CustomServers::setServers(const QList<CustomServerInfo>& csiList, QObject* receiver, const char* slotUpdated, const char* slotBegunRefreshing)
 {
 	emptyServerList();
 
-	QList<ServerPtr> servers;
-	foreach (const CustomServerInfo& customServerInfo, serverDefs)
+	foreach (const CustomServerInfo& customServerInfo, csiList)
 	{
 		if (customServerInfo.engineIndex < 0)
 		{
@@ -128,8 +128,8 @@ QList<ServerPtr> CustomServers::setServers(const QList<CustomServerInfo>& server
 		}
 		p->setCustom(true);
 
+		connect(p.data(), SIGNAL( updated(ServerPtr, int) ), receiver, slotUpdated);
+		connect(p.data(), SIGNAL( begunRefreshing(ServerPtr) ), receiver, slotBegunRefreshing);
 		registerNewServer(p);
-		servers << p;
 	}
-	return servers;
 }

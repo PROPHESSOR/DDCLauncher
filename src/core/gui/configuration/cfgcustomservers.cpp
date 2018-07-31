@@ -2,65 +2,53 @@
 // cfgcustomservers.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "configuration/doomseekerconfig.h"
 #include "cfgcustomservers.h"
-#include "ui_cfgcustomservers.h"
 #include "plugins/engineplugin.h"
 #include "plugins/pluginloader.h"
 #include <QHeaderView>
 #include <QMessageBox>
-#include <QStandardItemModel>
 #include <QUrl>
 
 const // clear warnings
 #include "unknownengine.xpm"
 
-DClass<CFGCustomServers> : public Ui::CFGCustomServers
+CFGCustomServers::CFGCustomServers(QWidget *parent) 
+: ConfigurationBaseBox(parent)
 {
-};
+	setupUi(this);
 
-DPointered(CFGCustomServers)
-
-CFGCustomServers::CFGCustomServers(QWidget *parent)
-: ConfigPage(parent)
-{
-	d->setupUi(this);
-
-	connect(d->btnAdd, SIGNAL( clicked() ), this, SLOT( add() ));
-	connect(d->btnRemove, SIGNAL( clicked() ), this, SLOT( remove() ));
-	connect(d->btnSetEngine, SIGNAL( clicked() ), this, SLOT( setEngine() ));
+	connect(btnAdd, SIGNAL( clicked() ), this, SLOT( add() ));
+	connect(btnRemove, SIGNAL( clicked() ), this, SLOT( remove() ));
+	connect(btnSetEngine, SIGNAL( clicked() ), this, SLOT( setEngine() ));
 
 	prepareEnginesComboBox();
 }
 
-CFGCustomServers::~CFGCustomServers()
-{
-}
-
 void CFGCustomServers::add()
 {
-	int pluginIndex = d->cboEngines->itemData(d->cboEngines->currentIndex()).toInt();
+	int pluginIndex = cboEngines->itemData(cboEngines->currentIndex()).toInt();
 	const EnginePlugin* plugin = gPlugins->info(pluginIndex);
 
-	QString engineName = d->cboEngines->itemText(d->cboEngines->currentIndex());
+	QString engineName = cboEngines->itemText(cboEngines->currentIndex());
 
 	add(engineName, "", plugin->data()->defaultServerPort);
 }
@@ -79,7 +67,7 @@ void CFGCustomServers::add(const QString& engineName, const QString& host, unsig
 	record.append(new QStandardItem(portString));
 
 	model->appendRow(record);
-	d->tvServers->resizeRowsToContents();
+	tvServers->resizeRowsToContents();
 }
 
 CFGCustomServers::CheckAndFixPorts CFGCustomServers::checkAndFixPorts(int firstRow, int lastRow)
@@ -151,17 +139,17 @@ bool CFGCustomServers::isPortCorrect(int rowIndex)
 
 void CFGCustomServers::prepareEnginesComboBox()
 {
-	d->cboEngines->clear();
+	cboEngines->clear();
 
 	for (unsigned i = 0; i < gPlugins->numPlugins(); ++i)
 	{
 		const EnginePlugin* plugin = gPlugins->info(i);
-		d->cboEngines->addItem(plugin->icon(), plugin->data()->name, i);
+		cboEngines->addItem(plugin->icon(), plugin->data()->name, i);
 	}
 
-	if (d->cboEngines->count() > 0)
+	if (cboEngines->count() > 0)
 	{
-		d->cboEngines->setCurrentIndex(0);
+		cboEngines->setCurrentIndex(0);
 	}
 }
 
@@ -175,20 +163,16 @@ void CFGCustomServers::prepareTable()
 	labels << "" << tr("Host") << tr("Port");
 	model->setHorizontalHeaderLabels(labels);
 
-	d->tvServers->setModel(model);
+	tvServers->setModel(model);
 
-	d->tvServers->setColumnWidth(0, 23);
-	d->tvServers->setColumnWidth(1, 180);
-	d->tvServers->setColumnWidth(2, 60);
+	tvServers->setColumnWidth(0, 23);
+	tvServers->setColumnWidth(1, 180);
+	tvServers->setColumnWidth(2, 60);
 
-	d->tvServers->horizontalHeader()->setHighlightSections(false);
-#if QT_VERSION >= 0x050000
-	d->tvServers->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-#else
-	d->tvServers->horizontalHeader()->setResizeMode(0, QHeaderView::Fixed);
-#endif
+	tvServers->horizontalHeader()->setHighlightSections(false);
+	tvServers->horizontalHeader()->setResizeMode(0, QHeaderView::Fixed);
 
-	d->tvServers->verticalHeader()->hide();
+	tvServers->verticalHeader()->hide();
 }
 
 void CFGCustomServers::readSettings()
@@ -205,7 +189,7 @@ void CFGCustomServers::readSettings()
 
 void CFGCustomServers::remove()
 {
-	QItemSelectionModel* selModel = d->tvServers->selectionModel();
+	QItemSelectionModel* selModel = tvServers->selectionModel();
 	QModelIndexList indexList = selModel->selectedRows();
 	selModel->clear();
 
@@ -229,14 +213,14 @@ void CFGCustomServers::saveSettings()
 
 void CFGCustomServers::setEngine()
 {
-	QItemSelectionModel* sel = d->tvServers->selectionModel();
+	QItemSelectionModel* sel = tvServers->selectionModel();
 	QModelIndexList indexList = sel->selectedRows();
 
 	QModelIndexList::iterator it;
 	for (it = indexList.begin(); it != indexList.end(); ++it)
 	{
 		QStandardItem* item = model->itemFromIndex(*it);
-		QString engineName = d->cboEngines->itemText(d->cboEngines->currentIndex());
+		QString engineName = cboEngines->itemText(cboEngines->currentIndex());
 		setEngineOnItem(item, engineName);
 	}
 }
@@ -276,10 +260,10 @@ QVector<CustomServerInfo> CFGCustomServers::tableGetServers()
 	for (int i = 0; i < model->rowCount(); ++i)
 	{
 		CustomServerInfo customServer;
-
+	
 		QStandardItem* item = model->item(i, EngineColumnIndex);
 		customServer.engine = item->data().toString();
-
+		
 		customServer.engineIndex = gPlugins->pluginIndexFromName(customServer.engine);
 
 		item = model->item(i, AddressColumnIndex);

@@ -2,55 +2,62 @@
 // ip2cupdater.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #ifndef __IP2CUPDATER_H__
 #define __IP2CUPDATER_H__
 
 #include <QByteArray>
 #include <QObject>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QNetworkRequest>
+
+#include <wadseeker/protocols/fixednetworkaccessmanager.h>
 
 /**
- * @brief IP2CUpdater is responsible for downloading a new version of database
- * from the site.
+ *	@brief IP2CUpdater is responsible for downloading a new version of database
+ *	from the site.
  *
- * NetworkManager class from Wadseeker library is used to communicate with WWW
- * site. As IP2C class remains the core of the whole system for more
- * information refer to there.
+ *	WWW class from Wadseeker library is used to communicate with WWW site.
+ *	Since IP2C class remains the core of the whole system for more information
+ *	refer there.
  */
 class IP2CUpdater : public QObject
 {
 	Q_OBJECT
 
 	public:
-		enum UpdateStatus
-		{
-			UpToDate,
-			UpdateNeeded,
-			UpdateCheckError
-		};
+		/**
+		 *	@brief Checks if IP2C file must be updated.
+		 *
+		 *	@param filePath - Path to the file. It is assumed that this is the
+		 *		IP2Country database file.
+		 *	@param minimumUpdateAge - Maximum age of the file for which this
+		 *		method will return false. Cannot be 0.
+		 */
+		static bool needsUpdate(const QString& filePath, unsigned minimumUpdateAge);
 
-		IP2CUpdater(QObject *parent = NULL);
+		IP2CUpdater();
 		~IP2CUpdater();
 
-		void downloadDatabase();
+		void downloadDatabase(const QUrl& netLocation);
 		const QByteArray& downloadedData();
 
 		const QString& filePath() const { return pathToFile; }
@@ -70,21 +77,6 @@ class IP2CUpdater : public QObject
 
 		bool hasDownloadedData() const { return !retrievedData.isEmpty(); }
 		bool hasRollbackData() const { return !rollbackData.isEmpty(); }
-
-		bool isWorking() const;
-
-		/**
-		 * @brief Checks if IP2C file must be updated.
-		 *
-		 * The call is asynchronous as the locally stored database is compared
-		 * against the one hosted online on Doomseeker's web page. Once it
-		 * completes, an updateNeeded() signal is emitted.
-		 *
-		 * @param filePath - Path to the file. It is assumed that this is the
-		 *     IP2Country database file.
-		 */
-		void needsUpdate(const QString& filePath);
-
 
 		/**
 		 *	@brief Saves data to the pathToFile file. This data must be first
@@ -118,37 +110,25 @@ class IP2CUpdater : public QObject
 		 */
 		void databaseDownloadFinished(const QByteArray& downloadedData);
 		void downloadProgress(qint64 value, qint64 max);
-		/**
-		 * @brief Emitted status is one of UpdateStatus enum values.
-		 */
-		void updateNeeded(int status);
 
 	private:
-		static const QUrl dbChecksumUrl();
-		static const QUrl dbDownloadUrl();
-
-		QNetworkAccessManager* pNetworkAccessManager;
+		FixedNetworkAccessManager* pNetworkAccessManager;
 		QNetworkReply* pCurrentNetworkReply;
 
 		/**
-		 * @brief Various methods will operate on this path.
+		 *	@brief Various methods will operate on this path.
 		 *
-		 * @see needsUpdate()
-		 * @see rollback()
-		 * @see saveDownloadedData()
-		 * @see saveRollbackData()
+		 *	@see rollback()
+		 *	@see saveDownloadedData()
+		 *	@see saveRollbackData()
 		 */
 		QString pathToFile;
 		QByteArray retrievedData;
 		QByteArray rollbackData;
 
-		void abort();
-		void get(const QUrl &url, const char *finishedSlot);
-		bool handleRedirect(QNetworkReply &reply, const char *finishedSlot);
 		bool save(const QByteArray& saveWhat);
 
 	private slots:
-		void checksumDownloadFinished();
 		void downloadFinished();
 };
 

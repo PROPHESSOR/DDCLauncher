@@ -2,28 +2,26 @@
 // ircrequestparser.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef __IRCREQUESTPARSER_H__
 #define __IRCREQUESTPARSER_H__
-
-#include "dptr.h"
 
 #include <QObject>
 #include <QString>
@@ -47,7 +45,7 @@ class IRCNetworkAdapter;
  * - ':' characters will be inserted into some commands.
  *   @b Example: "/part #channel I am leaving!" to
  *   "part #channel :I am leaving!"
- *
+ * 
  * For more information refer to parse() method.
  */
 class IRCRequestParser : public QObject
@@ -78,7 +76,7 @@ class IRCRequestParser : public QObject
 		 * @param pAdapter
 		 *     Adapter that sends the message.
 		 * @param input
-		 *     Input message in common format. See IRCRequestParser
+		 *     Input message in common format. See IRCRequestParser 
 		 *     description.
 		 *
 		 * @return
@@ -102,7 +100,7 @@ class IRCRequestParser : public QObject
 	signals:
 		/**
 		 * @brief Echoes back all PRIVMSG commands.
-		 *
+		 * 
 		 * @param recipient
 		 *     Recipient of the message. This is extracted
 		 *     directly from the privmsg request.
@@ -110,7 +108,7 @@ class IRCRequestParser : public QObject
 		 *     Content of the message.
 		 */
 		void echoPrivmsg(const QString& recipient, const QString& content);
-
+		
 		/**
 		 * @brief Emitted when "/query" alias is used.
 		 *
@@ -123,7 +121,8 @@ class IRCRequestParser : public QObject
 		void query(const QString& who);
 
 	private:
-		DPtr<IRCRequestParser> d;
+		class PrivData;
+		PrivData *d;
 
 		IRCRequestParseResult buildOutput();
 		IRCNetworkAdapter *network();

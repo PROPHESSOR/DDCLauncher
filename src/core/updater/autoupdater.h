@@ -2,28 +2,26 @@
 // autoupdater.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef DOOMSEEKER_UPDATER_AUTOUPDATER_H
 #define DOOMSEEKER_UPDATER_AUTOUPDATER_H
-
-#include "dptr.h"
 
 #include <QDomDocument>
 #include <QNetworkReply>
@@ -39,7 +37,7 @@ class UpdatePackage;
  *
  * AutoUpdater is a non-reusable state machine. This means that if start()
  * was called once then subsequent calls to start() are an error even if
- * the machine has completed its previous job. If updater needs to be
+ * the machine has completed its previous job. If updater needs to be 
  * launched multiple times then the old object needs to be disposed of
  * and a new object needs to be created.
  *
@@ -83,7 +81,7 @@ class AutoUpdater : public QObject
 			 */
 			EC_UpdaterInfoCannotParse,
 			/**
-			 * @brief File was parseable but there was no main program
+			 * @brief File was parseable but there was no main program 
 			 *        information inside.
 			 */
 			EC_UpdaterInfoMissingMainProgramNode,
@@ -129,8 +127,6 @@ class AutoUpdater : public QObject
 		 * Other packages are plugins.
 		 */
 		static const QString MAIN_PROGRAM_PACKAGE_NAME;
-		static const QString QT_PACKAGE_NAME;
-		static const QString WADSEEKER_PACKAGE_NAME;
 		/**
 		 * @brief Base URL to the directory where "update-info*"
 		 *        JSON files are contained.
@@ -146,7 +142,7 @@ class AutoUpdater : public QObject
 		 */
 		static QString updaterScriptPath();
 		static QString updateStorageDirPath();
-
+		
 
 		AutoUpdater(QObject* pParent = NULL);
 		~AutoUpdater();
@@ -206,9 +202,9 @@ class AutoUpdater : public QObject
 		 * then the entire list is treated as if it wasn't set.
 		 *
 		 * @param packagesRevisions
-		 *     Key - package name. Value - list of revisions.
+		 *     Key - package name. Value - list of revision numbers.
 		 */
-		void setIgnoreRevisions(const QMap<QString, QList<QString> >& packagesRevisions);
+		void setIgnoreRevisions(const QMap<QString, QList<unsigned long long> >& packagesRevisions);
 		/**
 		 * @brief Controls if the download&installation process is automated.
 		 *
@@ -222,7 +218,7 @@ class AutoUpdater : public QObject
 		 */
 		void setRequireDownloadAndInstallConfirmation(bool b);
 		void start();
-
+		
 	public slots:
 		void confirmDownloadAndInstall();
 
@@ -242,10 +238,11 @@ class AutoUpdater : public QObject
 
 		void overallProgress(int current, int total, const QString& msg);
 		void packageDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
-		void statusMessage(const QString &message);
 
 	private:
-		DPtr<AutoUpdater> d;
+		class PrivData;
+
+		PrivData* d;
 
 		/**
 		 * @brief Updates package name to fit the current package filename.
@@ -260,7 +257,6 @@ class AutoUpdater : public QObject
 		 */
 		void dumpUpdatePackagesToLog(const QList<UpdatePackage>& packages);
 		void emitOverallProgress(const QString& message);
-		void emitStatusMessage(const QString &message);
 		void finishWithError(ErrorCode code);
 		QUrl mkVersionDataFileUrl();
 

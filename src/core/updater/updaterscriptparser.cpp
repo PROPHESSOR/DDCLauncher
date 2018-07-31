@@ -2,20 +2,20 @@
 // updaterscriptparser.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
@@ -26,21 +26,21 @@
 #include <QDebug>
 #include <cassert>
 
-DClass<UpdaterScriptParser>
+class UpdaterScriptParser::PrivData
 {
 	public:
 		QDomDocument* pDoc;
 };
-
-DPointered(UpdaterScriptParser)
 //////////////////////////////////////////////////////////////////////////////
 UpdaterScriptParser::UpdaterScriptParser(QDomDocument& document)
 {
+	d = new PrivData();
 	d->pDoc = &document;
 }
 
 UpdaterScriptParser::~UpdaterScriptParser()
 {
+	delete d;
 }
 
 QDomNode UpdaterScriptParser::installNode(const QDomDocument& doc)
@@ -69,7 +69,7 @@ void UpdaterScriptParser::merge(const QDomDocument& otherDoc)
 		listNodes = nodePackagesSrc.toElement().elementsByTagName("package");
 		for (int i = 0; i < listNodes.count(); ++i)
 		{
-			nodePackagesDst.appendChild(listNodes.at(i).cloneNode(true));
+			nodePackagesDst.appendChild(listNodes.at(i));
 		}
 
 		QDomNode nodeInstallDst = installNode(*d->pDoc);
@@ -77,7 +77,7 @@ void UpdaterScriptParser::merge(const QDomDocument& otherDoc)
 		listNodes = nodeInstallSrc.toElement().elementsByTagName("file");
 		for (int i = 0; i < listNodes.count(); ++i)
 		{
-			nodeInstallDst.appendChild(listNodes.at(i).cloneNode(true));
+			nodeInstallDst.appendChild(listNodes.at(i));
 		}
 	}
 	else

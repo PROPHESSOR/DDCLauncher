@@ -25,7 +25,7 @@
 #include "protocols/idgames/idgamesreply.h"
 #include <QDebug>
 
-const QUrl IdgamesClient::DEFAULT_URL("https://www.doomworld.com/idgames/api/api.php");
+const QUrl IdgamesClient::DEFAULT_URL("http://www.doomworld.com/idgames/api/api.php");
 
 class IdgamesClient::PrivData
 {
@@ -61,9 +61,9 @@ IdgamesReply *IdgamesClient::search(const QString &filename)
 	#endif
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setRawHeader("User-Agent", d->userAgent.toUtf8());
+	request.setRawHeader("User-Agent", d->userAgent.toAscii());
 	QNetworkReply *reply = d->nam->get(request);
-	return new IdgamesReply(request, reply);
+	return new IdgamesReply(reply);
 }
 
 void IdgamesClient::setBaseUrl(const QUrl &baseUrl)

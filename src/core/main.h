@@ -2,23 +2,23 @@
 // main.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __MAIN_H__
@@ -67,24 +67,14 @@ class Main : public QObject
 		 */
 		int run();
 
-	private:
-		enum LogVerbosity
-		{
-			LV_Default,
-			LV_Verbose,
-			LV_Quiet
-		};
-
-		void applyLogVerbosity();
+	protected:
 		int connectToServerByURL();
 		void convertOldIniToQSettingsIni();
 
 		void createMainWindow();
+		bool createRemoteConsole();
 
 		int runTestMode();
-		int runVersionDump();
-
-		void initCaCerts();
 
 		/**
 		 *	@b Creates required directories and sets up the application.
@@ -112,26 +102,22 @@ class Main : public QObject
 		 */
 		bool interpretCommandLineParameters();
 		void setupRefreshingThread();
-		bool shouldLogToStderr() const;
 
 		char** arguments;
 		int argumentsCount;
 		bool bIsFirstRun;
 		bool bTestMode;
-		bool bVersionDump;
-		QString versionDumpFile;
 		QStringList dataDirectories;
-		LogVerbosity logVerbosity;
 		QString rconPluginName; /// If not empty assume we want to launch an rcon client.
 		QString rconAddress;
 		unsigned short rconPort;
 		bool startRcon;
 		int updateFailedCode;
 		QUrl connectUrl;
-		bool bPortableMode;
 
-	private slots:
-		void runRemoteConsole();
+	private:
+		bool bPortableMode;
+		QString workingDirectory;
 };
 
 #endif /* __MAIN_H__ */

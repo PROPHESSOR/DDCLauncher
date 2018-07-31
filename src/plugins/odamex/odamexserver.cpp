@@ -2,23 +2,23 @@
 // odamexserver.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "odamexserver.h"
 
@@ -162,17 +162,17 @@ Server::Response OdamexServer::readRequest(const QByteArray &data)
 		else if(cvarName == "sv_hostname")
 			setName(cvarValue);
 		else if(cvarName == "sv_maxplayers")
-			setMaxPlayers((quint8)cvarValue.toInt());
+			setMaxPlayers(cvarValue.toUInt());
 		else if(cvarName == "sv_maxclients")
-			setMaxClients((quint8)cvarValue.toInt());
+			setMaxClients(cvarValue.toUInt());
 		else if(cvarName == "sv_scorelimit")
 			setScoreLimit(cvarValue.toUInt());
 		else if(cvarName == "sv_gametype")
 		{
 			unsigned int mode = cvarValue.toUInt();
-			if(mode < (unsigned)plugin()->gameModes().size())
+			if(mode < (unsigned)plugin()->data()->gameModes->size())
 			{
-				setGameMode(plugin()->gameModes()[cvarValue.toUInt()]);
+				setGameMode((*plugin()->data()->gameModes)[cvarValue.toUInt()]);
 			}
 		}
 		else if(cvarName == "sv_website")
@@ -268,7 +268,7 @@ Server::Response OdamexServer::readRequest(const QByteArray &data)
 		unsigned short ping = in.readQUInt16();
 		in.skipRawData(2);
 		bool spectator = in.readQUInt8();
-		int score = in.readQInt16();
+		unsigned short score = in.readQUInt16();
 		in.skipRawData(4);
 
 		Player::PlayerTeam team = gameMode().isTeamGame() ? static_cast<Player::PlayerTeam> (teamIndex) : Player::TEAM_NONE;

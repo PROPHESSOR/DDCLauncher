@@ -78,8 +78,7 @@ std::string uriDecode(const std::string& sSrc)
 	return sResult;
 }
 
-#if defined(PLATFORM_WINDOWS) && _MSC_VER < 1800
-// Microsoft Visual Studio 2013 already has this function defined.
+#ifdef PLATFORM_WINDOWS
 long long atoll(const char* string)
 {
 	return _atoi64(string);

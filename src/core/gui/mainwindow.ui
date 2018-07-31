@@ -26,6 +26,12 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="font">
+       <font>
+        <family>Monospace</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
      </widget>
     </item>
     <item>
@@ -48,9 +54,21 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="lblExclamation1">
+        <widget class="QLabel" name="label_2">
+         <property name="maximumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <property name="pixmap">
-          <pixmap resource="../../../media/resources.qrc">:/icons/exclamation_16.png</pixmap>
+          <pixmap resource="../../../media/resources.qrc">:/icons/exclamation.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -78,10 +96,6 @@
          <property name="text">
           <string>Download &amp;&amp; Install</string>
          </property>
-         <property name="icon">
-          <iconset resource="../../../media/resources.qrc">
-           <normaloff>:/icons/ok.png</normaloff>:/icons/ok.png</iconset>
-         </property>
         </widget>
        </item>
        <item>
@@ -100,10 +114,6 @@
          </property>
          <property name="text">
           <string>Discard</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../../../media/resources.qrc">
-           <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
          </property>
         </widget>
        </item>
@@ -143,12 +153,21 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="lblExclamation2">
+        <widget class="QLabel" name="label_3">
+         <property name="maximumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
          <property name="text">
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../../../media/resources.qrc">:/icons/exclamation_16.png</pixmap>
+          <pixmap resource="../../../media/resources.qrc">:/icons/exclamation.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -243,9 +262,6 @@
       <property name="wordWrap">
        <bool>false</bool>
       </property>
-      <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
      </widget>
     </item>
    </layout>
@@ -256,7 +272,7 @@
      <x>0</x>
      <y>0</y>
      <width>796</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="locale">
@@ -278,7 +294,6 @@
     </property>
     <addaction name="menuActionHelp"/>
     <addaction name="menuActionCheckForUpdates"/>
-    <addaction name="menuActionProgramArgsHelp"/>
     <addaction name="separator"/>
     <addaction name="menuActionAbout"/>
     <addaction name="menuActionAboutQt"/>
@@ -290,7 +305,6 @@
     <addaction name="menuActionCreateServer"/>
     <addaction name="menuActionWadseeker"/>
     <addaction name="menuActionUpdateIP2C"/>
-    <addaction name="menuActionInstallFreedoom"/>
     <addaction name="separator"/>
     <addaction name="menuActionManageDemos"/>
     <addaction name="menuActionRecordDemo"/>
@@ -362,7 +376,7 @@
   <action name="menuActionWadseeker">
    <property name="icon">
     <iconset resource="../../../media/resources.qrc">
-     <normaloff>:/icons/get-wad.png</normaloff>:/icons/get-wad.png</iconset>
+     <normaloff>:/icons/download.png</normaloff>:/icons/download.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Wadseeker</string>
@@ -385,10 +399,10 @@
   <action name="menuActionCreateServer">
    <property name="icon">
     <iconset resource="../../../media/resources.qrc">
-     <normaloff>:/icons/create-server.png</normaloff>:/icons/create-server.png</iconset>
+     <normaloff>:/flags/localhost-small</normaloff>:/flags/localhost-small</iconset>
    </property>
    <property name="text">
-    <string>&amp;Create Game</string>
+    <string>&amp;Create Server</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -416,7 +430,7 @@
   <action name="menuActionUpdateIP2C">
    <property name="icon">
     <iconset resource="../../../media/resources.qrc">
-     <normaloff>:/icons/internet-web-browser.png</normaloff>:/icons/internet-web-browser.png</iconset>
+     <normaloff>:/icons/emblem-web.png</normaloff>:/icons/emblem-web.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Update IP2C</string>
@@ -479,16 +493,6 @@
     <string>&amp;Check for Updates</string>
    </property>
   </action>
-  <action name="menuActionProgramArgsHelp">
-   <property name="text">
-    <string>&amp;Program Args</string>
-   </property>
-  </action>
-  <action name="menuActionInstallFreedoom">
-   <property name="text">
-    <string>Install &amp;Freedoom</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -504,7 +508,6 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../../../media/resources.qrc"/>
   <include location="../../../media/resources.qrc"/>
   <include location="../../../media/resources.qrc"/>
  </resources>
@@ -589,45 +592,11 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>menuActionProgramArgsHelp</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindowWnd</receiver>
-   <slot>showProgramArgsHelp()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>397</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>menuActionInstallFreedoom</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindowWnd</receiver>
-   <slot>showInstallFreedoomDialog()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>397</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>checkForUpdatesUserTriggered()</slot>
   <slot>confirmUpdateInstallation()</slot>
   <slot>discardUpdates()</slot>
   <slot>restartAndInstallUpdatesNow()</slot>
-  <slot>showProgramArgsHelp()</slot>
-  <slot>showInstallFreedoomDialog()</slot>
  </slots>
 </ui>

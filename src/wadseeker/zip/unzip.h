@@ -24,7 +24,7 @@
 #define __UNZIP_H_
 
 #include "../wadseeker.h"
-#include "zipfile.h"
+#include "localfileheader.h"
 #include "unarchive.h"
 #include <QFile>
 #include <QFileInfo>
@@ -38,10 +38,44 @@ class UnZip : public UnArchive
 		UnZip(QIODevice *device);
 		~UnZip();
 
+
+		/**
+		 * @brief Extracts all data headers found in the zip file
+		 */
+		QList<ZipLocalFileHeader> allDataHeaders();
+
+		/**
+		 * @brief Extracts file to specified path.
+		 *
+		 * @param file
+		 *      File index. It can be extracted in following ways:
+		 *      - By counting indices of list returned by allDataHeaders().
+		 *        Each index corresponds directly to this param.
+		 *      - Through findFileEntry()
+		 * @param where
+		 *      Path in the file system to which the file should be extracted.
+		 */
 		bool extract(int file, const QString& where);
+
+		/**
+		 * @brief File index for given entry name.
+		 *
+		 * This is an opposite of fileNameFromIndex()
+		 *
+		 * @return Value that can be passed to extract() or negative value
+		 *         if entry not found or error occurred.
+		 */
 		int findFileEntry(const QString& entryName);
+
+		/**
+		 * @brief File name fron given index.
+		 *
+		 * This is an opposite of fileNameFromIndex()
+		 *
+		 * @see allDataHeaders()
+		 * @see extract()
+		 */
 		QString fileNameFromIndex(int file);
-		QStringList files();
 
 		/**
 		 * @brief true if the QIODevice specified in the constructor
@@ -59,24 +93,22 @@ class UnZip : public UnArchive
 		bool isZip();
 
 	private:
-		ZipFile::CentralDirectory centralDirectory;
-
 		/**
-		 * @brief This method expects the iodevice to be already open
+		 * @brief This method expects the iodevice to be already open 
 		 *        and it won't close it.
 		 *
 		 * @return ZipLocalFileHeader::HeaderError value
 		 */
-		ZipFile::HeaderError readHeader(qint64 pos, ZipFile::LocalFileHeader& zip);
-
+		int readHeader(qint64 pos, ZipLocalFileHeader& zip);
+		
 		/**
-		 * @brief This method expects the iodevice to be already open
+		 * @brief This method expects the iodevice to be already open 
 		 *        and it won't close it.
 		 *
 		 * @return ZipLocalFileHeader::HeaderError value
 		 */
-		ZipFile::HeaderError readHeaderFromFileIndex(int file, ZipFile::LocalFileHeader& zip);
-
+		int readHeaderFromFileIndex(int file, ZipLocalFileHeader& zip);
+		
 		int uncompress(QIODevice& streamIn, QIODevice& streamOut, unsigned long compressedSize);
 };
 

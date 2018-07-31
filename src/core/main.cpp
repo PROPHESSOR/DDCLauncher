@@ -2,42 +2,37 @@
 // main.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include <QApplication>
 #include <QDir>
-#include <QFile>
 #include <QHashIterator>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QObject>
-#include <QSslConfiguration>
 #include <QThreadPool>
 #include <QTimer>
 
-#include <cstdio>
-
 #include "configuration/doomseekerconfig.h"
 #include "configuration/passwordscfg.h"
-#include "configuration/queryspeed.h"
 #include "connectionhandler.h"
 #include "gui/mainwindow.h"
 #include "gui/remoteconsole.h"
@@ -46,9 +41,7 @@
 #include "irc/configuration/ircconfig.h"
 #include "serverapi/server.h"
 #include "application.h"
-#include "cmdargshelp.h"
 #include "commandlinetokenizer.h"
-#include "datapaths.h"
 #include "doomseekerfilepaths.h"
 #include "localization.h"
 #include "log.h"
@@ -57,7 +50,7 @@
 #include "plugins/pluginloader.h"
 #include "refresher/refresher.h"
 #include "serverapi/server.h"
-#include "strings.hpp"
+#include "strings.h"
 #include "tests/testruns.h"
 #include "wadseeker/wadseeker.h"
 #include "updater/updateinstaller.h"
@@ -75,8 +68,6 @@ Main::Main(int argc, char* argv[])
 	bIsFirstRun = false;
 	bTestMode = false;
 	bPortableMode = false;
-	bVersionDump = false;
-	logVerbosity = LV_Default;
 	updateFailedCode = 0;
 
 	qRegisterMetaType<ServerPtr>("ServerPtr");
@@ -119,7 +110,6 @@ int Main::connectToServerByURL()
 	if(handler)
 	{
 		connect(handler, SIGNAL(finished(int)), gApp, SLOT(quit()));
-		handler->run();
 		int ret = gApp->exec();
 		delete handler;
 		return ret;
@@ -135,7 +125,6 @@ int Main::run()
 	{
 		return 0;
 	}
-	applyLogVerbosity();
 
 	Application::init(argumentsCount, arguments);
 #ifdef Q_OS_MAC
@@ -159,13 +148,7 @@ int Main::run()
 		return 0;
 	}
 
-	initCaCerts();
-
-	PluginLoader::init(gDefaultDataPaths->pluginSearchLocationPaths());
-	if (bVersionDump)
-	{
-		return runVersionDump();
-	}
+	PluginLoader::init(Strings::combineManyPaths(dataDirectories, "engines/"));
 	PluginUrlHandler::registerAll();
 
 	if (bTestMode)
@@ -192,7 +175,8 @@ int Main::run()
 
 	if (startRcon)
 	{
-		QTimer::singleShot(0, this, SLOT(runRemoteConsole()));
+		if (!createRemoteConsole())
+			return 0;
 	}
 	else if (connectUrl.isValid())
 	{
@@ -278,49 +262,19 @@ int Main::runTestMode()
 	return testCore.numTestsFailed();
 }
 
-int Main::runVersionDump()
-{
-	QFile outfile;
-	QString error;
-	if (!versionDumpFile.isEmpty())
-	{
-		outfile.setFileName(versionDumpFile);
-		if (!outfile.open(QIODevice::WriteOnly | QIODevice::Text))
-		{
-			error = tr("Failed to open file '%1'.").arg(versionDumpFile);
-		}
-	}
-	else
-	{
-		// Use stdout instead.
-		if (!outfile.open(stdout, QIODevice::WriteOnly))
-		{
-			error = tr("Failed to open stdout.");
-		}
-	}
-	if (!error.isEmpty())
-	{
-		gLog.setPrintingToStderr(true);
-		gLog << error;
-		return 2;
-	}
-
-	gLog << tr("Dumping version info to file in JSON format.");
-	VersionDump::dumpJsonToIO(outfile);
-	return 0;
-}
-
-void Main::applyLogVerbosity()
-{
-	gLog.setPrintingToStderr(shouldLogToStderr());
-}
-
 void Main::createMainWindow()
 {
 	gLog << tr("Preparing GUI.");
 
 	gApp->setMainWindow(new MainWindow(gApp, argumentsCount, arguments));
-	gApp->mainWindow()->show();
+	if (gConfig.doomseeker.bMainWindowMaximized)
+	{
+		gApp->mainWindow()->showMaximized();
+	}
+	else
+	{
+		gApp->mainWindow()->show();
+	}
 
 	if (bIsFirstRun)
 	{
@@ -328,32 +282,14 @@ void Main::createMainWindow()
 	}
 }
 
-void Main::runRemoteConsole()
+bool Main::createRemoteConsole()
 {
 	gLog << tr("Starting RCon client.");
 	if(rconPluginName.isEmpty())
 	{
-		bool canAnyEngineRcon = false;
-		for(unsigned int i = 0;i < gPlugins->numPlugins();i++)
-		{
-			const EnginePlugin* info = gPlugins->plugin(i)->info();
-			if (info->server(QHostAddress("localhost"), 0)->hasRcon())
-			{
-				canAnyEngineRcon = true;
-				break;
-			}
-		}
-		if (!canAnyEngineRcon)
-		{
-			QString error = tr("None of the currently loaded game plugins supports RCon.");
-			gLog << error;
-			QMessageBox::critical(NULL, tr("Doomseeker RCon"), error);
-			gApp->exit(2);
-			return;
-		}
-
 		RemoteConsole *rc = new RemoteConsole();
-		rc->show();
+		if(rc->isValid())
+			rc->show();
 	}
 	else
 	{
@@ -362,8 +298,7 @@ void Main::runRemoteConsole()
 		if(pIndex == -1)
 		{
 			gLog << tr("Couldn't find specified plugin: ") + rconPluginName;
-			gApp->exit(2);
-			return;
+			return false;
 		}
 
 		// Check for RCon Availability.
@@ -372,39 +307,21 @@ void Main::runRemoteConsole()
 		if(!server->hasRcon())
 		{
 			gLog << tr("Plugin does not support RCon.");
-			gApp->exit(2);
-			return;
+			return false;
 		}
 
 		// Start it!
 		RemoteConsole *rc = new RemoteConsole(server);
 		rc->show();
 	}
-}
-
-void Main::initCaCerts()
-{
-	QString certsFilePath = DoomseekerFilePaths::cacerts();
-	QFile certsFile(certsFilePath);
-	if (!certsFilePath.isEmpty() && certsFile.exists())
-	{
-		gLog << tr("Loading extra CA certificates from '%1'.").arg(certsFilePath);
-		certsFile.open(QIODevice::ReadOnly);
-		QSslConfiguration sslConf = QSslConfiguration::defaultConfiguration();
-		QList<QSslCertificate> cacerts = sslConf.caCertificates();
-		QList<QSslCertificate> extraCerts = QSslCertificate::fromDevice(&certsFile);
-		gLog << tr("Appending %n extra CA certificate(s).", NULL, extraCerts.size());
-		cacerts.append(extraCerts);
-		sslConf.setCaCertificates(cacerts);
-		QSslConfiguration::setDefaultConfiguration(sslConf);
-		certsFile.close();
-	}
+	return true;
 }
 
 bool Main::initDataDirectories()
 {
 	DataPaths::initDefault(bPortableMode);
 	DoomseekerFilePaths::pDataPaths = gDefaultDataPaths;
+	gDefaultDataPaths->setWorkingDirectory(Strings::trim(this->workingDirectory, "\""));
 	if (!gDefaultDataPaths->createDirectories())
 	{
 		return false;
@@ -412,12 +329,15 @@ bool Main::initDataDirectories()
 
 	// I think this directory should take priority, if user, for example,
 	// wants to update the ip2country file.
-	dataDirectories << gDefaultDataPaths->localDataLocationPath();
+	dataDirectories << gDefaultDataPaths->programsDataSupportDirectoryPath();
 	dataDirectories << gDefaultDataPaths->workingDirectory();
 
 	// Continue with standard dirs:
 	dataDirectories << "./";
 #if defined(Q_OS_LINUX)
+	#ifndef INSTALL_PREFIX // For safety lets check for the defintion
+		#define INSTALL_PREFIX "/usr"
+	#endif
 	// check in /usr/local/share/doomseeker/ on Linux
 	dataDirectories << INSTALL_PREFIX "/share/doomseeker/";
 #endif
@@ -540,6 +460,13 @@ int Main::installPendingUpdates()
 
 bool Main::interpretCommandLineParameters()
 {
+	QString firstArg = arguments[0];
+	int lastSlash = qMax<int>(firstArg.lastIndexOf('\\'), firstArg.lastIndexOf('/'));
+	if(lastSlash != -1)
+	{
+		this->workingDirectory = firstArg.mid(0, lastSlash+1);
+	}
+
 	for(int i = 0; i < argumentsCount; ++i)
 	{
 		const char* arg = arguments[i];
@@ -568,8 +495,14 @@ bool Main::interpretCommandLineParameters()
 		{
 			gLog.setTimestampsEnabled(false);
 			// Print information to the log and terminate.
-			gLog << tr("Available command line parameters:\n");
-			gLog << CmdArgsHelp::argsHelp();
+			gLog << tr("Available command line parameters:");
+			gLog << tr("	--connect protocol://ip[:port] : Attempts to connect to the specified server.");
+			gLog << tr("	--datadir : Sets an explicit search location for IP2C data along with plugins.");
+			gLog << tr("	--rcon [plugin] [ip] : Launch the rcon client for the specified ip.");
+			gLog << tr("	--portable : Starts application in portable mode.");
+			gLog << tr("	--version-json [file] : Prints version info on\n"
+			           "	    Doomseeker and all plugins in JSON format\n"
+			           "	    to specified file, then closes the program.\n");
 			return false;
 		}
 		else if (strcmp(arg, "--update-failed") == 0)
@@ -581,31 +514,34 @@ bool Main::interpretCommandLineParameters()
 		{
 			bPortableMode = true;
 		}
-		else if (strcmp(arg, "--quiet") == 0)
-		{
-			logVerbosity = LV_Quiet;
-		}
 		else if (strcmp(arg, "--tests") == 0)
 		{
 			bTestMode = true;
 		}
-		else if (strcmp(arg, "--verbose") == 0)
-		{
-			logVerbosity = LV_Verbose;
-		}
 		else if (strcmp(arg, "--version-json") == 0)
 		{
-			bVersionDump = true;
 			if (i + 1 < argumentsCount)
 			{
-				++i;
-				QString filename = arguments[i];
-				if (filename != "-" && filename != "")
+				QString filename = arguments[i + 1];
+				QFile f(filename);
+				if (!f.open(QIODevice::WriteOnly))
 				{
-					versionDumpFile = filename;
+					gLog << tr("Failed to open file.");
+					return false;
 				}
+				initDataDirectories();
+				// Plugins generate QPixmaps which need a QApplication active
+				Application::init(argumentsCount, arguments);
+				PluginLoader::init(Strings::combineManyPaths(dataDirectories, "engines/"));
+				gLog << tr("Dumping version info to file in JSON format.");
+				VersionDump::dumpJsonToIO(f);
+				return false;
 			}
-
+			else
+			{
+				gLog << tr("No file specified!");
+			}
+			return false;
 		}
 	}
 
@@ -615,17 +551,8 @@ bool Main::interpretCommandLineParameters()
 void Main::setupRefreshingThread()
 {
 	gLog << tr("Starting refreshing thread.");
-	gRefresher->setDelayBetweenResends(gConfig.doomseeker.querySpeed().delayBetweenSingleServerAttempts);
+	gRefresher->setDelayBetweenResends(gConfig.doomseeker.queryTimeout);
 	gRefresher->start();
-}
-
-bool Main::shouldLogToStderr() const
-{
-	if (bTestMode)
-		return logVerbosity != LV_Quiet;
-	if (bVersionDump)
-		return logVerbosity == LV_Verbose;
-	return logVerbosity != LV_Quiet;
 }
 
 //==============================================================================
@@ -658,8 +585,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	for (int i = 0; i < commandLine.size(); ++i)
 	{
 		const QString& parameter = commandLine[i];
-		argv[i] = new char[parameter.toUtf8().size() + 1];
-		strcpy(argv[i], parameter.toUtf8().constData());
+		argv[i] = new char[parameter.size() + 1];
+		strcpy(argv[i], parameter.toAscii().constData());
 	}
 
 	Main* pMain = new Main(argc, argv);
@@ -675,6 +602,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 		delete [] argv[i];
 	}
 	delete [] argv;
+
 
 	return returnValue;
 }

@@ -58,8 +58,6 @@ class WadDownloadInfo
 		 */
 		bool isArchive() const;
 
-		bool isValid() const;
-
 		/**
 		 * @brief Checks if filename is the same WAD as this object.
 		 *
@@ -96,11 +94,11 @@ class WadDownloadInfo
 		 *         extension will replace the extension from name().
 		 */
 		QStringList possibleArchiveNames() const;
-
+		
 		/**
 		 * @brief Size of the file.
 		 *
-		 * @param size
+		 * @param size 
 		 *      Size of the file in bytes if known. If unknown
 		 *      then a negative value should be set.
 		 */
@@ -108,7 +106,7 @@ class WadDownloadInfo
 		{
 			d.size = size;
 		}
-
+		
 		/**
 		 * @brief Size of the file if known.
 		 *

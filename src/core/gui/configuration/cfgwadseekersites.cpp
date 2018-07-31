@@ -2,26 +2,25 @@
 // cfgwadseekersites.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "cfgwadseekersites.h"
-#include "ui_cfgwadseekersites.h"
 #include "configuration/doomseekerconfig.h"
 #include "wadseeker/wadseeker.h"
 #include <QCompleter>
@@ -29,52 +28,41 @@
 #include <QDirModel>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QStandardItemModel>
 #include <QUrl>
 
-DClass<CFGWadseekerSites> : public Ui::CFGWadseekerSites
+CFGWadseekerSites::CFGWadseekerSites(QWidget* parent) 
+: ConfigurationBaseBox(parent)
 {
-};
+	setupUi(this);
 
-DPointered(CFGWadseekerSites)
+	lstUrls->setModel(new QStandardItemModel());
 
-CFGWadseekerSites::CFGWadseekerSites(QWidget* parent)
-: ConfigPage(parent)
-{
-	d->setupUi(this);
-
-	d->lstUrls->setModel(new QStandardItemModel());
-
-	connect(d->btnUrlAdd, SIGNAL( clicked() ), this, SLOT( btnUrlAddClicked() ) );
-	connect(d->btnUrlDefault, SIGNAL( clicked() ), this, SLOT( btnUrlDefaultClicked() ) );
-	connect(d->btnUrlRemove, SIGNAL( clicked() ), this, SLOT( btnUrlRemoveClicked() ) );
-	connect(d->leUrl, SIGNAL(returnPressed()), this, SLOT(btnUrlAddClicked()));
-}
-
-CFGWadseekerSites::~CFGWadseekerSites()
-{
+	connect(btnUrlAdd, SIGNAL( clicked() ), this, SLOT( btnUrlAddClicked() ) );
+	connect(btnUrlDefault, SIGNAL( clicked() ), this, SLOT( btnUrlDefaultClicked() ) );
+	connect(btnUrlRemove, SIGNAL( clicked() ), this, SLOT( btnUrlRemoveClicked() ) );
+	connect(leUrl, SIGNAL(returnPressed()), this, SLOT(btnUrlAddClicked()));
 }
 
 void CFGWadseekerSites::btnUrlAddClicked()
 {
-	insertUrl(d->leUrl->text());
+	insertUrl(leUrl->text());
 }
 
 void CFGWadseekerSites::btnUrlDefaultClicked()
 {
 	for (int i = 0; !Wadseeker::defaultSites[i].isEmpty(); ++i)
 	{
-		insertUrl(Wadseeker::defaultSites[i]);
+		this->insertUrl(Wadseeker::defaultSites[i]);
 	}
 }
 
 void CFGWadseekerSites::btnUrlRemoveClicked()
 {
-	QItemSelectionModel* selModel = d->lstUrls->selectionModel();
+	QItemSelectionModel* selModel = lstUrls->selectionModel();
 	QModelIndexList indexList = selModel->selectedIndexes();
 	selModel->clear();
 
-	QStandardItemModel* model = static_cast<QStandardItemModel*>(d->lstUrls->model());
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(lstUrls->model());
 	QList<QStandardItem*> itemList;
 	for (int i = 0; i < indexList.count(); ++i)
 	{
@@ -88,7 +76,7 @@ void CFGWadseekerSites::btnUrlRemoveClicked()
 	}
 }
 
-void CFGWadseekerSites::insertUrl(const QString& url)
+void CFGWadseekerSites::insertUrl(const QUrl& url)
 {
 	if (url.isEmpty())
 	{
@@ -96,7 +84,7 @@ void CFGWadseekerSites::insertUrl(const QString& url)
 	}
 
 	// first we check whether the URL is already in the box.
-	QStandardItemModel* model = static_cast<QStandardItemModel*>(d->lstUrls->model());
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(lstUrls->model());
 	for (int i = 0; i < model->rowCount(); ++i)
 	{
 		QUrl existingUrl( model->item(i)->text() );
@@ -106,11 +94,11 @@ void CFGWadseekerSites::insertUrl(const QString& url)
 		}
 	}
 
-	QStandardItem* it = new QStandardItem(url);
+	QStandardItem* it = new QStandardItem(url.toString());
 
 	it->setDragEnabled(true);
 	it->setDropEnabled(false);
-	it->setToolTip(url);
+	it->setToolTip(url.toString());
 
 	model->appendRow(it);
 }
@@ -122,18 +110,17 @@ void CFGWadseekerSites::readSettings()
 	{
 		this->insertUrl(url);
 	}
-	d->cbAlwaysUseDefaultSites->setChecked(gConfig.wadseeker.bAlwaysUseDefaultSites);
 }
 
 void CFGWadseekerSites::saveSettings()
 {
 	QStringList urlList;
-	QStandardItemModel* model = static_cast<QStandardItemModel*>(d->lstUrls->model());
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(lstUrls->model());
 	for (int i = 0; i < model->rowCount(); ++i)
 	{
-		urlList << model->item(i)->text();
+		QUrl existingUrl( model->item(i)->text() );
+		urlList << existingUrl.toString();
 	}
 
 	gConfig.wadseeker.searchURLs = urlList;
-	gConfig.wadseeker.bAlwaysUseDefaultSites = d->cbAlwaysUseDefaultSites->isChecked();
 }

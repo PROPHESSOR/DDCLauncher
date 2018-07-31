@@ -51,13 +51,10 @@ QList<Link> UrlParser::directLinks(const QStringList& wantedFilenames, const QUr
 	return linksList;
 }
 
+
 bool UrlParser::hasFileReferenceSomewhere(const QStringList& wantedFilenames, const Link& link)
 {
-#if QT_VERSION >= 0x050000
-	QString strQuery = link.url.query(QUrl::FullyDecoded);
-#else
-	QString strQuery = QUrl::fromPercentEncoding(link.url.encodedQuery());
-#endif
+	QString strQuery = link.url.encodedQuery();
 
 	foreach (const QString& filename, wantedFilenames)
 	{
@@ -78,15 +75,7 @@ bool UrlParser::hasSameHost(const QUrl& url1, const QUrl& url2)
 
 bool UrlParser::isDirectLinkToFile(const QStringList& wantedFilenames, const QUrl& url)
 {
-	// In both cases we want path to match raw filename. This means no
-	// special percent encoding for characters that are valid on file
-	// system.
-#if QT_VERSION >= 0x050000
-	QString urlPath = url.path(QUrl::FullyDecoded);
-#else
-	QString urlPath = url.path();
-#endif
-	QFileInfo fi(urlPath);
+	QFileInfo fi(url.encodedPath());
 
 	foreach (const QString& filename, wantedFilenames)
 	{
@@ -104,23 +93,14 @@ bool UrlParser::isDirectLinkToFile(const QStringList& wantedFilenames, const Lin
 	return isDirectLinkToFile(wantedFilenames, link.url);
 }
 
-bool UrlParser::isWadnameTemplateUrl(const QString &url)
+bool UrlParser::isWadnameTemplateUrl(const QUrl &url)
 {
-	return url.contains("%WADNAME%") || url.contains("%s");
+	return url.toString().contains("%WADNAME%") || url.toString().contains("%s");
 }
 
-QUrl UrlParser::resolveWadnameTemplateUrl(QString url, const QString &wadname)
+QUrl UrlParser::resolveWadnameTemplateUrl(const QUrl &url, const QString &wadname)
 {
-	QString wadnameEncoded = QUrl::toPercentEncoding(wadname);
-	if (url.contains("%WADNAME%"))
-	{
-		url = url.replace("%WADNAME%", wadnameEncoded);
-	}
-	else
-	{
-		url = url.replace("%s", wadnameEncoded);
-	}
-	return url;
+	return url.toString().replace("%WADNAME%", wadname).replace("%s", wadname);
 }
 
 QList<Link> UrlParser::siteLinks(const QStringList& wantedFilenames, const QUrl& baseUrl)

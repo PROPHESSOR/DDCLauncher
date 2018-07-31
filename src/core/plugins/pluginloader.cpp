@@ -2,23 +2,23 @@
 // pluginloader.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2011 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2011 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "pluginloader.h"
 
@@ -28,7 +28,7 @@
 #include "ini/inivariable.h"
 #include "plugins/engineplugin.h"
 #include "serverapi/masterclient.h"
-#include "strings.hpp"
+#include "strings.h"
 #include <cassert>
 #include <QDir>
 
@@ -47,7 +47,7 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-DClass<PluginLoader::Plugin>
+class PluginLoader::Plugin::PrivData
 {
 	public:
 		EnginePlugin *info;
@@ -57,27 +57,14 @@ DClass<PluginLoader::Plugin>
 		#else
 			void *library;
 		#endif
-
-		static bool isForbiddenPlugin(QString file)
-		{
-			return QFileInfo(file).fileName().toLower().contains("vavoom");
-		}
 };
-
-DPointered(PluginLoader::Plugin)
 
 PluginLoader::Plugin::Plugin(unsigned int type, QString file)
 {
+	d = new PrivData();
 	d->file = file;
-	d->library = NULL;
-	d->info = NULL;
-	if (PrivData<PluginLoader::Plugin>::isForbiddenPlugin(file))
-	{
-		gLog << QObject::tr("Skipping loading of forbidden plugin: %1").arg(file);
-		return;
-	}
 	// Load the library
-	d->library = dlopen(d->file.toUtf8().constData(), RTLD_NOW);
+	d->library = dlopen(d->file.toAscii().constData(), RTLD_NOW);
 
 	if(d->library != NULL)
 	{
@@ -85,18 +72,6 @@ PluginLoader::Plugin::Plugin(unsigned int type, QString file)
 		if(!doomSeekerABI || doomSeekerABI() != DOOMSEEKER_ABI_VERSION)
 		{
 			// Unsupported version
-			QString reason;
-			if (doomSeekerABI != NULL)
-			{
-				reason = QObject::tr(
-					"plugin ABI version mismatch; plugin: %1, Doomseeker: %2").arg(
-						doomSeekerABI()).arg(DOOMSEEKER_ABI_VERSION);
-			}
-			else
-			{
-				reason = QObject::tr("plugin doesn't report its ABI version");
-			}
-			gLog << QObject::tr("Cannot load plugin %1, reason: %2.").arg(file, reason);
 			unload();
 			return;
 		}
@@ -116,7 +91,6 @@ PluginLoader::Plugin::Plugin(unsigned int type, QString file)
 		}
 
 		gLog << QObject::tr("Loaded plugin: \"%1\"!").arg(info()->data()->name);
-		d->info->start();
 	}
 	else
 	{
@@ -128,6 +102,7 @@ PluginLoader::Plugin::Plugin(unsigned int type, QString file)
 PluginLoader::Plugin::~Plugin()
 {
 	unload();
+	delete d;
 }
 
 void *PluginLoader::Plugin::function(const char* func) const
@@ -164,20 +139,19 @@ void PluginLoader::Plugin::unload()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-DClass<PluginLoader>
+class PluginLoader::PrivData
 {
 	public:
 		unsigned int type;
 		QString pluginsDirectory;
-		QList<PluginLoader::Plugin*> plugins;
+		QList<Plugin*> plugins;
 };
-
-DPointered(PluginLoader)
 
 PluginLoader *PluginLoader::staticInstance = NULL;
 
 PluginLoader::PluginLoader(unsigned int type, const QStringList &directories)
 {
+	d = new PrivData();
 	d->type = type;
 	foreach (const QString &dir, directories)
 	{
@@ -196,6 +170,7 @@ PluginLoader::PluginLoader(unsigned int type, const QStringList &directories)
 PluginLoader::~PluginLoader()
 {
 	qDeleteAll(d->plugins);
+	delete d;
 }
 
 void PluginLoader::clearPlugins()

@@ -36,7 +36,7 @@
 
 class FileSeekInfo;
 class NetworkReplySignalWrapper;
-class NetworkReply;
+class NetworkReplyWrapperInfo;
 
 /**
  *	@brief Search and protocol wrapper class.
@@ -163,7 +163,7 @@ class WWWSeeker : public QObject
 		}
 
 		void setUserAgent(const QString& userAgent);
-
+		
 		/**
 		 * @brief Skips site seeks for specified URL.
 		 *
@@ -267,7 +267,7 @@ class WWWSeeker : public QObject
 				 *
 				 * Amount here will not go above the maxConcurrentSiteDownloads.
 				 */
-				QList<NetworkReply*> networkQueries;
+				QList<NetworkReplyWrapperInfo*> networkQueries;
 
 				QNetworkAccessManager* pNetworkAccessManager;
 
@@ -293,10 +293,10 @@ class WWWSeeker : public QObject
 
 		PrivData d;
 
-		void addNetworkReply(const QNetworkRequest &request, QNetworkReply* pReply);
-		void deleteNetworkReply(NetworkReply* pReply);
-		NetworkReply* findNetworkReply(QNetworkReply* pReply);
-		NetworkReply* findNetworkReply(const QUrl& url);
+		void addNetworkReply(QNetworkReply* pReply);
+		void deleteNetworkReplyWrapperInfo(QNetworkReply* pReply);
+		NetworkReplyWrapperInfo* findNetworkReplyWrapperInfo(QNetworkReply* pReply);
+		NetworkReplyWrapperInfo* findNetworkReplyWrapperInfo(const QUrl& url);
 
 		/**
 		 * @brief Find FileSeekInfo object by comparing possible filenames.
@@ -317,9 +317,7 @@ class WWWSeeker : public QObject
 
 		bool isMoreToSearch() const;
 
-		void logHeaders(NetworkReply *reply);
-
-		void parseAsHtml(NetworkReply* pReply);
+		void parseAsHtml(QNetworkReply* pReply);
 
 		/**
 		 * @brief Starts network query using specified URL.
@@ -346,10 +344,10 @@ class WWWSeeker : public QObject
 		bool wasUrlUsed(const QUrl& url) const;
 
 	private slots:
-		void networkQueryDownloadProgress(NetworkReply* pReply, qint64 current, qint64 total);
-		void networkQueryError(NetworkReply* pReply, QNetworkReply::NetworkError code);
-		void networkQueryFinished(NetworkReply* pReply);
-		void networkQueryMetaDataChanged(NetworkReply* pReply);
+		void networkQueryDownloadProgress(QNetworkReply* pReply, qint64 current, qint64 total);
+		void networkQueryError(QNetworkReply* pReply, QNetworkReply::NetworkError code);
+		void networkQueryFinished(QNetworkReply* pReply);
+		void networkQueryMetaDataChanged(QNetworkReply* pReply);
 
 };
 

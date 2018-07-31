@@ -37,28 +37,14 @@
     <widget class="QLineEdit" name="leUrl"/>
    </item>
    <item>
-    <widget class="QCheckBox" name="cbAlwaysUseDefaultSites">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wadseeker library comes with its own list of file storage sites. As these sites come and go the list is modified with new updates of the library. Leave this option to be always up-to-date with the current list. &lt;/p&gt;&lt;p&gt;When enabled the list of hardcoded default sites will always be used in addition to the list above.&lt;/p&gt;&lt;p&gt;When disabled only the list above is used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>Always use Wadseeker's default sites</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="btnUrlDefault">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adds sites hardcoded within the Wadseeker library to the list. No URL that is currently on the list will be removed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Adds default URLs to the list. No URL that is currently on the list will be removed.</string>
        </property>
        <property name="text">
         <string>Add Defaults</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../media/resources.qrc">
-         <normaloff>:/icons/doomseeker_plus.png</normaloff>:/icons/doomseeker_plus.png</iconset>
        </property>
       </widget>
      </item>
@@ -80,10 +66,6 @@
        <property name="text">
         <string>Add</string>
        </property>
-       <property name="icon">
-        <iconset resource="../../../../media/resources.qrc">
-         <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
-       </property>
       </widget>
      </item>
      <item>
@@ -91,18 +73,12 @@
        <property name="text">
         <string>Remove</string>
        </property>
-       <property name="icon">
-        <iconset resource="../../../../media/resources.qrc">
-         <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
-       </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../../../media/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

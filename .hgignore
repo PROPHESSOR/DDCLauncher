@@ -3,4 +3,4 @@ build/*
 *.orig
 *~
 *.rej
-src/core/gitinfo.h
+src/core/svnrevision.h

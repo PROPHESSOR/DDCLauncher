@@ -22,8 +22,9 @@
 //------------------------------------------------------------------------------
 #include "wwwseeker.h"
 
+#include "protocols/entities/networkreplywrapperinfo.h"
+#include "protocols/fixednetworkaccessmanager.h"
 #include "protocols/networkreplysignalwrapper.h"
-#include "protocols/networkreply.h"
 #include "protocols/http.h"
 #include "wwwseeker/entities/fileseekinfo.h"
 #include "htmlparser.h"
@@ -43,7 +44,7 @@ WWWSeeker::WWWSeeker()
 
 WWWSeeker::~WWWSeeker()
 {
-	foreach (NetworkReply* pInfo, d.networkQueries)
+	foreach (NetworkReplyWrapperInfo* pInfo, d.networkQueries)
 	{
 		pInfo->deleteMembersLater();
 		delete pInfo;
@@ -71,9 +72,9 @@ void WWWSeeker::abort()
 		d.sitesUrls.clear();
 		d.seekedFiles.clear();
 
-		foreach (NetworkReply* pInfo, d.networkQueries)
+		foreach (NetworkReplyWrapperInfo* pInfo, d.networkQueries)
 		{
-			pInfo->reply->abort();
+			pInfo->pReply->abort();
 		}
 	}
 }
@@ -109,20 +110,20 @@ void WWWSeeker::addFileSiteUrlWithPriority(const QString& filename, const QUrl& 
 	}
 }
 
-void WWWSeeker::addNetworkReply(const QNetworkRequest &request, QNetworkReply* pReply)
+void WWWSeeker::addNetworkReply(QNetworkReply* pReply)
 {
-	NetworkReply* pQueryInfo = new NetworkReply(request, pReply);
-	pQueryInfo->setProgressTimeout(NetworkReply::SUGGESTED_PROGRESS_TIMEOUT_MSECS);
+	NetworkReplyWrapperInfo* pQueryInfo = new NetworkReplyWrapperInfo(pReply);
+	pQueryInfo->setProgressTimeout(NetworkReplyWrapperInfo::SUGGESTED_PROGRESS_TIMEOUT_MSECS);
 	pQueryInfo->startConnectionTimeoutTimer();
 
-	this->connect(pQueryInfo->signalWrapper, SIGNAL( downloadProgress(NetworkReply*, qint64, qint64) ),
-		SLOT( networkQueryDownloadProgress(NetworkReply*, qint64, qint64) ));
-	this->connect(pQueryInfo->signalWrapper, SIGNAL( error(NetworkReply*, QNetworkReply::NetworkError) ),
-		SLOT( networkQueryError(NetworkReply*, QNetworkReply::NetworkError) ));
-	this->connect(pQueryInfo->signalWrapper, SIGNAL( finished(NetworkReply*) ),
-		SLOT( networkQueryFinished(NetworkReply*) ));
-	this->connect(pQueryInfo->signalWrapper, SIGNAL( metaDataChanged(NetworkReply*) ),
-		SLOT( networkQueryMetaDataChanged(NetworkReply*) ));
+	this->connect(pQueryInfo->pSignalWrapper, SIGNAL( downloadProgress(QNetworkReply*, qint64, qint64) ),
+		SLOT( networkQueryDownloadProgress(QNetworkReply*, qint64, qint64) ));
+	this->connect(pQueryInfo->pSignalWrapper, SIGNAL( error(QNetworkReply*, QNetworkReply::NetworkError) ),
+		SLOT( networkQueryError(QNetworkReply*, QNetworkReply::NetworkError) ));
+	this->connect(pQueryInfo->pSignalWrapper, SIGNAL( finished(QNetworkReply*) ),
+		SLOT( networkQueryFinished(QNetworkReply*) ));
+	this->connect(pQueryInfo->pSignalWrapper, SIGNAL( metaDataChanged(QNetworkReply*) ),
+		SLOT( networkQueryMetaDataChanged(QNetworkReply*) ));
 
 	d.networkQueries << pQueryInfo;
 }
@@ -143,10 +144,18 @@ void WWWSeeker::addSitesUrls(const QList<QUrl>& urlsList)
 	}
 }
 
-void WWWSeeker::deleteNetworkReply(NetworkReply* pReply)
+void WWWSeeker::deleteNetworkReplyWrapperInfo(QNetworkReply* pReply)
 {
-	pReply->deleteMembersLater();
-	d.networkQueries.removeOne(pReply);
+	NetworkReplyWrapperInfo* pInfo = findNetworkReplyWrapperInfo(pReply);
+	if (pInfo != NULL)
+	{
+		pInfo->deleteMembersLater();
+		d.networkQueries.removeOne(pInfo);
+	}
+	else
+	{
+		pReply->deleteLater();
+	}
 }
 
 bool WWWSeeker::isMoreToSearch() const
@@ -184,9 +193,9 @@ FileSeekInfo* WWWSeeker::findFileSeekInfo(const QString& seekedName)
 	return NULL;
 }
 
-NetworkReply* WWWSeeker::findNetworkReply(QNetworkReply* pReply)
+NetworkReplyWrapperInfo* WWWSeeker::findNetworkReplyWrapperInfo(QNetworkReply* pReply)
 {
-	foreach (NetworkReply* info, d.networkQueries)
+	foreach (NetworkReplyWrapperInfo* info, d.networkQueries)
 	{
 		if (*info == pReply)
 		{
@@ -197,11 +206,11 @@ NetworkReply* WWWSeeker::findNetworkReply(QNetworkReply* pReply)
 	return NULL;
 }
 
-NetworkReply* WWWSeeker::findNetworkReply(const QUrl& url)
+NetworkReplyWrapperInfo* WWWSeeker::findNetworkReplyWrapperInfo(const QUrl& url)
 {
-	foreach (NetworkReply* info, d.networkQueries)
+	foreach (NetworkReplyWrapperInfo* info, d.networkQueries)
 	{
-		if (info->request().url() == url)
+		if (info->pReply->request().url() == url)
 		{
 			return info;
 		}
@@ -233,45 +242,41 @@ bool WWWSeeker::isDirectUrl(const QUrl& url, QString& outFileName) const
 	return false;
 }
 
-void WWWSeeker::networkQueryDownloadProgress(NetworkReply* pReply, qint64 current, qint64 total)
+void WWWSeeker::networkQueryDownloadProgress(QNetworkReply* pReply, qint64 current, qint64 total)
 {
 	emit siteProgress(pReply->request().url(), current, total);
 }
 
-void WWWSeeker::networkQueryError(NetworkReply* pReply, QNetworkReply::NetworkError code)
+void WWWSeeker::networkQueryError(QNetworkReply* pReply, QNetworkReply::NetworkError code)
 {
 	// We shall ignore OperationCanceledError because this error is caused
 	// by a call to QNetworkReply::abort() and it may confuse users.
 	// "Why am I getting this error? Is it a bug? Yeah, it is a bug!"
-	if (code != QNetworkReply::NoError && code != QNetworkReply::OperationCanceledError)
+	if (code != QNetworkReply::NoError && code != QNetworkReply::OperationCanceledError) 
 	{
+		QString errorString = FixedNetworkAccessManager::networkErrorToString(code);
+		
 		emit message(tr("Site \"%1\": network error occurred: %2")
-			.arg(pReply->request().url().toString(), pReply->errorString()), WadseekerLib::Error);
+			.arg(pReply->request().url().toString(), errorString), WadseekerLib::Error);
 	}
 	qDebug() << "WWWSeeker::networkQueryError() " << code;
 }
 
-void WWWSeeker::logHeaders(NetworkReply *reply)
-{
-	qDebug() << "HEADERS";
-	qDebug() << "URL " << reply->url();
-	QList<QByteArray> headers = reply->rawHeaderList();
-	foreach (const QByteArray& headerName, headers)
-	{
-		QByteArray headerData = reply->rawHeader(headerName);
-		qDebug() << QString("%1: %2").arg(QString::fromUtf8(headerName)).arg(
-			QString::fromUtf8(headerData));
-	}
-	printf("END OF HEADERS\n");
-}
-
-void WWWSeeker::networkQueryFinished(NetworkReply* pReply)
+void WWWSeeker::networkQueryFinished(QNetworkReply* pReply)
 {
 	QUrl url = pReply->request().url();
 
 #ifndef NDEBUG
 	printf("WWWSeeker::networkQueryFinished()\n");
-	logHeaders(pReply);
+	QList<QByteArray> headers = pReply->rawHeaderList();
+	printf("HEADERS\n");
+	printf("URL %s\n", url.toEncoded().constData());
+	foreach (const QByteArray& headerName, headers)
+	{
+		QByteArray headerData = pReply->rawHeader(headerName);
+		printf("%s: %s\n", headerName.constData(), headerData.constData());
+	}
+	printf("END OF HEADERS\n");
 #endif
 
 	QUrl possibleRedirectUrl = pReply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
@@ -288,7 +293,7 @@ void WWWSeeker::networkQueryFinished(NetworkReply* pReply)
 			possibleRedirectUrl = url.resolved(possibleRedirectUrl);
 		}
 
-		deleteNetworkReply(pReply);
+		deleteNetworkReplyWrapperInfo(pReply);
 
 		if (!d.bIsAborting)
 		{
@@ -302,7 +307,7 @@ void WWWSeeker::networkQueryFinished(NetworkReply* pReply)
 	{
 		parseAsHtml(pReply);
 
-		deleteNetworkReply(pReply);
+		deleteNetworkReplyWrapperInfo(pReply);
 		emit siteFinished(url);
 	}
 
@@ -323,13 +328,21 @@ void WWWSeeker::networkQueryFinished(NetworkReply* pReply)
 	}
 }
 
-void WWWSeeker::networkQueryMetaDataChanged(NetworkReply* pReply)
+void WWWSeeker::networkQueryMetaDataChanged(QNetworkReply* pReply)
 {
 	QUrl url = pReply->request().url();
 
 #ifndef NDEBUG
 	printf("WWWSeeker::networkQueryMetaDataChanged()\n");
-	logHeaders(pReply);
+	QList<QByteArray> headers = pReply->rawHeaderList();
+	printf("HEADERS\n");
+	printf("URL %s\n", url.toEncoded().constData());
+	foreach (const QByteArray& headerName, headers)
+	{
+		QByteArray headerData = pReply->rawHeader(headerName);
+		printf("%s: %s\n", headerName.constData(), headerData.constData());
+	}
+	printf("END OF HEADERS\n");
 #endif
 
 	Http http(pReply);
@@ -354,11 +367,11 @@ void WWWSeeker::networkQueryMetaDataChanged(NetworkReply* pReply)
 			FileSeekInfo* attachmentSeekInfo = findFileSeekInfo(attachmentName);
 
 #ifndef NDEBUG
-			printf("Attachment detected on URL %s\n", url.toString().toUtf8().constData());
+			printf("Attachment detected on URL %s\n", url.toString().toAscii().constData());
 			if (attachmentSeekInfo != NULL)
 			{
 				printf("Forwarding the detected attachment to \"%s\" download queue\n",
-						attachmentSeekInfo->file().toUtf8().constData());
+						attachmentSeekInfo->file().toAscii().constData());
 			}
 #endif
 			// Abort further download here.
@@ -385,7 +398,7 @@ void WWWSeeker::networkQueryMetaDataChanged(NetworkReply* pReply)
 	}
 }
 
-void WWWSeeker::parseAsHtml(NetworkReply* pReply)
+void WWWSeeker::parseAsHtml(QNetworkReply* pReply)
 {
 	QByteArray downloadedData = pReply->readAll();
 	QUrl url = pReply->request().url();
@@ -401,10 +414,10 @@ void WWWSeeker::parseAsHtml(NetworkReply* pReply)
 	QList<Link> links = html.linksFromHtml();
 
 #ifndef NDEBUG
-	qDebug() << "Finished URL" << url << "; content type"
-		<< pReply->header(QNetworkRequest::ContentTypeHeader).toString()
-		<< ". Data size:" << downloadedData.size();
-	qDebug() << "Links:" << links.size();
+	printf("Finished URL %s - content type %s. Data size: %d\n", url.toEncoded().constData(),
+		pReply->header(QNetworkRequest::ContentTypeHeader).toByteArray().constData(), downloadedData.size());
+
+	printf("Links: %d\n", links.size());
 #endif
 
 	// Extract URLs of interest from <A HREFs>
@@ -419,7 +432,7 @@ void WWWSeeker::parseAsHtml(NetworkReply* pReply)
 		QList<Link> directLinks = urlParser.directLinks(possibleFilenames, url);
 
 #ifndef NDEBUG
-		printf("File %s\n", file.toUtf8().constData());
+		printf("File %s\n", file.toAscii().constData());
 		printf("Site links: %d\n", siteLinks.size());
 		printf("Direct links: %d\n", directLinks.size());
 #endif
@@ -470,10 +483,10 @@ void WWWSeeker::setUserAgent(const QString& userAgent)
 
 void WWWSeeker::skipSite(const QUrl& url)
 {
-	NetworkReply* pInfo = findNetworkReply(url);
+	NetworkReplyWrapperInfo* pInfo = findNetworkReplyWrapperInfo(url);
 	if (pInfo != NULL)
 	{
-		pInfo->reply->abort();
+		pInfo->pReply->abort();
 	}
 }
 
@@ -481,10 +494,10 @@ void WWWSeeker::startNetworkQuery(const QUrl& url)
 {
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setRawHeader("User-Agent", d.userAgent.toUtf8());
+	request.setRawHeader("User-Agent", d.userAgent.toAscii());
 
-	QNetworkReply* reply = d.pNetworkAccessManager->get(request);
-	addNetworkReply(request, reply);
+	QNetworkReply* pReply = d.pNetworkAccessManager->get(request);
+	addNetworkReply(pReply);
 }
 
 void WWWSeeker::startNextSites()
@@ -493,7 +506,7 @@ void WWWSeeker::startNextSites()
 			&& isMoreToSearch())
 	{
 		QUrl url = takeNextUrl();
-		qDebug() << "Took URL:" << url.toString();
+		printf("Took URL: %s\n", url.toString().toAscii().constData());
 
 		if (url.isValid())
 		{
@@ -508,7 +521,7 @@ void WWWSeeker::startNextSites()
 			}
 			else
 			{
-				qDebug() << "Starting site:" << url.toString();
+				printf("Starting site: %s\n", url.toEncoded().constData());
 
 				startNetworkQuery(url);
 				emit siteStarted(url);

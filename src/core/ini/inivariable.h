@@ -23,7 +23,6 @@
 #ifndef __INIVARIABLE_H__
 #define __INIVARIABLE_H__
 
-#include "dptr.h"
 #include "global.h"
 
 #include <QHash>
@@ -50,11 +49,11 @@ class MAIN_EXPORT IniVariable
 		IniVariable();
 
 		/**
-		 * @brief Creates a valid IniVariable object, provided that
-		 * the section is also valid.
+		 * @brief Creates a valid IniVariable object.
 		 */
 		IniVariable(const IniSection &section, const QString& key);
 
+		COPYABLE_D_POINTERED_DECLARE(IniVariable);
 		virtual ~IniVariable();
 
 		/**
@@ -63,7 +62,7 @@ class MAIN_EXPORT IniVariable
 		const QString& key();
 
 		/**
-		 * @brief If true, IniVariable object is not valid and should not be
+		 * @brief If true, IniSection object is not valid and should not be
 		 *        used to perform any actions on the Ini file.
 		 */
 		bool isNull() const;
@@ -134,7 +133,8 @@ class MAIN_EXPORT IniVariable
 		friend class TestReadINIVariable;
 		friend class TestReadINIList;
 
-		DPtr<IniVariable> d;
+		class PrivData;
+		PrivData *d;
 };
 
 #endif

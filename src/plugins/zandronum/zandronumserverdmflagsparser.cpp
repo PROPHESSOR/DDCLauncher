@@ -2,28 +2,27 @@
 // zandronumserverdmflagsparser.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "zandronumserverdmflagsparser.h"
 
-#include "zandronum2dmflags.h"
-#include "zandronum3dmflags.h"
+#include "zandronumdmflags.h"
 #include "zandronumgameinfo.h"
 #include "zandronumserver.h"
 #include <serverapi/serverstructs.h>
@@ -32,10 +31,7 @@
 ZandronumServerDmflagsParser *ZandronumServerDmflagsParser::mkParser(
 	ZandronumServer *server, QDataStream *in)
 {
-	ZandronumVersion version(server->gameVersion());
-	if (version.majorVersion() >= 3)
-		return new ZandronumServer3DmflagsParser(server, in);
-	return new ZandronumServer2DmflagsParser(server, in);
+	return new ZandronumServer1point0DmflagsParser(server, in);
 }
 
 ZandronumServerDmflagsParser::ZandronumServerDmflagsParser(
@@ -55,10 +51,10 @@ QList<DMFlagsSection> ZandronumServerDmflagsParser::sequential32Parse(
 	// Read each dmflags section separately.
 	for (int i = 0; i < knownFlags.count() && i < numSections; ++i)
 	{
-		quint32 dmflags = in.readQUInt32();
+		unsigned int dmflags = in.readQInt32();
 
 		const DMFlagsSection& knownSection = knownFlags[i];
-		DMFlagsSection detectedSection = knownSection.copyEmpty();
+		DMFlagsSection detectedSection(knownSection.name());
 
 		// Iterate through every known flag to check whether it should be
 		// inserted into the structure of this server.
@@ -93,14 +89,7 @@ QList<DMFlagsSection> ZandronumServerNullParser::parse()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-QList<DMFlagsSection> ZandronumServer2DmflagsParser::parse()
+QList<DMFlagsSection> ZandronumServer1point0DmflagsParser::parse()
 {
-	return sequential32Parse(Zandronum2::Dmflags().flags());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-QList<DMFlagsSection> ZandronumServer3DmflagsParser::parse()
-{
-	return sequential32Parse(Zandronum3::Dmflags().flags());
+	return sequential32Parse(ZandronumDmflags1point0().flags());
 }

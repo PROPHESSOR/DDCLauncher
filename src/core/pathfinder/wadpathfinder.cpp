@@ -2,20 +2,20 @@
 // wadpathfinder.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
@@ -25,23 +25,24 @@
 #include "configuration/doomseekerconfig.h"
 #include "pathfinder/filealias.h"
 #include "pathfinder/pathfinder.h"
-#include "serverapi/server.h"
 
-DClass<WadFindResult>
+class WadFindResult::PrivData
 {
 	public:
 		QString alias;
 		QString path;
 };
 
-DPointered(WadFindResult)
+COPYABLE_D_POINTERED_DEFINE(WadFindResult);
 
 WadFindResult::WadFindResult()
 {
+	d = new PrivData();
 }
 
 WadFindResult::~WadFindResult()
 {
+	delete d;
 }
 
 const QString &WadFindResult::alias() const
@@ -74,43 +75,27 @@ void WadFindResult::setPath(const QString &val)
 	d->path = val;
 }
 ///////////////////////////////////////////////////////////////////////////////
-DClass<WadPathFinder>
+class WadPathFinder::PrivData
 {
 	public:
 		QList<FileAlias> aliases;
 		PathFinder pathFinder;
-		bool aliasesAllowed;
-
-		QStringList defaultPaths()
-		{
-			QStringList paths;
-			#ifdef Q_OS_UNIX
-			paths << "/usr/local/share/games/doom/"
-				<< "/usr/share/games/doom/";
-			#endif
-			return paths;
-		}
 };
 
-DPointered(WadPathFinder)
-
-WadPathFinder::WadPathFinder(PathFinder pathFinder)
+WadPathFinder::WadPathFinder(const PathFinder &pathFinder)
 {
+	d = new PrivData();
 	d->aliases = gConfig.doomseeker.wadAliases();
-	d->aliasesAllowed = true;
 	d->pathFinder = pathFinder;
-	foreach (const QString &path, d->defaultPaths())
-		d->pathFinder.addSearchDir(path);
 }
 
 WadPathFinder::~WadPathFinder()
 {
+	delete d;
 }
 
 QStringList WadPathFinder::aliases(const QString &name) const
 {
-	if (!d->aliasesAllowed)
-		return QStringList();
 	foreach (const FileAlias &candidate, d->aliases)
 	{
 		if (candidate.name().compare(name, Qt::CaseInsensitive) == 0)
@@ -144,17 +129,4 @@ WadFindResult WadPathFinder::find(const QString &name)
 		}
 	}
 	return WadFindResult();
-}
-
-void WadPathFinder::setAllowAliases(bool allowed)
-{
-	d->aliasesAllowed = allowed;
-}
-
-///////////////////////////////////////////////////////////////////////////
-WadFindResult findWad(ServerPtr server, const QString &wadName)
-{
-	PathFinder pathFinder = server->wadPathFinder();
-	WadPathFinder wadFinder(pathFinder);
-	return wadFinder.find(wadName);
 }

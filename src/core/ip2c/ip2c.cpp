@@ -2,23 +2,23 @@
 // ip2c.cpp
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "ip2c.h"
 
@@ -163,8 +163,13 @@ IP2CCountryInfo IP2C::obtainCountryInfo(unsigned int ipaddress)
 
 	const IP2CData& data = lookupIP(ipaddress);
 
-	if (!data.isCountryKnown())
+	if (data.country.isEmpty())
 	{
+		char buffer[1024];
+
+		sprintf(buffer, "Unrecognized IP address: %s (DEC: %u / HEX: %X)", QHostAddress(ipaddress).toString().toAscii().constData(), ipaddress, ipaddress);
+		gLog << buffer;
+
 		return IP2CCountryInfo(&flagUnknown, tr("Unknown"));
 	}
 
@@ -175,9 +180,4 @@ IP2CCountryInfo IP2C::obtainCountryInfo(unsigned int ipaddress)
 
 	const QPixmap* pFlag = &flag(data.country);
 	return IP2CCountryInfo(pFlag, data.countryFullName);
-}
-
-bool IP2C::IP2CData::isCountryKnown() const
-{
-	return !country.isEmpty() && country != "ZZZ";
 }

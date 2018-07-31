@@ -447,7 +447,7 @@ QVariant Json::parseString(const QString &json, int &index, bool &success)
                 return QVariant();
         }
 
-        s = QString::fromUtf8(s.toUtf8());
+        s = QString::fromUtf8(s.toAscii());
 
         return QVariant(s);
 }
@@ -531,7 +531,7 @@ int Json::nextToken(const QString &json, int &index)
 
         QChar c = json[index];
         index++;
-        switch(c.toLatin1())
+        switch(c.toAscii())
         {
                 case '{': return JsonTokenCurlyOpen;
                 case '}': return JsonTokenCurlyClose;

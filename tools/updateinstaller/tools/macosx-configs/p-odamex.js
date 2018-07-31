@@ -1,8 +1,7 @@
 {
     "name" : "p-odamex",
     "files" : [
-        "Contents/MacOS/engines/libodamex.so",
-        "Contents/MacOS/translations/odamex_pl_PL.qm"
+        "Contents/MacOS/engines/libodamex.so"
     ],
     "updater-binary" : "Contents/MacOS/updater",
     "main-binary" : "Contents/MacOS/doomseeker"

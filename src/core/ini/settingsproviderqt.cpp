@@ -36,37 +36,21 @@
 
 #include <cassert>
 
-DClass<SettingsProviderQt>
+class SettingsProviderQt::PrivData
 {
-public:
-	QSettings* target;
-
-	/**
-	 * We want case-insensitivity, but QSettings
-	 * is not always case-insensitive, so let's
-	 * try to retrieve the exact key name.
-	 */
-	QString exactKey(const QString &key) const
-	{
-		assert(target != NULL);
-		foreach (const QString &candidate, target->allKeys())
-		{
-			if (candidate.compare(key, Qt::CaseInsensitive) == 0)
-				return candidate;
-		}
-		return key;
-	}
+	public:
+		QSettings* target;
 };
-
-DPointered(SettingsProviderQt)
 
 SettingsProviderQt::SettingsProviderQt(QSettings* target)
 {
+	d = new PrivData();
 	d->target = target;
 }
 
 SettingsProviderQt::~SettingsProviderQt()
 {
+	delete d;
 }
 
 QStringList SettingsProviderQt::allKeys() const
@@ -83,22 +67,22 @@ QStringList SettingsProviderQt::allSections() const
 
 bool SettingsProviderQt::hasKey(const QString& key) const
 {
-	return d->target->contains(d->exactKey(key));
+	return d->target->contains(key);
 }
 
 void SettingsProviderQt::remove(const QString& key)
 {
-	d->target->remove(d->exactKey(key));
+	d->target->remove(key);
 }
 
 void SettingsProviderQt::setValue(const QString& key, const QVariant& value)
 {
 	assert(d->target != NULL);
-	d->target->setValue(d->exactKey(key), value);
+	d->target->setValue(key, value);
 }
 
 QVariant SettingsProviderQt::value(const QString& key, QVariant defValue) const
 {
 	assert(d->target != NULL);
-	return d->target->value(d->exactKey(key), defValue);
+	return d->target->value(key, defValue);
 }

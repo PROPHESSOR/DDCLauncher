@@ -6,7 +6,6 @@ require 'find'
 require 'json'
 require 'rexml/document'
 require 'optparse'
-require 'OS'
 require 'set'
 
 # syntax:
@@ -79,10 +78,6 @@ def strip_prefix(string,prefix)
 end
 
 def file_sha1(path)
-	if OS.mac?
-		return `shasum "#{path}"`.split(' ')[0]
-	end
-
 	return `sha1sum "#{path}"`.split(' ')[0]
 end
 

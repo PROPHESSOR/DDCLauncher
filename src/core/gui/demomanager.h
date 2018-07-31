@@ -2,58 +2,67 @@
 // demomanager.h
 //------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// 02110-1301, USA.
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2011 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+// Copyright (C) 2011 "Blzut3" <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #ifndef __DEMOMANAGER_H__
 #define __DEMOMANAGER_H__
 
+#include "ui_demomanager.h"
 #include "global.h"
-#include "dptr.h"
 
-#include <QDialog>
+#include <QDateTime>
+#include <QList>
 
-class QAbstractButton;
+class QLabel;
 class QModelIndex;
+class QStandardItemModel;
 
 /**
  *	@brief Dialog for managing demos recorded through Doomseeker.
  */
-class DemoManagerDlg : public QDialog
+class DemoManagerDlg : public QDialog, private Ui::DemoManagerDlg
 {
 	Q_OBJECT
 
 	public:
 		DemoManagerDlg();
-		~DemoManagerDlg();
 
-	private slots:
-		void deleteSelected();
-		void exportSelected();
-		void playSelected();
-		void performAction(QAbstractButton *button);
-		void updatePreview(const QModelIndex &index);
+	protected:
+		class Demo
+		{
+			public:
+				QString filename;
+				QString port;
+				QDateTime time;
+				QStringList wads;
+		};
 
-	private:
 		void adjustDemoList();
 		bool doRemoveDemo(const QString &file);
 
-		DPtr<DemoManagerDlg> d;
+		Demo *selectedDemo;
+		QStandardItemModel *demoModel;
+		QList<QList<Demo> > demoTree;
+
+	protected slots:
+		void performAction(QAbstractButton *button);
+		void updatePreview(const QModelIndex &index);
 };
 
 #endif

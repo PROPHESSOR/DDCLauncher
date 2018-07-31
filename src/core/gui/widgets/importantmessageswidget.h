@@ -1,35 +1,17 @@
 //------------------------------------------------------------------------------
 // importantmessageswidget.h
-//------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
-//
-//------------------------------------------------------------------------------
 // Copyright (C) 2011 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef __IMPORTANTMESSAGESWIDGET_H__
 #define __IMPORTANTMESSAGESWIDGET_H__
 
-#include "dptr.h"
-
+#include <QDateTime>
+#include <QLabel>
+#include <QList>
+#include <QTimer>
+#include <QVBoxLayout>
 #include <QWidget>
-
-class QDateTime;
-class QLabel;
-class QVBoxLayout;
 
 /**
  * @brief A self-scaling widget that displays messages as separate instances of
@@ -46,75 +28,112 @@ class ImportantMessagesWidget : public QWidget
 	Q_OBJECT
 
 	public:
+		static const unsigned DEFAULT_MAX_MESSAGES = 0;
+		static const unsigned MAX_MSG_KEEP_TIME_SEC = 10;
+
 		ImportantMessagesWidget(QWidget* pParent = NULL);
 		~ImportantMessagesWidget();
 
 		/**
-		* @brief Amount of messages that can be displayed in the widget at
-		* the same time.
-		*/
-		unsigned maxMessages() const;
-		void setMaxMessages(unsigned num);
+ 		* @see _maxMessages
+ 		*/
+		unsigned maxMessages() const
+		{
+			return _maxMessages;
+		}
+
+		/**
+ 		* @see _maxMessages
+ 		*/
+		void setMaxMessages(unsigned num)
+		{
+			_maxMessages = num;
+		}
 
 	public slots:
 		/**
-		* @brief Adds a new message without a timestamp.
-		*/
+ 		* @brief Adds a new message without a timestamp.
+ 		*/
 		void addMessage(const QString& message);
 
 		/**
-		* @brief Adds a message with a timestamp.
-		*
-		* @param message
-		*      Message to add.
-		* @param timestamp
-		*      QDateTime object representing time.
-		*/
+ 		* @brief Adds a message with a timestamp.
+ 		*
+ 		* @param message
+ 		*      Message to add.
+ 		* @param timestamp
+ 		*      QDateTime object representing time.
+ 		*/
 		void addMessage(const QString& message, const QDateTime& dateTime);
 
 		/**
-		* @brief Adds a message with a timestamp.
-		*
-		* @param message
-		*      Message to add.
-		* @param timestamp
-		*      Time in seconds since the epoch.
-		*/
+ 		* @brief Adds a message with a timestamp.
+ 		*
+ 		* @param message
+ 		*      Message to add.
+ 		* @param timestamp
+ 		*      Time in seconds since the epoch.
+ 		*/
 		void addMessage(const QString& message, unsigned timestamp);
 
 		/**
-		* @brief Clears all messages from the widghet.
-		*
-		* Widget will shrink itself in a way that will make it invisible.
-		*/
+ 		* @brief Clears all messages from the widghet.
+ 		*
+ 		* Widget will shrink itself in a way that will make it invisible.
+ 		*/
 		void clear();
 
 		/**
-		* @brief Removes a number of oldest messages from the widget.
-		*
-		* Widget will shrink with each message removed.
-		*
-		* @param num
-		*      Amount of messages to remove. If higher than the actual count
-		*      of messages, will work the same as clear().
-		*/
+ 		* @brief Removes a number of oldest messages from the widget.
+ 		*
+ 		* Widget will shrink with each message removed.
+ 		*
+ 		* @param num
+ 		*      Amount of messages to remove. If higher than the actual count
+ 		*      of messages, will work the same as clear().
+ 		*/
 		void removeOldest(int num);
 
 		/**
-		* @brief Will remove one oldest message.
-		*/
+ 		* @brief Will remove one oldest message.
+ 		*/
 		void removeOneOldest();
 
 	private:
-		DPtr<ImportantMessagesWidget> d;
+		class MessageLabel
+		{
+			public:
+				MessageLabel(QLabel* pLabel)
+				{
+					this->pLabel = pLabel;
+					this->timeCreated = QDateTime::currentDateTime();
+				}
+
+				QLabel* pLabel;
+				QDateTime timeCreated;
+		};
+
+		QList<MessageLabel> labelWidgets;
+
+		/**
+ 		* @brief Amount of messages that can be displayed in the widget at
+ 		* the same time.
+ 		*/
+		unsigned _maxMessages;
+
+		/**
+ 		* @brief Will periodically clean up old label widgets.
+ 		*/
+		QTimer oldLabelCleaner;
+		QVBoxLayout* pLayout;
 
 	private slots:
 		/**
-		* @brief Removes old label widgets.
-		*
-		* Removes old label widgets only if they are both beyond maximum amount
-		* of widgets limit AND beyond the MAX_MSG_KEEP_TIME_SEC time limit.
-		*/
+ 		* @brief Removes old label widgets.
+ 		*
+ 		* Removes old label widgets only if they are both beyond maximum amount
+ 		* of widgets limit AND beyond the MAX_MSG_KEEP_TIME_SEC time limit.
+ 		*/
 		void dropOldWidgetsIfBeyondLimit();
 };
 

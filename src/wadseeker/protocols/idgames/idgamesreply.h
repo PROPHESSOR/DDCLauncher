@@ -49,10 +49,7 @@ class IdgamesReply : public QObject
 		class PrivData;
 		PrivData *d;
 
-		IdgamesReply(const QNetworkRequest &request, QNetworkReply *reply);
-		void finish(const IdgamesResult &result);
-		void redirect(QUrl redirectUrl);
-		void setReply(QNetworkReply *reply);
+		IdgamesReply(QNetworkReply *reply);
 
 	private slots:
 		void onNetworkFinished();

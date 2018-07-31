@@ -1,23 +1,6 @@
 //------------------------------------------------------------------------------
 // ircresponsetype.h
-//------------------------------------------------------------------------------
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301  USA
-//
-//------------------------------------------------------------------------------
 // Copyright (C) 2011 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef __IRCRESPONSETYPE_H__
@@ -86,15 +69,6 @@ class IRCResponseType
 			/// 254 - how many channels,
 			RPLLUserChannels,
 
-			/// 301
-			RPLAway,
-
-			/**
-			 * @brief 307 - no idea what this is, but we'll treat it
-			 *        the same way we treat RPLWhoIsSpecial.
-			 */
-			RPLWhoIsRegnick,
-
 			/**
  			* @brief 255 - how many clients on how many servers,
  			*
@@ -106,51 +80,11 @@ class IRCResponseType
 			/// 311
 			RPLWhoIsUser,
 
-			/// 312
-			RPLWhoIsServer,
-
-			/// 313
-			RPLWhoIsOperator,
-
-			/// 317
-			RPLWhoIsIdle,
-
-			/// 318
-			RPLEndOfWhoIs,
-
-			/// 319
-			RPLWhoIsChannels,
-
-			/**
-			 * @brief 320 - it's inconclusive what this code means.
-			 *
-			 * This source https://www.alien.net.au/irc/irc2numerics.html
-			 * specified that this can have more than one meaning.
-			 * I'm not sure what to expect here, but this message will
-			 * be treated the same as a generic WHOIS reply.
-			 */
-			RPLWhoIsSpecial,
-
-			/// 328
-			RPLChannelUrl,
-
-			/// 329
-			RPLCreationTime,
-
-			/// 330
-			RPLWhoIsAccount,
-
 			/// 332
 			RPLTopic,
 
 			/// 333
 			RPLTopicWhoTime,
-
-			/// 335 - non-standard
-			RPLWhoIsBot,
-
-			/// 338
-			RPLWhoIsActually,
 
 			/// 353 - names list for a channel
 			RPLNamReply,
@@ -167,37 +101,16 @@ class IRCResponseType
 			/// 376 - end of the message of the day
 			RPLEndOfMOTD,
 
-			/// 378
-			RPLWhoIsHost,
-
-			/// 379
-			RPLWhoIsModes,
-
 			// === Here are errors with no text representation ===
 
 			/// 401
 			ERRNoSuchNick,
 
-			/// 404
-			ERRCannotSendToChan,
-
-			/// 432
-			ERRErroneousNickname,
 			/// 433
 			ERRNicknameInUse,
 
-			ERRChannelIsFull, // 471
-			ERRInviteOnlyChan, // 473
-			ERRBannedFromChan, // 474
-			ERRBadChannelKey, // 475
-			ERRBadChannelMask, // 476
-			ERRNoChanModes, // 477
-
 			/// 482
 			ERRChanOpPrivIsNeeded,
-
-			/// 671
-			RPLWhoIsSecure,
 
 			// === Here are types which convert to their string counterparts
 			// === letter-by-letter

@@ -20,7 +20,6 @@
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
-#include "wadseekerversiondefs.h"
 #include "wadseekerversioninfo.h"
 #include <QObject>
 
@@ -31,7 +30,7 @@ QString WadseekerVersionInfo::author()
 
 QString WadseekerVersionInfo::description()
 {
-	return QObject::tr("This library is distributed under the terms of the LGPL v2.1 or later.");
+	return QObject::tr("This library is distributed under the terms of the LGPL v2.1.");
 }
 
 QStringList WadseekerVersionInfo::knownWadExtensions()
@@ -68,17 +67,18 @@ QStringList WadseekerVersionInfo::supportedArchiveExtensions()
 	return list;
 }
 
-QString WadseekerVersionInfo::userAgent()
+QString	WadseekerVersionInfo::userAgent()
 {
 	return "Wadseeker/" + WadseekerVersionInfo::version();
 }
 
 QString WadseekerVersionInfo::version()
 {
-	return VERSION_STRING;
+	return "0.8.1";
 }
 
 QString WadseekerVersionInfo::yearSpan()
 {
-	return "2009 - 2017";
+	return "2009 - 2014";
 }
+
