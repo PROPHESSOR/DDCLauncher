@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>181</width>
+    <width>242</width>
     <height>565</height>
    </rect>
   </property>
@@ -22,12 +22,39 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Server Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="leServerName">
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QCheckBox" name="cbGroupServersWithPlayersAtTop">
       <property name="text">
        <string>Put populated servers on top</string>
       </property>
       <property name="checked">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
@@ -54,31 +81,23 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>163</width>
-         <height>479</height>
+         <width>224</width>
+         <height>425</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="margin">
+        <property name="leftMargin">
          <number>0</number>
         </property>
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Server Name:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="leServerName">
-          <property name="minimumSize">
-           <size>
-            <width>150</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </item>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
@@ -182,6 +201,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="cbShowTestingServers">
+          <property name="text">
+           <string>Show testing servers</string>
+          </property>
+          <property name="tristate">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -198,6 +227,10 @@
          <widget class="QPushButton" name="btnClear">
           <property name="text">
            <string>Clear</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../../../media/resources.qrc">
+            <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
           </property>
          </widget>
         </item>
@@ -232,7 +265,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>leServerName</tabstop>
   <tabstop>spinMaxPing</tabstop>
   <tabstop>leWads</tabstop>
   <tabstop>leExcludeWads</tabstop>
@@ -244,7 +276,9 @@
   <tabstop>btnClear</tabstop>
   <tabstop>scrollArea</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../../../media/resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>btnClear</sender>
@@ -253,8 +287,8 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>419</y>
+     <x>100</x>
+     <y>488</y>
     </hint>
     <hint type="destinationlabel">
      <x>101</x>
@@ -269,8 +303,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>47</x>
-     <y>57</y>
+     <x>45</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>38</x>
@@ -285,8 +319,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>107</y>
+     <x>97</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>61</x>
@@ -301,8 +335,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>123</x>
-     <y>155</y>
+     <x>121</x>
+     <y>205</y>
     </hint>
     <hint type="destinationlabel">
      <x>72</x>
@@ -317,8 +351,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>73</x>
-     <y>318</y>
+     <x>71</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>159</x>
@@ -333,8 +367,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>47</x>
-     <y>341</y>
+     <x>45</x>
+     <y>386</y>
     </hint>
     <hint type="destinationlabel">
      <x>133</x>
@@ -349,8 +383,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>52</x>
-     <y>364</y>
+     <x>50</x>
+     <y>409</y>
     </hint>
     <hint type="destinationlabel">
      <x>138</x>
@@ -365,8 +399,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>58</x>
-     <y>239</y>
+     <x>56</x>
+     <y>295</y>
     </hint>
     <hint type="destinationlabel">
      <x>99</x>
@@ -385,8 +419,8 @@
      <y>210</y>
     </hint>
     <hint type="destinationlabel">
-     <x>101</x>
-     <y>60</y>
+     <x>99</x>
+     <y>115</y>
     </hint>
    </hints>
   </connection>
@@ -397,8 +431,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>195</y>
+     <x>99</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>101</x>
@@ -413,8 +447,8 @@
    <slot>emitUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>285</y>
+     <x>99</x>
+     <y>340</y>
     </hint>
     <hint type="destinationlabel">
      <x>101</x>
@@ -430,7 +464,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>164</x>
-     <y>44</y>
+     <y>70</y>
     </hint>
     <hint type="destinationlabel">
      <x>164</x>
@@ -454,11 +488,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>cbShowTestingServers</sender>
+   <signal>clicked()</signal>
+   <receiver>ServerFilterDock</receiver>
+   <slot>emitUpdated()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>165</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>444</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>emitUpdated()</slot>
   <slot>clear()</slot>
   <slot>emitUpdated(QString)</slot>
   <slot>onServerGroupingChange()</slot>
+  <slot>enableFilter()</slot>
  </slots>
 </ui>

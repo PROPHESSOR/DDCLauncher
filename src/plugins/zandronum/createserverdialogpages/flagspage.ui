@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
-    <height>407</height>
+    <width>853</width>
+    <height>476</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,18 +25,59 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
-        <widget class="QCheckBox" name="cbDefaultDmflags">
-         <property name="toolTip">
-          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <widget class="QWidget" name="widget_8" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>Game version:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cboGameVersion"/>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cbDefaultDmflags">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;If this is checked then Zandronum may override some of the settings selected here.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;(+sv_defaultdmflags)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Default DMFlags</string>
-         </property>
+            </property>
+            <property name="text">
+             <string>Default DMFlags</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -283,21 +324,21 @@ p, li { white-space: pre-wrap; }
             <item>
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="0" column="0">
-               <widget class="QCheckBox" name="cbSuicide">
+               <widget class="QCheckBox" name="cbNoSuicide">
                 <property name="text">
-                 <string>Sucide</string>
+                 <string>Suicide</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QCheckBox" name="cbRespawn">
+               <widget class="QCheckBox" name="cbNoRespawn">
                 <property name="text">
                  <string>Respawn</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QCheckBox" name="cbRocketJump">
+               <widget class="QCheckBox" name="cbNoRocketJump">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;P_RadiusAttack doesn't give players any z-momentum if the attack was made by a player. This essentially disables rocket jumping.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -307,9 +348,16 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QCheckBox" name="cbTaunt">
+               <widget class="QCheckBox" name="cbNoTaunt">
                 <property name="text">
                  <string>Taunt</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QCheckBox" name="cbNoItemDrop">
+                <property name="text">
+                 <string>Item drop</string>
                 </property>
                </widget>
               </item>
@@ -334,35 +382,35 @@ p, li { white-space: pre-wrap; }
             <item>
              <layout class="QGridLayout" name="gridLayout_5">
               <item row="0" column="0">
-               <widget class="QCheckBox" name="cbUseAutomap">
+               <widget class="QCheckBox" name="cbNoUseAutomap">
                 <property name="text">
                  <string>Use automap</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QCheckBox" name="cbTurnOffTranslucency">
+               <widget class="QCheckBox" name="cbNoTurnOffTranslucency">
                 <property name="text">
                  <string>Turn off translucency</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QCheckBox" name="cbUseCrosshairs">
+               <widget class="QCheckBox" name="cbNoUseCrosshairs">
                 <property name="text">
                  <string>Use crosshairs</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QCheckBox" name="cbUseCustomGLLightingSettings">
+               <widget class="QCheckBox" name="cbNoUseCustomGLLightingSettings">
                 <property name="text">
                  <string>Use custom GL lighting settings</string>
                 </property>
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QCheckBox" name="cbTargetIdentify">
+               <widget class="QCheckBox" name="cbNoTargetIdentify">
                 <property name="toolTip">
                  <string>Enforces clients not to identify players, i.e. behave as if cl_identifytarget == 0.</string>
                 </property>
@@ -372,7 +420,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QCheckBox" name="cbDisplayCoopInfo">
+               <widget class="QCheckBox" name="cbNoDisplayCoopInfo">
                 <property name="toolTip">
                  <string>Enforces clients not to draw coop info, i.e. behave as if cl_drawcoopinfo == 0.</string>
                 </property>
@@ -400,14 +448,14 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="cbUseAutoaim">
+             <widget class="QCheckBox" name="cbNoUseAutoaim">
               <property name="text">
                <string>Use autoaim</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="cbUseFOV">
+             <widget class="QCheckBox" name="cbNoUseFOV">
               <property name="toolTip">
                <string>Only let the arbitrator set FOV (for all players)</string>
               </property>
@@ -417,19 +465,29 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="cbUseFreelook">
+             <widget class="QCheckBox" name="cbNoUseFreelook">
               <property name="text">
                <string>Use freelook</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="cbUseLandConsoleCommand">
+             <widget class="QCheckBox" name="cbNoUseLandConsoleCommand">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Players are not allowed to use the land CCMD. Because of Zandronum's default amount of air control, flying players can get a huge speed boast with the land CCMD. Disallowing players to land, allows to keep the default air control most people are used to while not giving flying players too much of an advantage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>Use 'land' console command</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbNoMaxBloodScalar">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't allow players to change how strongly will their screen flash when they get hit.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Change bloodied screen brightness</string>
               </property>
              </widget>
             </item>
@@ -504,9 +562,6 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <widget class="QCheckBox" name="cbAllowBFGFreeaiming">
-                <property name="toolTip">
-                 <string>Disallow BFG freeaiming in multiplayer games.</string>
-                </property>
                 <property name="text">
                  <string>Allow BFG freeaiming</string>
                 </property>
@@ -522,9 +577,33 @@ p, li { white-space: pre-wrap; }
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
               <item>
-               <widget class="QCheckBox" name="cbPlayersCanWalkThroughEachOther">
+               <widget class="QRadioButton" name="rbPlayersCanWalkThroughEachOther">
                 <property name="text">
                  <string>Players can walk through each other</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rbAlliesCanWalkThroughEachOther">
+                <property name="text">
+                 <string>Allies can walk through each other</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rbPlayersBlockEachOtherNormally">
+                <property name="text">
+                 <string>Players block each other normally</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cbDontCheckAmmoWhenSwitchingWeapons">
+                <property name="text">
+                 <string>Don't check ammo when switching weapons</string>
                 </property>
                </widget>
               </item>
@@ -709,6 +788,13 @@ p, li { white-space: pre-wrap; }
                    </item>
                   </layout>
                  </item>
+                 <item>
+                  <widget class="QCheckBox" name="cbKillBossMonsters">
+                   <property name="text">
+                    <string>Kill all monsters spawned by a boss cube when the boss dies</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -779,10 +865,37 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QCheckBox" name="cbDeadPlayersCanKeepInventory">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Affects game modes where &amp;quot;max. lives&amp;quot; can be used. If set, players who become dead spectators (run out of lives) will still keep inventory in accordance to the &amp;quot;Lose *&amp;quot; flags above. If unset, players who lose all lives will always lose entire inventory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Players who lose all lives can keep inventory</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cbShareKeys">
+         <property name="text">
+          <string>Share keys between players</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cbSurvivalNoMapResetOnDeath">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Players will be respawned with full lives but the map will not be reset. Inventory will be preserved in accordance to &amp;quot;Lose inventory&amp;quot; flags. Players will be able to continue from the point where they died.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Survival only: no map reset when all players die</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_3">
@@ -1279,6 +1392,44 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatAnyBossDeathActivatesMapSpecials">
+             <property name="text">
+              <string>Any boss death activates map specials</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatFrictionPushersPullersAffectMonsters">
+             <property name="text">
+              <string>Friction/pushers/pullers affect Monsters</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatCrusherGibsByMorphingNotReplacement">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Crushed monsters are turned into gibs, rather than replaced by gibs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Crusher gibs by morphing, not replacement</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatBlockMonsterLinesIgnoreFriendlyMonsters">
+             <property name="text">
+              <string>Block monster lines ignore friendly monsters</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatFindNeighboringLightLevelLikeDoom">
+             <property name="text">
+              <string>Find neighboring light level like Doom</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item>
@@ -1364,6 +1515,41 @@ p, li { white-space: pre-wrap; }
             <widget class="QCheckBox" name="cbCompatOldDamageRadiusInfiniteHeight">
              <property name="text">
               <string>Old damage radius (infinite height)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatMinotaur">
+             <property name="text">
+              <string>Minotaur's floor flame explodes immediately when feet are clipped</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatOriginalVelocityCalcForMushroomInDehacked">
+             <property name="text">
+              <string>Original velocity calc. for A_Mushroom in Dehacked</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatSpriteSortOrderInverted">
+             <property name="text">
+              <string>Sprite sort order inverted for sprites of equal distance</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatHitscansOriginalBlockmap">
+             <property name="text">
+              <string>Hitscans use original blockmap and hit check code</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatDrawPolyobjectsOld">
+             <property name="text">
+              <string>Draw polyobjects the old fashioned way</string>
              </property>
             </widget>
            </item>
@@ -1480,14 +1666,34 @@ p, li { white-space: pre-wrap; }
            <item>
             <widget class="QCheckBox" name="cbOldZDoomJumpPhysics">
              <property name="toolTip">
-              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Uses old ZDoom jump physics, it's a minor bug in the gravity code that causes gravity application in the wrong place.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uses old ZDoom jump physics, it's a minor bug in the gravity code that causes gravity application in the wrong place.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>ZDoom 1.23B33 jump physics</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatUseVanillaAutoaimTracerBehavior">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;p&gt;Zandronum uses more tracers to fill in the gaps, this reverts it to vanilla's 3 tracer behavior&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Use vanilla autoaim tracer behavior</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatMaskedMidtex">
+             <property name="text">
+              <string>Ignore compositing when drawing masked midtextures</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatBadAngles">
+             <property name="text">
+              <string>It is impossible to face directly NSEW</string>
              </property>
             </widget>
            </item>
@@ -1569,15 +1775,22 @@ p, li { white-space: pre-wrap; }
            </item>
            <item>
             <widget class="QCheckBox" name="cbCompatFullWeaponLower">
-             <property name="toolTip">
-              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Uses old ZDoom jump physics, it's a minor bug in the gravity code that causes gravity application in the wrong place.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
              <property name="text">
               <string>Disallow weapon change until fully drawn or hidden</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatWestSpawnsAreSilent">
+             <property name="text">
+              <string>West spawns are silent</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbCompatFloorMove">
+             <property name="text">
+              <string>Use the same floor motion behavior as Doom</string>
              </property>
             </widget>
            </item>
@@ -1600,21 +1813,28 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabVoting">
+      <attribute name="title">
+       <string>Voting</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="VotingSetupWidget" name="votingPage" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="3">
-      <widget class="QLineEdit" name="leDmflags3">
+     <item row="0" column="4">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>0</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <string>zandronum dmflags</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="1">
       <widget class="QLineEdit" name="leDmflags">
        <property name="text">
         <string>0</string>
@@ -1624,31 +1844,21 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>dmflags</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>dmflags2</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="5">
-      <widget class="QLineEdit" name="leCompatflags">
-       <property name="text">
-        <string>0</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
+     <item row="1" column="1">
       <widget class="QLineEdit" name="leDmflags2">
        <property name="text">
         <string>0</string>
@@ -1658,28 +1868,58 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
-      <widget class="QLabel" name="label_5">
+     <item row="1" column="4">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>dmflags3</string>
+        <string>zandronum compatflags</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="4">
+     <item row="1" column="5">
+      <widget class="QLineEdit" name="leZandronumCompatflags">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>compatflags</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QLabel" name="label_4">
+     <item row="0" column="5">
+      <widget class="QLineEdit" name="leZandronumDmflags">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLineEdit" name="leCompatflags">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="lblCompatflags2">
        <property name="text">
         <string>compatflags2</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="5">
+     <item row="1" column="3">
       <widget class="QLineEdit" name="leCompatflags2">
        <property name="text">
         <string>0</string>
@@ -1693,13 +1933,18 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>VotingSetupWidget</class>
+   <extends>QWidget</extends>
+   <header>createserverdialogpages/votingsetupwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>leDmflags</tabstop>
-  <tabstop>leDmflags2</tabstop>
-  <tabstop>leDmflags3</tabstop>
-  <tabstop>leCompatflags</tabstop>
-  <tabstop>leCompatflags2</tabstop>
+  <tabstop>cboGameVersion</tabstop>
+  <tabstop>cbDefaultDmflags</tabstop>
   <tabstop>cboFallingDamage</tabstop>
   <tabstop>cbNoMonsters</tabstop>
   <tabstop>cbItemsRespawn</tabstop>
@@ -1711,10 +1956,25 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbHideAlliesOnTheAutomap</tabstop>
   <tabstop>cbDontLetPlayersSpyOnAllies</tabstop>
   <tabstop>cbInstantFlagSkullReturn</tabstop>
-  <tabstop>cbUseAutoaim</tabstop>
-  <tabstop>cbUseFOV</tabstop>
-  <tabstop>cbUseFreelook</tabstop>
-  <tabstop>cbUseLandConsoleCommand</tabstop>
+  <tabstop>cbNoUnlagged</tabstop>
+  <tabstop>cbNoMedals</tabstop>
+  <tabstop>cbAlwaysApplyLMSSpectatorSettings</tabstop>
+  <tabstop>cbNoSuicide</tabstop>
+  <tabstop>cbNoRespawn</tabstop>
+  <tabstop>cbNoItemDrop</tabstop>
+  <tabstop>cbNoRocketJump</tabstop>
+  <tabstop>cbNoTaunt</tabstop>
+  <tabstop>cbNoUseAutomap</tabstop>
+  <tabstop>cbNoUseCustomGLLightingSettings</tabstop>
+  <tabstop>cbNoUseCrosshairs</tabstop>
+  <tabstop>cbNoTurnOffTranslucency</tabstop>
+  <tabstop>cbNoTargetIdentify</tabstop>
+  <tabstop>cbNoDisplayCoopInfo</tabstop>
+  <tabstop>cbNoUseAutoaim</tabstop>
+  <tabstop>cbNoUseFOV</tabstop>
+  <tabstop>cbNoUseFreelook</tabstop>
+  <tabstop>cbNoUseLandConsoleCommand</tabstop>
+  <tabstop>cbNoMaxBloodScalar</tabstop>
   <tabstop>cboJumping</tabstop>
   <tabstop>cboCrouching</tabstop>
   <tabstop>cbInfiniteInventory</tabstop>
@@ -1722,13 +1982,20 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbSlowlyLoseHealthWhenOver100</tabstop>
   <tabstop>cbCanUseChasecam</tabstop>
   <tabstop>cbAllowBFGFreeaiming</tabstop>
-  <tabstop>cbPlayersCanWalkThroughEachOther</tabstop>
+  <tabstop>rbPlayersCanWalkThroughEachOther</tabstop>
+  <tabstop>rbAlliesCanWalkThroughEachOther</tabstop>
+  <tabstop>rbPlayersBlockEachOtherNormally</tabstop>
+  <tabstop>cbDontCheckAmmoWhenSwitchingWeapons</tabstop>
+  <tabstop>spinForceInactivePlayersSpectatingMins</tabstop>
   <tabstop>cbScoreDamageNotKills</tabstop>
   <tabstop>cbDontSpawnDeathmatchWeapons</tabstop>
+  <tabstop>cbDontSpawnAnyMultiplayerItem</tabstop>
   <tabstop>cbMonstersAreFast</tabstop>
   <tabstop>cbMonstersRespawn</tabstop>
   <tabstop>cbMonstersMustBeKilledToExit</tabstop>
   <tabstop>spinMonsterKillPercentage</tabstop>
+  <tabstop>spinMonstersDamageFactor</tabstop>
+  <tabstop>cbKillBossMonsters</tabstop>
   <tabstop>cbRespawnWhereDied</tabstop>
   <tabstop>cbLoseAllInventory</tabstop>
   <tabstop>cbLoseArmor</tabstop>
@@ -1737,6 +2004,9 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbLoseWeapons</tabstop>
   <tabstop>cbLoseAllAmmo</tabstop>
   <tabstop>cbLoseHalfAmmo</tabstop>
+  <tabstop>cbDeadPlayersCanKeepInventory</tabstop>
+  <tabstop>cbShareKeys</tabstop>
+  <tabstop>cbSurvivalNoMapResetOnDeath</tabstop>
   <tabstop>cbRespawnAutomatically</tabstop>
   <tabstop>cbRespawnFarthestAwayFromOthers</tabstop>
   <tabstop>cbRespawnWithAShotgun</tabstop>
@@ -1762,24 +2032,10 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbLMSGrenadeLauncher</tabstop>
   <tabstop>cbLMSPlasmaRifle</tabstop>
   <tabstop>cbLMSRailgun</tabstop>
-  <tabstop>cbLMSSpectatorsCanTalkToActivePlayers</tabstop>
-  <tabstop>cbLMSSpectatorsCanViewTheGame</tabstop>
   <tabstop>leLMSAllowedWeapons</tabstop>
   <tabstop>leLMSSpectatorSettings</tabstop>
-  <tabstop>cbDefaultDmflags</tabstop>
-  <tabstop>cbSuicide</tabstop>
-  <tabstop>cbRespawn</tabstop>
-  <tabstop>cbRocketJump</tabstop>
-  <tabstop>cbTaunt</tabstop>
-  <tabstop>cbUseAutomap</tabstop>
-  <tabstop>cbUseCrosshairs</tabstop>
-  <tabstop>cbUseCustomGLLightingSettings</tabstop>
-  <tabstop>cbTurnOffTranslucency</tabstop>
-  <tabstop>spinForceInactivePlayersSpectatingMins</tabstop>
-  <tabstop>cbTargetIdentify</tabstop>
-  <tabstop>cbDisplayCoopInfo</tabstop>
-  <tabstop>cbDontSpawnAnyMultiplayerItem</tabstop>
-  <tabstop>spinMonstersDamageFactor</tabstop>
+  <tabstop>cbLMSSpectatorsCanTalkToActivePlayers</tabstop>
+  <tabstop>cbLMSSpectatorsCanViewTheGame</tabstop>
   <tabstop>cbCompatEnableWallRunning</tabstop>
   <tabstop>cbCompatDontLetOthersHearPickups</tabstop>
   <tabstop>cbCompatAllowInstantRespawn</tabstop>
@@ -1789,6 +2045,11 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbCompatLimitedMovementInTheAir</tabstop>
   <tabstop>cbCompatMonstersSeeSemiInvisiblePlayers</tabstop>
   <tabstop>cbCompatPlasmaBumpBug</tabstop>
+  <tabstop>cbCompatAnyBossDeathActivatesMapSpecials</tabstop>
+  <tabstop>cbCompatFrictionPushersPullersAffectMonsters</tabstop>
+  <tabstop>cbCompatCrusherGibsByMorphingNotReplacement</tabstop>
+  <tabstop>cbCompatBlockMonsterLinesIgnoreFriendlyMonsters</tabstop>
+  <tabstop>cbCompatFindNeighboringLightLevelLikeDoom</tabstop>
   <tabstop>cbCompatUseOldIntermissionScreensMusic</tabstop>
   <tabstop>cbCompatScrollingSectorsAreAdditive</tabstop>
   <tabstop>cbCompatSectorSoundsUseOriginalMethod</tabstop>
@@ -1798,6 +2059,11 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbCompatOldRandomNumberGenerator</tabstop>
   <tabstop>cbCompatMonstersCantBePushedOffCliffs</tabstop>
   <tabstop>cbCompatOldDamageRadiusInfiniteHeight</tabstop>
+  <tabstop>cbCompatMinotaur</tabstop>
+  <tabstop>cbCompatOriginalVelocityCalcForMushroomInDehacked</tabstop>
+  <tabstop>cbCompatSpriteSortOrderInverted</tabstop>
+  <tabstop>cbCompatHitscansOriginalBlockmap</tabstop>
+  <tabstop>cbCompatDrawPolyobjectsOld</tabstop>
   <tabstop>cbCompatUseOriginalMissileClippingHeight</tabstop>
   <tabstop>cbCompatUseSectorBasedSoundTargetCode</tabstop>
   <tabstop>cbCompatTraceIgnoreLinesWithoutSameSectorOnBothSides</tabstop>
@@ -1807,6 +2073,10 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbDontStopPlayerScriptsOnDisconnect</tabstop>
   <tabstop>cbOldZDoomHorizontalThrust</tabstop>
   <tabstop>cbOldZDoomBridgeDrops</tabstop>
+  <tabstop>cbOldZDoomJumpPhysics</tabstop>
+  <tabstop>cbCompatUseVanillaAutoaimTracerBehavior</tabstop>
+  <tabstop>cbCompatMaskedMidtex</tabstop>
+  <tabstop>cbCompatBadAngles</tabstop>
   <tabstop>cbCompatFindShortestTexturesLikeDoom</tabstop>
   <tabstop>cbCompatLimitPainElementals</tabstop>
   <tabstop>cbCompatSpawnItemDropsOnTheFloor</tabstop>
@@ -1816,6 +2086,16 @@ p, li { white-space: pre-wrap; }
   <tabstop>cbCompatDisableBoomDoorLightEffect</tabstop>
   <tabstop>cbCompatAllSpecialLinesCanDropUseLines</tabstop>
   <tabstop>cbCompatOriginalSoundCurve</tabstop>
+  <tabstop>cbCompatFullWeaponLower</tabstop>
+  <tabstop>cbCompatWestSpawnsAreSilent</tabstop>
+  <tabstop>cbCompatFloorMove</tabstop>
+  <tabstop>votingPage</tabstop>
+  <tabstop>leDmflags</tabstop>
+  <tabstop>leDmflags2</tabstop>
+  <tabstop>leCompatflags</tabstop>
+  <tabstop>leCompatflags2</tabstop>
+  <tabstop>leZandronumDmflags</tabstop>
+  <tabstop>leZandronumCompatflags</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -1826,8 +2106,8 @@ p, li { white-space: pre-wrap; }
    <slot>propagateFlagsInputsChanges()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>370</y>
+     <x>239</x>
+     <y>439</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1836,14 +2116,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>leDmflags3</sender>
+   <sender>leZandronumDmflags</sender>
    <signal>textEdited(QString)</signal>
    <receiver>FlagsPage</receiver>
    <slot>propagateFlagsInputsChanges()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>362</x>
-     <y>370</y>
+     <x>809</x>
+     <y>439</y>
     </hint>
     <hint type="destinationlabel">
      <x>349</x>
@@ -1858,8 +2138,8 @@ p, li { white-space: pre-wrap; }
    <slot>propagateFlagsInputsChanges()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>185</x>
-     <y>396</y>
+     <x>239</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>124</x>
@@ -1874,8 +2154,8 @@ p, li { white-space: pre-wrap; }
    <slot>propagateFlagsInputsChanges()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
-     <y>370</y>
+     <x>500</x>
+     <y>439</y>
     </hint>
     <hint type="destinationlabel">
      <x>572</x>
@@ -1884,14 +2164,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>leCompatflags2</sender>
+   <sender>leZandronumCompatflags</sender>
    <signal>textEdited(QString)</signal>
    <receiver>FlagsPage</receiver>
    <slot>propagateFlagsInputsChanges()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
-     <y>396</y>
+     <x>809</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>567</x>
@@ -1906,8 +2186,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>180</y>
+     <x>144</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1922,8 +2202,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>137</x>
-     <y>218</y>
+     <x>159</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -1938,8 +2218,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>244</y>
+     <x>176</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1954,8 +2234,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>163</x>
-     <y>266</y>
+     <x>185</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1970,8 +2250,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>140</y>
+     <x>598</x>
+     <y>103</y>
     </hint>
     <hint type="destinationlabel">
      <x>570</x>
@@ -1986,8 +2266,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>494</x>
-     <y>152</y>
+     <x>598</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>572</x>
@@ -2002,8 +2282,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>496</x>
-     <y>170</y>
+     <x>598</x>
+     <y>149</y>
     </hint>
     <hint type="destinationlabel">
      <x>570</x>
@@ -2018,8 +2298,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>451</x>
-     <y>212</y>
+     <x>598</x>
+     <y>188</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2034,8 +2314,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>496</x>
-     <y>230</y>
+     <x>598</x>
+     <y>211</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2050,8 +2330,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>265</y>
+     <x>598</x>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>575</x>
@@ -2066,8 +2346,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>143</y>
+     <x>300</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2076,14 +2356,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbSuicide</sender>
+   <sender>cbNoSuicide</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>150</x>
-     <y>121</y>
+     <x>154</x>
+     <y>85</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2092,14 +2372,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbRespawn</sender>
+   <sender>cbNoRespawn</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>299</x>
-     <y>126</y>
+     <x>237</x>
+     <y>85</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -2108,14 +2388,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbRocketJump</sender>
+   <sender>cbNoRocketJump</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>163</x>
-     <y>153</y>
+     <x>154</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2124,14 +2404,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbTaunt</sender>
+   <sender>cbNoTaunt</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>296</x>
-     <y>153</y>
+     <x>237</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2140,14 +2420,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseAutomap</sender>
+   <sender>cbNoUseAutomap</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>124</x>
-     <y>198</y>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -2156,14 +2436,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseCrosshairs</sender>
+   <sender>cbNoUseCrosshairs</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>124</x>
-     <y>221</y>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2172,14 +2452,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseCustomGLLightingSettings</sender>
+   <sender>cbNoUseCustomGLLightingSettings</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>240</x>
-     <y>198</y>
+     <x>301</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2188,14 +2468,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbTurnOffTranslucency</sender>
+   <sender>cbNoTurnOffTranslucency</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>270</x>
-     <y>221</y>
+     <x>301</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -2204,14 +2484,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseAutoaim</sender>
+   <sender>cbNoUseAutoaim</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>141</x>
-     <y>284</y>
+     <x>185</x>
+     <y>289</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2220,14 +2500,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseFOV</sender>
+   <sender>cbNoUseFOV</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>307</y>
+     <x>214</x>
+     <y>312</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2242,8 +2522,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>176</y>
+     <x>597</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2258,8 +2538,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>199</y>
+     <x>597</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2274,8 +2554,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>222</y>
+     <x>597</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2290,8 +2570,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>245</y>
+     <x>597</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2306,8 +2586,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>268</y>
+     <x>597</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2316,23 +2596,7 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbPlayersCanWalkThroughEachOther</sender>
-   <signal>clicked()</signal>
-   <receiver>FlagsPage</receiver>
-   <slot>applyWidgetsChange()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>536</x>
-     <y>310</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>586</x>
-     <y>327</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cbTargetIdentify</sender>
+   <sender>cbNoTargetIdentify</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
@@ -2348,7 +2612,7 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbDisplayCoopInfo</sender>
+   <sender>cbNoDisplayCoopInfo</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
@@ -2370,8 +2634,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>551</x>
-     <y>126</y>
+     <x>596</x>
+     <y>85</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2386,8 +2650,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>551</x>
-     <y>152</y>
+     <x>596</x>
+     <y>111</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2396,14 +2660,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseFreelook</sender>
+   <sender>cbNoUseFreelook</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>152</x>
-     <y>330</y>
+     <x>196</x>
+     <y>335</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2450,8 +2714,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>99</y>
+     <x>135</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2466,8 +2730,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>153</x>
-     <y>145</y>
+     <x>176</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2482,8 +2746,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>214</y>
+     <x>244</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2498,8 +2762,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>215</x>
-     <y>237</y>
+     <x>248</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2514,8 +2778,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>208</x>
-     <y>260</y>
+     <x>241</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2530,12 +2794,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>268</x>
-     <y>260</y>
+     <x>301</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
-     <x>267</x>
-     <y>287</y>
+     <x>351</x>
+     <y>246</y>
     </hint>
    </hints>
   </connection>
@@ -2546,8 +2810,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>121</y>
+     <x>819</x>
+     <y>84</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2562,8 +2826,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>144</y>
+     <x>819</x>
+     <y>111</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2578,8 +2842,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>167</y>
+     <x>819</x>
+     <y>138</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2594,8 +2858,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>190</y>
+     <x>819</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2610,8 +2874,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>233</y>
+     <x>819</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2626,8 +2890,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>260</y>
+     <x>819</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2642,8 +2906,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>287</y>
+     <x>819</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2658,8 +2922,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>314</y>
+     <x>819</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2674,8 +2938,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>120</y>
+     <x>175</x>
+     <y>79</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -2690,8 +2954,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>146</x>
-     <y>143</y>
+     <x>167</x>
+     <y>102</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2706,8 +2970,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>152</x>
-     <y>166</y>
+     <x>173</x>
+     <y>125</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2722,8 +2986,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
-     <y>120</y>
+     <x>599</x>
+     <y>79</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2738,8 +3002,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
-     <y>143</y>
+     <x>599</x>
+     <y>102</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2754,8 +3018,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
-     <y>166</y>
+     <x>599</x>
+     <y>125</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2770,8 +3034,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>224</y>
+     <x>597</x>
+     <y>183</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2786,8 +3050,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>247</y>
+     <x>597</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2802,8 +3066,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>303</y>
+     <x>597</x>
+     <y>262</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2818,8 +3082,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>326</y>
+     <x>597</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2834,8 +3098,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>349</y>
+     <x>597</x>
+     <y>308</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -2850,8 +3114,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>200</x>
-     <y>230</y>
+     <x>222</x>
+     <y>189</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2866,8 +3130,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>159</x>
-     <y>260</y>
+     <x>181</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2882,8 +3146,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>180</x>
-     <y>290</y>
+     <x>202</x>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2898,8 +3162,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>159</x>
-     <y>343</y>
+     <x>181</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2915,7 +3179,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>121</y>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2931,7 +3195,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>144</y>
+     <y>103</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -2947,7 +3211,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>167</y>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2963,7 +3227,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>190</y>
+     <y>149</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2979,7 +3243,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>213</y>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2995,7 +3259,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>236</y>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -3011,7 +3275,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>259</y>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -3027,7 +3291,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>282</y>
+     <y>241</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -3043,7 +3307,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>305</y>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -3059,7 +3323,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>138</x>
-     <y>328</y>
+     <y>287</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -3074,8 +3338,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>176</y>
+     <x>597</x>
+     <y>135</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -3090,8 +3354,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>199</y>
+     <x>597</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -3107,7 +3371,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>365</x>
-     <y>103</y>
+     <y>62</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -3123,7 +3387,7 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>365</x>
-     <y>129</y>
+     <y>88</y>
     </hint>
     <hint type="destinationlabel">
      <x>586</x>
@@ -3132,14 +3396,14 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>cbUseLandConsoleCommand</sender>
+   <sender>cbNoUseLandConsoleCommand</sender>
    <signal>clicked()</signal>
    <receiver>FlagsPage</receiver>
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>158</x>
-     <y>353</y>
+     <x>202</x>
+     <y>358</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -3154,8 +3418,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>283</y>
+     <x>147</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -3170,8 +3434,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>63</x>
-     <y>191</y>
+     <x>76</x>
+     <y>150</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -3186,8 +3450,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>66</x>
-     <y>99</y>
+     <x>79</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -3202,8 +3466,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>145</x>
-     <y>214</y>
+     <x>158</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -3218,8 +3482,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>122</y>
+     <x>120</x>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -3234,8 +3498,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>111</x>
-     <y>237</y>
+     <x>124</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -3250,8 +3514,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>145</y>
+     <x>125</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -3266,8 +3530,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>403</x>
-     <y>99</y>
+     <x>607</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -3282,8 +3546,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>168</y>
+     <x>121</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -3298,8 +3562,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>260</y>
+     <x>143</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -3314,8 +3578,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>363</x>
-     <y>168</y>
+     <x>607</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -3330,8 +3594,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>362</x>
-     <y>122</y>
+     <x>607</x>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -3346,8 +3610,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>366</x>
-     <y>191</y>
+     <x>607</x>
+     <y>150</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -3362,8 +3626,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>358</x>
-     <y>145</y>
+     <x>607</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -3378,8 +3642,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>367</x>
-     <y>214</y>
+     <x>607</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -3394,8 +3658,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>357</x>
-     <y>237</y>
+     <x>607</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -3410,8 +3674,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>155</x>
-     <y>160</y>
+     <x>178</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>293</x>
@@ -3426,8 +3690,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>466</x>
-     <y>256</y>
+     <x>607</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>627</x>
@@ -3442,8 +3706,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>492</x>
-     <y>274</y>
+     <x>558</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>628</x>
@@ -3458,8 +3722,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>70</x>
-     <y>93</y>
+     <x>83</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>624</x>
@@ -3474,8 +3738,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>174</x>
-     <y>116</y>
+     <x>187</x>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3490,8 +3754,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>120</x>
-     <y>136</y>
+     <x>133</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3506,8 +3770,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>252</x>
-     <y>160</y>
+     <x>265</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3522,8 +3786,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>175</y>
+     <x>241</x>
+     <y>150</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3538,8 +3802,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>276</x>
-     <y>210</y>
+     <x>289</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3554,8 +3818,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>271</x>
-     <y>232</y>
+     <x>284</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3570,8 +3834,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>231</x>
-     <y>245</y>
+     <x>244</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3586,8 +3850,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>271</y>
+     <x>239</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3602,8 +3866,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>400</x>
-     <y>95</y>
+     <x>607</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3618,8 +3882,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>502</x>
-     <y>113</y>
+     <x>607</x>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3634,8 +3898,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>416</x>
-     <y>140</y>
+     <x>607</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3650,8 +3914,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>441</x>
-     <y>165</y>
+     <x>607</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3666,8 +3930,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>497</x>
-     <y>185</y>
+     <x>607</x>
+     <y>150</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3682,8 +3946,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>556</x>
-     <y>214</y>
+     <x>607</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3698,8 +3962,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>556</x>
-     <y>237</y>
+     <x>607</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3714,8 +3978,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>556</x>
-     <y>260</y>
+     <x>607</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3730,8 +3994,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>556</x>
-     <y>283</y>
+     <x>607</x>
+     <y>242</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3746,8 +4010,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>151</x>
-     <y>299</y>
+     <x>164</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>631</x>
@@ -3762,8 +4026,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>529</x>
-     <y>299</y>
+     <x>607</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>607</x>
@@ -3778,8 +4042,8 @@ p, li { white-space: pre-wrap; }
    <slot>applyWidgetsChange()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>442</x>
-     <y>291</y>
+     <x>608</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
      <x>604</x>
@@ -3787,9 +4051,442 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>cbDontCheckAmmoWhenSwitchingWeapons</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>597</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>631</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbKillBossMonsters</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>240</x>
+     <y>294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>315</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbShareKeys</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>45</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>338</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbNoMaxBloodScalar</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>381</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>322</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rbPlayersCanWalkThroughEachOther</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>553</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>628</x>
+     <y>270</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rbAlliesCanWalkThroughEachOther</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>479</x>
+     <y>303</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>631</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rbPlayersBlockEachOtherNormally</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>494</x>
+     <y>322</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>631</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatAnyBossDeathActivatesMapSpecials</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>45</x>
+     <y>249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>268</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatMinotaur</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>588</x>
+     <y>256</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>623</x>
+     <y>2</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatFrictionPushersPullersAffectMonsters</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>39</x>
+     <y>281</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>280</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatCrusherGibsByMorphingNotReplacement</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>41</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>307</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatOriginalVelocityCalcForMushroomInDehacked</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>795</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>595</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatSpriteSortOrderInverted</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>302</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>7</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatBlockMonsterLinesIgnoreFriendlyMonsters</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>79</x>
+     <y>324</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatHitscansOriginalBlockmap</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>756</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>629</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatDrawPolyobjectsOld</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>707</x>
+     <y>357</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>631</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatFindNeighboringLightLevelLikeDoom</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>345</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatUseVanillaAutoaimTracerBehavior</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>279</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatWestSpawnsAreSilent</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>795</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>630</x>
+     <y>278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatMaskedMidtex</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>311</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatBadAngles</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>338</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbCompatFloorMove</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>440</x>
+     <y>314</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>847</x>
+     <y>320</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>leCompatflags2</sender>
+   <signal>textEdited(QString)</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>propagateFlagsInputsChanges()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>393</x>
+     <y>454</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cboGameVersion</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyGameVersion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>47</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbNoItemDrop</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>323</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>369</x>
+     <y>2</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbSurvivalNoMapResetOnDeath</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>42</x>
+     <y>351</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cbDeadPlayersCanKeepInventory</sender>
+   <signal>clicked()</signal>
+   <receiver>FlagsPage</receiver>
+   <slot>applyWidgetsChange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>664</x>
+     <y>290</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>845</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>propagateFlagsInputsChanges()</slot>
   <slot>applyWidgetsChange()</slot>
+  <slot>applyGameVersion()</slot>
  </slots>
 </ui>

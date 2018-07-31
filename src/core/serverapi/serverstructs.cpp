@@ -2,53 +2,77 @@
 // serverstructs.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "serverstructs.h"
 
+#include <QRegExp>
 #include <QVector>
 
-class DMFlag::PrivData
+
+static QString coerceInternalName(const QString &name)
+{
+	return name.toLower().remove(QRegExp("[^a-z0-9]"));
+}
+
+
+DClass<DMFlag>
 {
 	public:
 		QString name;
 		unsigned value;
+		QString internalName;
+
+		void setInternalName(const QString &name)
+		{
+			internalName = coerceInternalName(name);
+		}
 };
+
+DPointered(DMFlag)
 
 DMFlag::DMFlag()
 {
-	d = new PrivData();
 	d->value = 0;
 }
 
-DMFlag::DMFlag(QString name, unsigned value)
+DMFlag::DMFlag(const QString &internalName, unsigned value)
 {
-	d = new PrivData();
-	d->name = name;
+	d->name = internalName;
+	d->setInternalName(internalName);
 	d->value = value;
 }
 
-COPYABLE_D_POINTERED_DEFINE(DMFlag);
+DMFlag::DMFlag(const QString &internalName, unsigned value, const QString &name)
+{
+	d->name = name;
+	d->setInternalName(internalName);
+	d->value = value;
+}
 
 DMFlag::~DMFlag()
 {
-	delete d;
+}
+
+const QString &DMFlag::internalName() const
+{
+	return d->internalName;
 }
 
 bool DMFlag::isValid() const
@@ -56,7 +80,7 @@ bool DMFlag::isValid() const
 	return value() > 0;
 }
 
-const QString& DMFlag::name() const
+const QString &DMFlag::name() const
 {
 	return d->name;
 }
@@ -68,29 +92,39 @@ unsigned DMFlag::value() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class DMFlagsSection::PrivData
+DClass<DMFlagsSection>
 {
 	public:
 		QString name;
+		QString internalName;
 		QVector<DMFlag> flags;
+
+		void setInternalName(const QString &name)
+		{
+			internalName = coerceInternalName(name);
+		}
 };
 
-COPYABLE_D_POINTERED_DEFINE(DMFlagsSection);
+DPointered(DMFlagsSection)
 
 DMFlagsSection::DMFlagsSection()
 {
-	d = new PrivData();
 }
 
-DMFlagsSection::DMFlagsSection(const QString& name)
+DMFlagsSection::DMFlagsSection(const QString &internalName)
 {
-	d = new PrivData();
+	d->name = internalName;
+	d->setInternalName(internalName);
+}
+
+DMFlagsSection::DMFlagsSection(const QString &internalName, const QString &name)
+{
 	d->name = name;
+	d->setInternalName(internalName);
 }
 
 DMFlagsSection::~DMFlagsSection()
 {
-	delete d;
 }
 
 void DMFlagsSection::add(const DMFlag& flag)
@@ -108,9 +142,21 @@ unsigned DMFlagsSection::combineValues() const
 	return result;
 }
 
+DMFlagsSection DMFlagsSection::copyEmpty() const
+{
+	DMFlagsSection copy = *this;
+	copy.d->flags.clear();
+	return copy;
+}
+
 int DMFlagsSection::count() const
 {
 	return d->flags.count();
+}
+
+const QString &DMFlagsSection::internalName() const
+{
+	return d->internalName;
 }
 
 bool DMFlagsSection::isEmpty() const
@@ -133,9 +179,53 @@ DMFlag& DMFlagsSection::operator[](int index)
 	return d->flags[index];
 }
 
+QList<DMFlagsSection> DMFlagsSection::removedBySection(
+	const QList<DMFlagsSection> &original,
+	const QList<DMFlagsSection> &removals)
+{
+	QList<DMFlagsSection> copy;
+	foreach (const DMFlagsSection &section, original)
+	{
+		bool removed = false;
+		foreach (const DMFlagsSection &removal, removals)
+		{
+			if (section.internalName() == removal.internalName())
+			{
+				copy << section.removed(removal);
+				removed = true;
+				break;
+			}
+		}
+		if (!removed)
+		{
+			copy << section;
+		}
+	}
+	return copy;
+}
+
+DMFlagsSection DMFlagsSection::removed(const DMFlagsSection &removals) const
+{
+	DMFlagsSection copy = *this;
+	foreach (const DMFlag &removal, removals.d->flags)
+	{
+		QMutableVectorIterator<DMFlag> i(copy.d->flags);
+		while (i.hasNext())
+		{
+			DMFlag &flag = i.next();
+			if (flag.value() == removal.value())
+			{
+				i.remove();
+				break;
+			}
+		}
+	}
+	return copy;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
-class GameCVar::PrivData
+DClass<GameCVar>
 {
 	public:
 		QString command;
@@ -143,23 +233,27 @@ class GameCVar::PrivData
 		QVariant value;
 };
 
-COPYABLE_D_POINTERED_DEFINE(GameCVar);
+DPointered(GameCVar)
 
 GameCVar::GameCVar()
 {
-	d = new PrivData();
 }
 
 GameCVar::GameCVar(const QString &name, const QString &command)
 {
-	d = new PrivData();
 	d->name = name;
 	d->command = command;
 }
 
+GameCVar::GameCVar(const QString &name, const QString &command, const QVariant &value)
+{
+	d->name = name;
+	d->command = command;
+	setValue(value);
+}
+
 GameCVar::~GameCVar()
 {
-	delete d;
 }
 
 const QString &GameCVar::command() const
@@ -194,7 +288,28 @@ const QVariant &GameCVar::value() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class GameMode::PrivData
+DClass<GameCVarProvider>
+{
+};
+
+DPointeredNoCopy(GameCVarProvider)
+
+GameCVarProvider::GameCVarProvider()
+{
+}
+
+GameCVarProvider::~GameCVarProvider()
+{
+}
+
+QList<GameCVar> GameCVarProvider::get(const QVariant &context)
+{
+	return QList<GameCVar>();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+DClass<GameMode>
 {
 	public:
 		int index;
@@ -202,18 +317,16 @@ class GameMode::PrivData
 		bool teamgame;
 };
 
-COPYABLE_D_POINTERED_DEFINE(GameMode);
+DPointered(GameMode)
 
 GameMode::GameMode()
 {
-	d = new PrivData();
 	d->index = -1;
 	d->teamgame = false;
 }
 
 GameMode::GameMode(int index, const QString &name)
 {
-	d = new PrivData();
 	d->index = index;
 	d->name = name;
 	d->teamgame = false;
@@ -221,7 +334,6 @@ GameMode::GameMode(int index, const QString &name)
 
 GameMode::~GameMode()
 {
-	delete d;
 }
 
 GameMode GameMode::ffaGame(int index, const QString &name)
@@ -290,25 +402,23 @@ GameMode GameMode::teamGame(int index, const QString &name)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class PWad::PrivData
+DClass<PWad>
 {
 	public:
 		QString name;
 		bool optional;
 };
 
-COPYABLE_D_POINTERED_DEFINE(PWad);
+DPointered(PWad)
 
 PWad::PWad(const QString &name, bool optional)
 {
-	d = new PrivData();
 	d->name = name;
 	d->optional = optional;
 }
 
 PWad::~PWad()
 {
-	delete d;
 }
 
 bool PWad::isOptional() const
@@ -320,4 +430,3 @@ const QString& PWad::name() const
 {
 	return d->name;
 }
-

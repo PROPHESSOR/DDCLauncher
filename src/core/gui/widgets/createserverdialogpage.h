@@ -2,20 +2,20 @@
 // createserverdialogpage.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
@@ -24,15 +24,17 @@
 #define DOOMSEEKER_GUI_WIDGETS_CREATESERVERDIALOGPAGE_H
 
 #include "global.h"
+#include "dptr.h"
 #include <QWidget>
 
 class CreateServerDialog;
+class GameCreateParams;
 class Ini;
 
 /**
  * @ingroup group_pluginapi
- * @brief Base class to be used by plugins to define custom pages in Create
- *        Server dialog.
+ * @brief Base class to be used by plugins to define custom pages
+ *        in Create Game dialog.
  */
 class MAIN_EXPORT CreateServerDialogPage : public QWidget
 {
@@ -41,12 +43,16 @@ class MAIN_EXPORT CreateServerDialogPage : public QWidget
 		virtual ~CreateServerDialogPage();
 
 		/**
-		 * @brief Generates game run parameters basing on the page's contents.
+		 * @brief Fills in GameCreateParams structure with the page's contents.
 		 *
-		 * These parameters are passed as arguments to the executable when
-		 * the game process is started.
+		 * The page is free to modify the params structure as it pleases.
+		 * Touching most of the fields should not be necessary, however,
+		 * as Doomseeker already provides common facilities for setting most
+		 * of the parameters. Any behavior in this method should do fine by
+		 * sticking to GameCreateParams::addOption() and
+		 * GameCreateParams::customParameters().
 		 */
-		virtual QStringList generateGameRunParameters() = 0;
+		virtual void fillInGameCreateParams(GameCreateParams &params) = 0;
 
 		const QString& name() const;
 
@@ -55,7 +61,7 @@ class MAIN_EXPORT CreateServerDialogPage : public QWidget
 		 *
 		 * This config is saved by Doomseeker when it calls saveConfig()
 		 * method.
-
+		 *
 		 * @return Return true on success.
 		 */
 		virtual bool loadConfig(Ini& ini) = 0;
@@ -64,18 +70,22 @@ class MAIN_EXPORT CreateServerDialogPage : public QWidget
 		 * @brief Saves variables defined by this page to a config.
 		 *
 		 * This config is loaded by Doomseeker when it calls loadConfig()
-		 * method.
+		 * method. Please remember that the config should be saved as best
+		 * as possible even if validate() returns false.
 		 *
 		 * @return Return true on success.
 		 */
 		virtual bool saveConfig(Ini& ini) = 0;
 
 		/**
-		 * @brief Validates contents of the page before the saveConfig().
+		 * @brief Validates contents of the page before fillInGameCreateParams().
 		 *
-		 * Should return true on validation success or false otherwise. This may
-		 * be used to modify the page contents, appearance or behavior.
-		 * Validation is run before the game is run. No validation is performed
+		 * Should return true on validation success or false otherwise.
+		 * During validate() call, the page contents, appearance or behavior
+		 * can be modified to display to the user what's wrong.
+		 * Validation is run before the game is run.
+		 *
+		 * No validation is performed
 		 * before saveConfig() or after loadConfig().
 		 *
 		 * Pages must take care of displaying their own error messages.
@@ -85,17 +95,13 @@ class MAIN_EXPORT CreateServerDialogPage : public QWidget
 		 *
 		 * @return Return true on validation success or false on failure.
 		 */
-		virtual bool validate()
-		{
-			return true;
-		}
+		virtual bool validate();
 
 	protected:
-		CreateServerDialog* parentDialog();
+		QDialog* parentDialog();
 
 	private:
-		class PrivData;
-		PrivData *d;
+		DPtr<CreateServerDialogPage> d;
 };
 
 #endif

@@ -2,33 +2,50 @@
 // commongui.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "commongui.h"
+#include <QComboBox>
 #include <QInputDialog>
+#include <QListView>
 #include <QStandardItemModel>
+#include <QTableWidget>
+#include <QStringList>
 
 QString CommonGUI::askString(const QString& title, const QString& label,
 	bool* ok, const QString& defaultString)
 {
 	return QInputDialog::getText(NULL, title,label, QLineEdit::Normal,
 		defaultString, ok);
+}
+
+QList<bool> CommonGUI::listViewStandardItemsToBoolList(QListView* listview)
+{
+	QList<bool> list;
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(
+		listview->model());
+	for (int i = 0; i < model->rowCount(); ++i)
+	{
+		list << (model->item(i)->checkState() == Qt::Checked);
+	}
+
+	return list;
 }
 
 QStringList CommonGUI::listViewStandardItemsToStringList(QListView* listview)
@@ -89,23 +106,46 @@ void CommonGUI::removeSelectedRowsFromStandardItemView(QAbstractItemView* view,
 		QModelIndex index = model->indexFromItem(itemList[i]);
 		model->removeRow(index.row());
 	}
-	
+
 	if (bSelectNextItem && !indexList.isEmpty())
 	{
 		int selectRowIdx = lowestRemovedRow;
 		selectRowIdx -= indexList.size();
-		
+
 		if (selectRowIdx + 1 < model->rowCount())
 		{
 			++selectRowIdx;
 		}
-		
+
 		if (selectRowIdx >= 0)
 		{
 			QModelIndex newIdx = model->index(selectRowIdx, 0);
 			selModel->select(newIdx, QItemSelectionModel::ClearAndSelect);
 		}
 	}
+}
+
+void CommonGUI::setCurrentText(QComboBox *box, const QString &text)
+{
+#if QT_VERSION >= 0x050000
+	box->setCurrentText(text);
+#else
+	if (box->isEditable())
+	{
+		box->setEditText(text);
+	}
+	else
+	{
+		for (int i = 0; i < box->count(); ++i)
+		{
+			if (box->itemText(i) == text)
+			{
+				box->setCurrentIndex(i);
+				break;
+			}
+		}
+	}
+#endif
 }
 
 void CommonGUI::stringListToStandardItemsListView(QListView* targetListview,

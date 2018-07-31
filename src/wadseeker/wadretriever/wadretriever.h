@@ -24,16 +24,16 @@
 #define __WADRETRIEVER_H__
 
 #include <QList>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QString>
 #include <QUrl>
 
-#include "protocols/fixednetworkaccessmanager.h"
 #include "entities/waddownloadinfo.h"
 #include "wadretriever/wadinstaller.h"
 #include "wadseekermessagetype.h"
 
-class NetworkReplyWrapperInfo;
+class NetworkReply;
 class URLProvider;
 class WadDownloadInfo;
 
@@ -61,11 +61,11 @@ class WadRetriever : public QObject
 	Q_OBJECT
 
 	public:
-		WadRetriever();
+		WadRetriever(QObject *parent = 0);
 		~WadRetriever();
 
 		void abort();
-		
+
 		/**
 		 * @brief Provides a list of mirror URLs for a WAD download.
 		 *
@@ -77,12 +77,12 @@ class WadRetriever : public QObject
 		 *      WAD for which the URL will be added. If WAD is not on the list
 		 *      set by setWads() the URL will not be added.
 		 * @param urls
-		 *      A list of mirror download URLs that will be queued for 
+		 *      A list of mirror download URLs that will be queued for
 		 *      specified WAD. If file is downloaded but then discarded because
 		 *      Wadseeker decides that this is not a file it wants then all
 		 *      mirror URLs will also be discarded.
 		 */
-		void addMirrorUrls(const WadDownloadInfo& wad, const QList<QUrl>& urls);		
+		void addMirrorUrls(const WadDownloadInfo& wad, const QList<QUrl>& urls);
 
 		/**
 		 * @brief Provides new URL for a WAD download.
@@ -204,7 +204,7 @@ class WadRetriever : public QObject
 		 *
 		 * This omits the download procedure treating data param as already
 		 * downloaded file contents. If data is recognized as an archive
-		 * it will be inspected for seeked filenames and if desired files 
+		 * it will be inspected for seeked filenames and if desired files
 		 * are found then they will be extracted.
 		 *
 		 * @param
@@ -212,6 +212,8 @@ class WadRetriever : public QObject
 		void tryInstall(const QString& filename, QIODevice* dataStream);
 
 	signals:
+		void badUrlDetected(const QUrl &url);
+
 		/**
 		 * @brief Emitted when all WADs are successfully installed.
 		 *
@@ -269,12 +271,12 @@ class WadRetriever : public QObject
 		{
 			public:
 				URLProvider* downloadUrls;
-				NetworkReplyWrapperInfo* pNetworkReply;
+				NetworkReply* pNetworkReply;
 				WadDownloadInfo* wad;
 
 				WadRetrieverInfo(const WadDownloadInfo& wad);
 				~WadRetrieverInfo();
-				
+
 				bool isAvailableForDownload() const;
 
 				bool operator==(const WadDownloadInfo& wad) const;
@@ -298,7 +300,7 @@ class WadRetriever : public QObject
 			public:
 				bool bIsAborting;
 				int maxConcurrentWadDownloads;
-				FixedNetworkAccessManager* pNetworkAccessManager;
+				QNetworkAccessManager* pNetworkAccessManager;
 				QString targetSavePath;
 
 				/**
@@ -328,10 +330,10 @@ class WadRetriever : public QObject
 		QUrl extractNextValidUrl(WadRetrieverInfo& wadRetrieverInfo);
 		WadRetrieverInfo* findRetrieverInfo(const WadDownloadInfo& wad);
 		WadRetrieverInfo* findRetrieverInfo(const QString& wadName);
-		WadRetrieverInfo* findRetrieverInfo(const QNetworkReply* pNetworkReply);
+		WadRetrieverInfo* findRetrieverInfo(const NetworkReply* pNetworkReply);
 		const WadRetrieverInfo* findRetrieverInfo(const WadDownloadInfo& wad) const;
 		const WadRetrieverInfo* findRetrieverInfo(const QString& wadName) const;
-		const WadRetrieverInfo* findRetrieverInfo(const QNetworkReply* pNetworkReply) const;
+		const WadRetrieverInfo* findRetrieverInfo(const NetworkReply* pNetworkReply) const;
 
 		QList< WadRetrieverInfo* > getAllCurrentlyRunningDownloadsInfos() const;
 		QList< WadDownloadInfo* > getWadDownloadInfoList();
@@ -340,12 +342,12 @@ class WadRetriever : public QObject
 		 * @brief True if URL is either on the queue or already used.
 		 */
 		bool hasUrl(const WadRetrieverInfo& wadRetrieverInfo, const QUrl& url) const;
-		
+
 		/**
 		 * @brief Checks if URL can be download at the curren time.
 		 *
 		 * @return True if it is Ok to download the resource denoted by URL.
-		 *         False if a resource from the same hostname is already 
+		 *         False if a resource from the same hostname is already
 		 *         being downloaded.
 		 */
 		bool isUrlAllowedToDownloadATM(const QUrl& url) const;
@@ -367,19 +369,20 @@ class WadRetriever : public QObject
 
 		/**
 		 * @brief Attempts to extract meaningful file data from
-		 *        the QNetworkReply.
+		 *        the NetworkReply.
 		 */
-		void resolveDownloadFinish(QNetworkReply* pReply, WadRetrieverInfo* pWadRetrieverInfo);
+		void resolveDownloadFinish(NetworkReply* pReply, WadRetrieverInfo* pWadRetrieverInfo);
 
-		void setNetworkReply(WadRetrieverInfo& wadRetrieverInfo, QNetworkReply* pReply);
+		void setNetworkReply(WadRetrieverInfo& wadRetrieverInfo,
+			const QNetworkRequest &request, QNetworkReply* pReply);
 		void startNetworkQuery(WadRetrieverInfo& wadRetrieverInfo, const QUrl& url);
 
 		bool wasUrlUsed(const QUrl& url) const;
 
 	private slots:
-		void networkQueryDownloadProgress(QNetworkReply* pReply, qint64 current, qint64 total);
-		void networkQueryError(QNetworkReply* pReply, QNetworkReply::NetworkError code);
-		void networkQueryFinished(QNetworkReply* pReply);
+		void networkQueryDownloadProgress(NetworkReply* pReply, qint64 current, qint64 total);
+		void networkQueryError(NetworkReply* pReply, QNetworkReply::NetworkError code);
+		void networkQueryFinished(NetworkReply* pReply);
 		void startNextDownloads();
 };
 

@@ -2,20 +2,20 @@
 // odamexgamerunner.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -31,7 +31,16 @@ OdamexGameClientRunner::OdamexGameClientRunner(QSharedPointer<OdamexServer> serv
 {
 	this->server = server;
 	setArgForDemoRecord("-netrecord");
+	set_addConnectCommand(&OdamexGameClientRunner::addConnectCommand);
 	set_addExtra(&OdamexGameClientRunner::addExtra);
+	set_addPassword(&OdamexGameClientRunner::addPassword);
+}
+
+void OdamexGameClientRunner::addConnectCommand()
+{
+	GameClientRunner::addConnectCommand_default();
+	if(server->isLocked())
+		args() << connectPassword();
 }
 
 void OdamexGameClientRunner::addExtra()
@@ -42,7 +51,7 @@ void OdamexGameClientRunner::addExtra()
 		args() << "-deh";
 		foreach(QString patch, dehPatches)
 		{
-			QString file = pathFinder().findFile(patch.toLower());
+			QString file = findWad(patch.toLower());
 			args() << file;
 		}
 	}
@@ -65,16 +74,26 @@ void OdamexGameClientRunner::addExtra()
 		{
 			waddir = wadTargetDirectory() + PATH_SEPARATOR;
 		}
-		waddir += pathFinder().findFile(iwad.toLower());
-		waddir.truncate(waddir.length() - iwad.length());
+		QString iwadPath = findWad(iwad.toLower());
+		if (!iwadPath.isEmpty())
+		{
+			waddir += iwadPath;
+			waddir.truncate(waddir.length() - iwad.length());
+		}
 		for (int i = 0;i < server->numWads();i++)
 		{
 			QString wad = server->wad(i).name();
-			QString pwaddir = pathFinder().findFile(wad.toLower());
+			QString pwaddir = findWad(wad.toLower());
 			pwaddir.truncate(pwaddir.length() - wad.length());
 			if(!pwaddir.isEmpty())
 				waddir += PATH_SEPARATOR + pwaddir;
 		}
 		args() << waddir;
 	}
+}
+
+void OdamexGameClientRunner::addPassword()
+{
+	// Odamex specifies the connect password as part of the connect command
+	// so we should no-op this function.
 }

@@ -2,20 +2,20 @@
 // serverlistrowhandler.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -25,40 +25,43 @@
 #include "serverlistmodel.h"
 #include "configuration/doomseekerconfig.h"
 #include "gui/helpers/playersdiagram.h"
+#include "gui/widgets/serverlistview.h"
+#include "gui/dockBuddiesList.h"
+#include "gui/mainwindow.h"
 #include "gui/serverlist.h"
 #include "ip2c/ip2c.h"
 #include "serverapi/playerslist.h"
 #include "serverapi/server.h"
 #include "serverapi/serverstructs.h"
+#include "application.h"
 #include "log.h"
 #include <QPainter>
 
 using namespace ServerListColumnId;
 
-class ServerListRowHandler::PrivData
+DClass<ServerListRowHandler>
 {
 	public:
 		ServerPtr server;
 };
 
+DPointered(ServerListRowHandler)
+
 ServerListRowHandler::ServerListRowHandler(ServerListModel* parentModel,
     int rowIndex, const ServerPtr &server)
 : model(parentModel), row(rowIndex)
 {
-	d = new PrivData();
 	d->server = server;
 }
 
 ServerListRowHandler::ServerListRowHandler(ServerListModel* parentModel, int rowIndex)
 : model(parentModel), row(rowIndex)
 {
-	d = new PrivData();
 	d->server = serverFromList(parentModel, rowIndex);
 }
 
 ServerListRowHandler::~ServerListRowHandler()
 {
-	delete d;
 }
 
 void ServerListRowHandler::clearNonVitalFields()
@@ -152,7 +155,7 @@ void ServerListRowHandler::fillPlayerColumn()
 {
 	QStandardItem* pItem = item(IDPlayers);
 
-	int style = gConfig.doomseeker.slotStyle;
+	QString style = gConfig.doomseeker.slotStyle;
 	bool botsAreNotPlayers = gConfig.doomseeker.bBotsAreNotPlayers;
 
 	const PlayersList &players = d->server->players();
@@ -167,7 +170,7 @@ void ServerListRowHandler::fillPlayerColumn()
 		sortValue = players.numClients();
 	}
 
-	if(style != NUM_SLOTSTYLES)
+	if(!PlayersDiagram::isNumericStyle(style))
 	{
 		fillItem(pItem, sortValue, PlayersDiagram(d->server).pixmap());
 	}
@@ -178,8 +181,8 @@ void ServerListRowHandler::fillPlayerColumn()
 	}
 
 	// Unset some data if it has been set before.
-	pItem->setData(QVariant(QVariant::Invalid), style == NUM_SLOTSTYLES ? Qt::DecorationRole : Qt::DisplayRole);
-	pItem->setData(style == NUM_SLOTSTYLES ? 0 : USERROLE_RIGHTALIGNDECORATION, Qt::UserRole);
+	pItem->setData(QVariant(QVariant::Invalid), PlayersDiagram::isNumericStyle(style) ? Qt::DecorationRole : Qt::DisplayRole);
+	pItem->setData(PlayersDiagram::isNumericStyle(style) ? 0 : USERROLE_RIGHTALIGNDECORATION, Qt::UserRole);
 }
 
 void ServerListRowHandler::fillPortIconColumn()
@@ -200,6 +203,14 @@ void ServerListRowHandler::fillPortIconColumn()
 			iconPainter.drawPixmap(0, 0, QPixmap(":/shield.png"));
 			iconPainter.end();
 		}
+		// 't' is drawn on a different part of the logo therefore it can be
+		// drawn together with other icons
+		if (d->server->isTestingServer())
+		{
+			QPainter iconPainter(&icon);
+			iconPainter.drawPixmap(0, 0, QPixmap(":/t.png"));
+			iconPainter.end();
+		}
 	}
 	fillItem(pItem, d->server->metaObject()->className(), icon);
 }
@@ -218,7 +229,7 @@ QStandardItem* ServerListRowHandler::item(int columnIndex)
 
 void ServerListRowHandler::redraw()
 {
-	updateServer(d->server->lastResponse());
+	updateServer();
 
 	// Since updateServer doesn't do anything with the flags we need to
 	// explicitly redraw it here.
@@ -232,15 +243,30 @@ ServerPtr ServerListRowHandler::server()
 
 void ServerListRowHandler::setBackgroundColor()
 {
+	QString color;
 	if (d->server->isCustom())
 	{
-		QString color = gConfig.doomseeker.customServersColor;
-
-		for (int column = 0; column < NUM_SERVERLIST_COLUMNS; ++column)
+		color = gConfig.doomseeker.customServersColor;
+	}
+	else if (d->server->isLan())
+	{
+		color = gConfig.doomseeker.lanServersColor;
+	}
+	else if (gApp->mainWindow()->buddiesList()->hasBuddy(d->server))
+	{
+		if (gConfig.doomseeker.bMarkServersWithBuddies)
 		{
-			QStandardItem* pItem = item(column);
-			pItem->setBackground( QBrush(QColor(color )) );
+			color = gConfig.doomseeker.buddyServersColor;
 		}
+	}
+
+	for (int column = 0; column < NUM_SERVERLIST_COLUMNS; ++column)
+	{
+		QBrush brush = !color.isEmpty()
+			? QBrush(QColor(color))
+			: Qt::NoBrush;
+		QStandardItem* pItem = item(column);
+		pItem->setBackground(brush);
 	}
 }
 
@@ -371,30 +397,24 @@ void ServerListRowHandler::setWait()
 	fillItem(qstdItem, SGWait);
 }
 
-ServerPtr ServerListRowHandler::serverFromList(ServerListModel* parentModel, int rowIndex)
+ServerPtr ServerListRowHandler::serverFromList(const ServerListModel* parentModel, int rowIndex)
 {
 	QStandardItem* pItem = parentModel->item(rowIndex, IDHiddenServerPointer);
-	QVariant pointer = qVariantFromValue(pItem->data(DTPointerToServerStructure));
+	QVariant pointer = pItem->data(DTPointerToServerStructure);
 	if (!pointer.isValid())
 	{
 		return ServerPtr();
 	}
-	return qVariantValue<ServerPtr>(pointer);
+	return pointer.value<ServerPtr>();
 }
 
-//ServerListRowHandler::ServerGroup ServerListRowHandler::serverGroup()
-//{
-//	QStandardItem* qstdItem = item(row, SLCID_HIDDEN_GROUP);
-//	return static_cast<ServerListRowHandler::ServerGroup>(qstdItem->data(DTSort).toInt());
-//}
-
-int ServerListRowHandler::updateServer(int response)
+int ServerListRowHandler::updateServer()
 {
 	fillServerPointerColumn();
 	fillPortIconColumn();
 	fillAddressColumn();
 
-	switch(response)
+	switch(d->server->lastResponse())
 	{
 		case Server::RESPONSE_BAD:
 			setBad();
@@ -425,10 +445,14 @@ int ServerListRowHandler::updateServer(int response)
 
 		case Server::RESPONSE_NO_RESPONSE_YET:
 			setFirstQuery();
+			if (d->server->isRefreshing())
+			{
+				setRefreshing();
+			}
 			break;
 
 		default:
-			gLog << tr("Unkown server response (%1): %2:%3").arg(response)
+			gLog << tr("Unkown server response (%1): %2:%3").arg(d->server->lastResponse())
 				.arg(d->server->address().toString()).arg(d->server->port());
 			break;
 	}

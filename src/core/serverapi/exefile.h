@@ -2,20 +2,20 @@
 // exefile.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2013 "Zalewa" <zalewapl@gmail.com>
@@ -24,6 +24,7 @@
 #define id97064B0C_7D3A_489E_B2241AD6943450FB
 
 #include "global.h"
+#include "dptr.h"
 #include <QHash>
 #include <QObject>
 #include <QString>
@@ -134,10 +135,33 @@ class MAIN_EXPORT ExeFile : public QObject
 		virtual QString workingDirectory(Message& message);
 
 	private:
-		class PrivData;
-		PrivData* d;
+		DPtr<ExeFile> d;
 
 		QString obtainBinary(Message& message) const;
+};
+
+/**
+ * @ingroup group_pluginapi
+ * @brief A simple executable path & working dir structure.
+ */
+class MAIN_EXPORT ExeFilePath
+{
+public:
+	ExeFilePath();
+	/**
+	 * @brief Infers working dir from path.
+	 */
+	ExeFilePath(const QString &path);
+	virtual ~ExeFilePath();
+
+	QString path() const;
+	ExeFilePath &setPath(const QString &path);
+
+	QString workingDir() const;
+	ExeFilePath &setWorkingDir(const QString &path);
+
+private:
+	DPtr<ExeFilePath> d;
 };
 
 #endif

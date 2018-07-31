@@ -2,38 +2,55 @@
 // serversstatuswidget.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
+#include <cmath>
 
 #include "serversstatuswidget.h"
+#include "gui/serverlist.h"
+#include "plugins/engineplugin.h"
 #include "serverapi/masterclient.h"
 #include "serverapi/playerslist.h"
 #include "serverapi/server.h"
+#include "serverapi/serverlistcounttracker.h"
 
-ServersStatusWidget::ServersStatusWidget(const QPixmap &icon, MasterClient *serverList) : QLabel(),
-	bMasterIsEnabled(false), icon(icon), numBots(0), numPlayers(0), serverList(serverList)
+ServersStatusWidget::ServersStatusWidget(const EnginePlugin *plugin, const ServerList *serverList)
+	: QLabel(), enabled(false), icon(plugin->icon())
 {
+	this->plugin = plugin;
+
+	this->countTracker = new ServerListCountTracker(this);
+	this->countTracker->setPluginFilter(plugin);
+	this->serverList = serverList;
+
+	countTracker->connect(serverList, SIGNAL(serverRegistered(ServerPtr)),
+		SLOT(registerServer(ServerPtr)));
+	countTracker->connect(serverList, SIGNAL(serverDeregistered(ServerPtr)),
+		SLOT(deregisterServer(ServerPtr)));
+	this->connect(countTracker, SIGNAL(updated()), SLOT(updateDisplay()));
+	this->connect(countTracker, SIGNAL(updated()), SIGNAL(counterUpdated()));
+
 	// Transform icon to grayscale format for disabled appearance
 	QImage iconImage = icon.toImage();
 	int width = iconImage.width();
@@ -63,29 +80,22 @@ ServersStatusWidget::ServersStatusWidget(const QPixmap &icon, MasterClient *serv
 #endif
 
 	setFixedHeight(22);
-	setToolTip(tr("Players-Bots Servers"));
+	setToolTip(tr("Players (Humans + Bots) / Servers Refreshed%"));
 
 	setIndent(22);
 	updateDisplay();
-
-	registerServers();
-
-	connect(serverList, SIGNAL(listUpdated()), this, SLOT(registerServers()));
 }
 
-void ServersStatusWidget::addServer(const ServerPtr &server)
+const ServerListCount &ServersStatusWidget::count() const
 {
-	const PlayersList &players = server->players();
-	numPlayers += players.numClients();
-	numBots += players.numBots();
-	updateDisplay();
+	return countTracker->count();
 }
 
 void ServersStatusWidget::mousePressEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton)
 	{
-		emit clicked(serverList);
+		emit clicked(plugin);
 	}
 }
 
@@ -93,50 +103,56 @@ void ServersStatusWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter p(this);
 	p.setRenderHint(QPainter::SmoothPixmapTransform);
-	p.drawPixmap(2, 2, 18, 18, bMasterIsEnabled ? icon : iconDisabled);
+	p.drawPixmap(2, 2, 18, 18, enabled ? icon : iconDisabled);
 	p.end();
 
 	QLabel::paintEvent(event);
 }
 
-void ServersStatusWidget::registerServers()
+void ServersStatusWidget::registerServerIfSamePlugin(ServerPtr server)
 {
-	// Since this is done when the list changes we should reset some values
-	numPlayers = 0;
-	numBots = 0;
-
-	if (serverList != NULL)
-	{
-		foreach(ServerPtr server, serverList->servers())
-		{
-			connect(server.data(), SIGNAL(begunRefreshing(ServerPtr)), this, SLOT(removeServer(ServerPtr)), Qt::DirectConnection);
-			connect(server.data(), SIGNAL(updated(ServerPtr, int)), this, SLOT(addServer(ServerPtr)), Qt::DirectConnection);
-		}
-	}
+	countTracker->registerServer(server);
 }
 
-void ServersStatusWidget::removeServer(const ServerPtr &server)
+void ServersStatusWidget::deregisterServerIfSamePlugin(const ServerPtr &server)
 {
-	const PlayersList &players = server->players();
-	numPlayers -= players.numClients();
-	numBots -= players.numBots();
-	updateDisplay();
+	countTracker->deregisterServer(server);
+}
+
+QString ServersStatusWidget::refreshedPercentAsText() const
+{
+	const ServerListCount &count = countTracker->count();
+	if (count.numServers == 0)
+	{
+		return tr("N/A");
+	}
+	else
+	{
+		return tr("%1%").arg(count.refreshedPercent());
+	}
 }
 
 void ServersStatusWidget::setMasterEnabledStatus(bool bEnabled)
 {
-	this->bMasterIsEnabled = bEnabled;
+	this->enabled = bEnabled;
 	updateDisplay();
 }
 
 void ServersStatusWidget::updateDisplay()
 {
-	if (bMasterIsEnabled)
+	if (enabled)
 	{
-		setText(QString("%1-%2 %3").arg(numPlayers).arg(numBots).arg(serverList != NULL ? serverList->numServers() : 0));
+		const ServerListCount &count = countTracker->count();
+		QString text = tr("%1 (%2+%3) / %4").arg(count.numPlayers).arg(count.numHumanPlayers)
+			.arg(count.numBots) .arg(count.numServers);
+		if (count.numRefreshing > 0)
+		{
+			text += tr(" %1").arg(refreshedPercentAsText());
+		}
+		setText(text);
 	}
 	else
 	{
-		setText("N/A");
+		setText(tr("N/A"));
 	}
 }

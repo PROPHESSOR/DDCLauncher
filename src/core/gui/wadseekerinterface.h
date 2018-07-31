@@ -2,20 +2,20 @@
 // wadseekerinterface.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -23,13 +23,14 @@
 #ifndef __WADSEEKERINTERFACE_H_
 #define __WADSEEKERINTERFACE_H_
 
-#include "ui_wadseekerinterface.h"
-
-#include "ini/ini.h"
 #include "serverapi/serverptr.h"
 #include "wadseeker/wadseeker.h"
+#include "dptr.h"
+#include <QDialog>
 #include <QStringList>
 #include <QTimer>
+
+class QModelIndex;
 
 /**
  * @brief Wadseeker dialog box, only one instance is allowed.
@@ -37,7 +38,7 @@
  * This is not a singleton, but create() methods will return NULL if instance
  * is already running. There's also isInstantiated() static method available.
  */
-class WadseekerInterface : public QDialog, Ui::WadseekerInterface
+class WadseekerInterface : public QDialog
 {
 	Q_OBJECT
 
@@ -46,6 +47,7 @@ class WadseekerInterface : public QDialog, Ui::WadseekerInterface
 
 		static WadseekerInterface *create(QWidget* parent = NULL);
 		static WadseekerInterface *create(ServerPtr server, QWidget* parent = NULL);
+		static WadseekerInterface *createAutoNoGame(QWidget* parent = NULL);
 		~WadseekerInterface();
 
 		bool isAutomatic() { return bAutomatic; }
@@ -74,8 +76,7 @@ class WadseekerInterface : public QDialog, Ui::WadseekerInterface
 			Waiting = 1
 		};
 
-		class PrivData;
-		PrivData *d;
+		DPtr<WadseekerInterface> d;
 
 		static const int UPDATE_INTERVAL_MS;
 		static WadseekerInterface *currentInstance;
@@ -121,6 +122,7 @@ class WadseekerInterface : public QDialog, Ui::WadseekerInterface
 
 		void setStateDownloading();
 		void setStateWaiting();
+		void setupAutomatic();
 		void setupIdgames();
 		void showEvent(QShowEvent* event);
 		void startSeeking(const QStringList& seekedFilesList);
@@ -134,6 +136,8 @@ class WadseekerInterface : public QDialog, Ui::WadseekerInterface
 		QStringList unsuccessfulWads() const;
 
 	private slots:
+		void abortService(const QString &service);
+		void abortSite(const QUrl &url);
 		void accept();
 		void allDone(bool bSuccess);
 		void fileDownloadSuccessful(const QString& filename);
@@ -141,6 +145,8 @@ class WadseekerInterface : public QDialog, Ui::WadseekerInterface
 		void message(const QString& message, WadseekerLib::MessageType type);
 		void registerUpdateRequest();
 		void seekStarted(const QStringList& filenames);
+		void serviceStarted(const QString &service);
+		void serviceFinished(const QString &service);
 		void siteFinished(const QUrl& site);
 		void siteProgress(const QUrl& site, qint64 bytes, qint64 total);
 		void siteRedirect(const QUrl& oldUrl, const QUrl& newUrl);

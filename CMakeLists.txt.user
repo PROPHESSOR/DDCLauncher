@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.6.1, 2018-07-31T03:39:05. -->
+<!-- Written by QtCreator 4.6.1, 2018-07-31T20:16:22. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -398,7 +398,7 @@
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.Arguments"></value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory"></value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory.default">/home/prophessor/tmp/build-doomseeker-Desktop_Qt_5_11_0_GCC_64bit-u041fu043e u0443u043cu043eu043bu0447u0430u043du0438u044e/src/core</value>
-    <value type="int" key="PE.EnvironmentAspect.Base">-1</value>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">doomseeker</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>

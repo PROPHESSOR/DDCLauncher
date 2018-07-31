@@ -2,44 +2,47 @@
 // server.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "server.h"
 
 #include "log.h"
 #include "configuration/doomseekerconfig.h"
+#include "configuration/queryspeed.h"
 #include "pathfinder/pathfinder.h"
+#include "pathfinder/wadpathfinder.h"
 #include "plugins/engineplugin.h"
-#include "strings.h"
+#include "strings.hpp"
 #include "serverapi/tooltips/tooltipgenerator.h"
 #include "serverapi/exefile.h"
 #include "serverapi/gameclientrunner.h"
 #include "serverapi/gameexeretriever.h"
 #include "serverapi/message.h"
 #include "serverapi/playerslist.h"
+#include <QElapsedTimer>
 #include <QTime>
 #include <QUdpSocket>
 #include <cassert>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class Server::PrivData
+DClass<Server>
 {
 	public:
 		PrivData()
@@ -71,7 +74,9 @@ class Server::PrivData
 		bool custom;
 		QList<DMFlagsSection> dmFlags;
 		QString email;
+		QElapsedTimer lastRefreshClock;
 		QString iwad;
+		bool lan;
 		bool locked;
 		bool lockedInGame;
 		QStringList mapList;
@@ -83,12 +88,13 @@ class Server::PrivData
 		QTime pingClock;
 		PlayersList players;
 		bool randomMapRotation;
-		Response response;
+		Server::Response response;
 		QList<int> scores;
 		unsigned int scoreLimit;
 		unsigned short timeLeft;
 		unsigned short timeLimit;
 		unsigned char skill;
+		bool testingServer;
 		QString version;
 		QList<PWad> wads;
 		QString webSite;
@@ -110,8 +116,10 @@ class Server::PrivData
 
 		QString (Server::*customDetails)();
 		QByteArray (Server::*createSendRequest)();
-		Response (Server::*readRequest)(const QByteArray&);
+		Server::Response (Server::*readRequest)(const QByteArray&);
 };
+
+DPointeredNoCopy(Server)
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -126,16 +134,18 @@ QString Server::teamNames[] =
 Server::Server(const QHostAddress &address, unsigned short port)
 : QObject()
 {
-	d = new PrivData();
 	d->address = address;
 	d->port = port;
 	d->bIsRefreshing = false;
+	d->lan = false;
 	d->locked = false;
 	d->lockedInGame = false;
+	d->testingServer = false;
 	d->triesLeft = 0;
 	d->maxClients = 0;
 	d->maxPlayers = 0;
 	d->name = tr("<< ERROR >>");
+	d->response = RESPONSE_NO_RESPONSE_YET;
 	d->scoreLimit = 0;
 	d->timeLeft = 0;
 	d->timeLimit = 0;
@@ -149,6 +159,7 @@ Server::Server(const QHostAddress &address, unsigned short port)
 	d->skill = 3;
 	d->bKnown = false;
 	d->custom = false;
+	d->lastRefreshClock.invalidate();
 
 	set_customDetails(&Server::customDetails_default);
 	set_createSendRequest(&Server::createSendRequest_default);
@@ -163,7 +174,6 @@ Server::Server(const QHostAddress &address, unsigned short port)
 Server::~Server()
 {
 	clearDMFlags();
-	delete d;
 }
 
 POLYMORPHIC_DEFINE(QString, Server, customDetails, (), ());
@@ -175,7 +185,7 @@ void Server::addPlayer(const Player& player)
 	d->players << player;
 }
 
-void Server::addWad(const QString& wad)
+void Server::addWad(const PWad& wad)
 {
 	d->wads << wad;
 }
@@ -269,11 +279,6 @@ const QString& Server::email() const
 	return d->email;
 }
 
-void Server::emitUpdated(int response)
-{
-	emit updated(self(), response);
-}
-
 QString Server::engineName() const
 {
 	if (plugin() != NULL)
@@ -356,11 +361,6 @@ bool Server::isRandomMapRotation() const
 	return d->randomMapRotation;
 }
 
-bool Server::isRefreshable() const
-{
-	return d->pingClock.secsTo(QTime::currentTime()) >= plugin()->data()->refreshThreshold;
-}
-
 bool Server::isRefreshing() const
 {
 	return d->bIsRefreshing;
@@ -369,6 +369,16 @@ bool Server::isRefreshing() const
 bool Server::isSecure() const
 {
 	return d->bSecure;
+}
+
+bool Server::isSpecial() const
+{
+	return isLan() || isCustom();
+}
+
+bool Server::isTestingServer() const
+{
+	return d->testingServer;
 }
 
 const QString& Server::iwad() const
@@ -383,7 +393,8 @@ Server::Response Server::lastResponse() const
 
 void Server::lookupHost()
 {
-	QHostInfo::lookupHost(address().toString(), this, SLOT( setHostName(QHostInfo) ));
+	QHostInfo::lookupHost(address().toString(), this,
+		SLOT(setHostName(QHostInfo)));
 }
 
 const QStringList& Server::mapList() const
@@ -475,15 +486,16 @@ void Server::refreshStarts()
 	d->bIsRefreshing = true;
 
 	emit begunRefreshing(ServerPtr(self()));
-	d->triesLeft = gConfig.doomseeker.queryTries;
-	if (d->triesLeft > 10) // Limit the maximum number of tries
-	{
-		d->triesLeft = 10;
-	}
+	d->triesLeft = gConfig.doomseeker.querySpeed().attemptsPerServer;
+	// Limit the maximum number of tries
+	d->triesLeft = qMin(d->triesLeft, QuerySpeed::MAX_ATTEMPTS_PER_SERVER);
+	// Sanity.
+	d->triesLeft = qMax(d->triesLeft, 1);
 }
 
 void Server::refreshStops(Response response)
 {
+	d->lastRefreshClock.start();
 	setResponse(response);
 	if (!d->bPingIsSet)
 	{
@@ -620,6 +632,8 @@ void Server::setMotd(const QString& motd)
 void Server::setName(const QString& serverName)
 {
 	d->name = serverName;
+	// Don't let servers occupy more than one row with newline chars.
+	d->name.replace('\n', ' ').replace('\r', ' ');
 }
 
 void Server::setPing(unsigned int ping)
@@ -673,6 +687,11 @@ void Server::setSecure(bool bSecure)
 void Server::setSelf(const QWeakPointer<Server> &self)
 {
 	d->self = self;
+}
+
+void Server::setTestingServer(bool b)
+{
+	d->testingServer = b;
 }
 
 void Server::setTimeLeft(unsigned short serverTimeLeft)
@@ -732,6 +751,18 @@ unsigned short Server::timeLimit() const
 	return d->timeLimit;
 }
 
+qint64 Server::timeMsSinceLastRefresh() const
+{
+	if (d->lastRefreshClock.isValid())
+	{
+		return d->lastRefreshClock.elapsed();
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 TooltipGenerator* Server::tooltipGenerator() const
 {
 	return new TooltipGenerator(self());
@@ -751,7 +782,7 @@ PathFinder Server::wadPathFinder()
 {
 	PathFinder pathFinder;
 	{
-		GameExeRetriever exeRetriever = GameExeRetriever(*plugin()->gameExe());
+		GameExeRetriever exeRetriever(*plugin()->gameExe());
 		Message msg;
 		pathFinder.addPrioritySearchDir(exeRetriever.pathToOfflineExe(msg));
 	}
@@ -771,4 +802,14 @@ const QList<PWad>& Server::wads() const
 const QString& Server::webSite() const
 {
 	return d->webSite;
+}
+
+bool Server::isLan() const
+{
+	return d->lan;
+}
+
+void Server::setLan(bool b)
+{
+	d->lan = b;
 }

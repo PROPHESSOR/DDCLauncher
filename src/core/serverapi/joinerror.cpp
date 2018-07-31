@@ -2,30 +2,33 @@
 // joinerror.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "joinerror.h"
+#include "serverapi/serverstructs.h"
 
-class JoinError::PrivData
+#include <QList>
+
+DClass<JoinError>
 {
 	public:
-		JoinErrorType type;
+		JoinError::JoinErrorType type;
 		QString error;
 
 		/**
@@ -36,43 +39,37 @@ class JoinError::PrivData
 		/**
 		 * This is valid only if type == MissingWads.
 		 */
-		QStringList missingWads;
+		QList<PWad> missingWads;
 };
+
+DPointered(JoinError)
 
 JoinError::JoinError()
 {
-	d = new PrivData();
 	d->type = NoError;
 }
 
 JoinError::JoinError(JoinError::JoinErrorType type)
 {
-	d = new PrivData();
 	d->type = type;
 }
 
 JoinError::JoinError(const JoinError& other)
 {
-	d = new PrivData();
-	*d = *other.d;
+	d = other.d;
 }
 
 JoinError& JoinError::operator=(const JoinError& other)
 {
-	if (this != &other)
-	{
-		d = new PrivData();
-		*d = *other.d;
-	}
+	d = other.d;
 	return *this;
 }
 
 JoinError::~JoinError()
 {
-	delete d;
 }
 
-void JoinError::addMissingWad(const QString& wad)
+void JoinError::addMissingWad(const PWad& wad)
 {
 	d->missingWads << wad;
 }
@@ -109,7 +106,7 @@ const QString& JoinError::missingIwad() const
 	return d->missingIwad;
 }
 
-const QStringList& JoinError::missingWads() const
+const QList<PWad>& JoinError::missingWads() const
 {
 	return d->missingWads;
 }
@@ -124,7 +121,7 @@ void JoinError::setMissingIwad(const QString& iwad)
 	d->missingIwad = iwad;
 }
 
-void JoinError::setMissingWads(const QStringList& wads)
+void JoinError::setMissingWads(const QList<PWad>& wads)
 {
 	d->missingWads = wads;
 }

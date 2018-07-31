@@ -2,31 +2,31 @@
 // joincommandlinebuilder.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
-//------------------------------------------------------------------------------ 
+//------------------------------------------------------------------------------
 #include "joincommandlinebuilder.h"
 
 #include "apprunner.h"
 #include "datapaths.h"
 #include "log.h"
 #include "configuration/doomseekerconfig.h"
-#include "gui/passwordDlg.h"
+#include "gui/passworddlg.h"
 #include "gui/wadseekerinterface.h"
 #include "gui/wadseekershow.h"
 #include "ini/settingsproviderqt.h"
@@ -36,67 +36,101 @@
 #include "serverapi/message.h"
 #include "serverapi/server.h"
 #include "application.h"
+#include "gamedemo.h"
 
 #include <wadseeker/wadseeker.h>
+#include <QDialogButtonBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QListWidget>
 #include <QMessageBox>
 #include <cassert>
 
-class JoinCommandLineBuilder::PrivData
+DClass<JoinCommandLineBuilder>
 {
 	public:
 		CommandLineInfo cli;
 		bool configurationError;
+		QString connectPassword;
 		QString error;
-		Demo demo;
+		GameDemo demo;
+		QString demoName;
+		QString inGamePassword;
 		ServerPtr server;
 		QWidget *parentWidget;
+		bool passwordsAlreadySet;
+
+		// For missing wads dialog
+		QDialogButtonBox *buttonBox;
+		QDialogButtonBox::StandardButton lastButtonClicked;
 };
 
+DPointered(JoinCommandLineBuilder)
+
 JoinCommandLineBuilder::JoinCommandLineBuilder(ServerPtr server,
-	Demo demo, QWidget *parentWidget)
+	GameDemo demo, QWidget *parentWidget)
 {
-	d = new PrivData();
 	d->configurationError = false;
 	d->demo = demo;
+	d->demoName = GameDemo::mkDemoFullPath(demo, *server->plugin());
 	d->parentWidget = parentWidget;
+	d->passwordsAlreadySet = false;
 	d->server = server;
 }
 
 JoinCommandLineBuilder::~JoinCommandLineBuilder()
 {
-	delete d;
 }
 
-QStringList JoinCommandLineBuilder::allDownloadableWads(const JoinError &joinError)
+void JoinCommandLineBuilder::allDownloadableWads(const JoinError &joinError, QStringList &required, QStringList &optional)
 {
-	QStringList wads;
 	if (!joinError.missingIwad().isEmpty())
 	{
-		wads << joinError.missingIwad();
+		required << joinError.missingIwad();
 	}
-	wads.append(joinError.missingWads());
-	return Wadseeker::filterAllowedOnlyWads(wads);
+
+	const QList<PWad> missingWads = joinError.missingWads();
+	foreach(const PWad &wad, missingWads)
+	{
+		if(wad.isOptional())
+			optional.append(wad.name());
+		else
+			required.append(wad.name());
+	}
+	required = Wadseeker::filterAllowedOnlyWads(required);
+	optional = Wadseeker::filterAllowedOnlyWads(optional);
 }
 
 bool JoinCommandLineBuilder::buildServerConnectParams(ServerConnectParams &params)
 {
-	if(d->server->isLockedAnywhere())
+	if (d->server->isLockedAnywhere())
 	{
-		PasswordDlg password(d->server);
-		int ret = password.exec();
-		if (ret != QDialog::Accepted)
+		if (!d->passwordsAlreadySet)
 		{
-			return false;
+			PasswordDlg password(d->server);
+			int ret = password.exec();
+			if (ret != QDialog::Accepted)
+			{
+				return false;
+			}
+			d->connectPassword = password.connectPassword();
+			d->inGamePassword = password.inGamePassword();
+			d->passwordsAlreadySet = true;
 		}
-		params.setConnectPassword(password.connectPassword());
-		params.setInGamePassword(password.inGamePassword());
+		params.setConnectPassword(d->connectPassword);
+		params.setInGamePassword(d->inGamePassword);
 	}
 
-	if (gConfig.doomseeker.bRecordDemo)
+	if (!d->demoName.isEmpty())
 	{
-		params.setDemoName(mkDemoName());
+		params.setDemoName(d->demoName);
 	}
 	return true;
+}
+
+const CommandLineInfo &JoinCommandLineBuilder::builtCommandLine() const
+{
+	return d->cli;
 }
 
 bool JoinCommandLineBuilder::checkServerStatus()
@@ -134,38 +168,15 @@ bool JoinCommandLineBuilder::checkWadseekerValidity(QWidget *parent)
 	return true;
 }
 
-int JoinCommandLineBuilder::displayMissingWadsMessage(const QStringList &downloadableWads,
-	const QString &message)
-{
-	QString fullMessage = message;
-	QString ignoreMessage;
-	QMessageBox::StandardButtons buttons = 0;
-	if (d->server->plugin()->data()->inGameFileDownloads)
-	{
-		ignoreMessage = tr("\nAlternatively use ignore to connect anyways.");
-		buttons |= QMessageBox::Ignore;
-	}
-
-	const QString CAPTION = tr("Doomseeker - files are missing");
-	if (!downloadableWads.isEmpty())
-	{
-		fullMessage += tr("\n\nFollowing files can be downloaded: %1\n\n"
-			"Do you want Wadseeker to find the missing WADs?").arg(downloadableWads.join(", "));
-		fullMessage += ignoreMessage;
-		buttons |= QMessageBox::Yes | QMessageBox::No;
-		return QMessageBox::question(d->parentWidget, CAPTION, fullMessage, buttons);
-	}
-	else
-	{
-		fullMessage += ignoreMessage;
-		buttons |= QMessageBox::Ok;
-		return QMessageBox::critical(d->parentWidget, CAPTION, fullMessage, buttons);
-	}
-}
-
 const QString &JoinCommandLineBuilder::error() const
 {
 	return d->error;
+}
+
+void JoinCommandLineBuilder::failBuild()
+{
+	d->cli = CommandLineInfo();
+	emit commandLineBuildFinished();
 }
 
 void JoinCommandLineBuilder::handleError(const JoinError &error)
@@ -185,64 +196,34 @@ void JoinCommandLineBuilder::handleError(const JoinError &error)
 			d->server->engineName()).arg(d->error);
 }
 
-JoinCommandLineBuilder::MissingWadsProceed JoinCommandLineBuilder::handleMissingWads(const JoinError &error)
+MissingWadsDialog::MissingWadsProceed JoinCommandLineBuilder::handleMissingWads(const JoinError &error)
 {
-	if (WadseekerInterface::isInstantiated())
-	{
-		QMessageBox::StandardButtons ret = 
-			QMessageBox::warning(d->parentWidget, tr("Doomseeker - files are missing"),
-				tr("You don't have all the files required by this server and an instance "
-					"of Wadseeker is already running.\n\n"
-					"Press 'Ignore' to join anyway."),
-				QMessageBox::Abort | QMessageBox::Ignore);
-		return ret == QMessageBox::Ignore ? Ignore : Cancel;;
-	}
-
-	QString filesMissingMessage = tr("Following files are missing:\n");
-
+	QList<PWad> missingWads;
 	if (!error.missingIwad().isEmpty())
 	{
-		filesMissingMessage += tr("IWAD: ") + error.missingIwad().toLower() + "\n";
-		if (Wadseeker::isForbiddenWad(error.missingIwad()))
-		{
-			filesMissingMessage += tr("\n"
-				"Make sure that this file is in one of the paths "
-				"specified in Options -> File Paths.\n"
-				"This file belongs to a commercial game or is otherwise "
-				"blocked from download. If you don't have this file, "
-				"and it belongs to a commercial game, "
-				"you need to purchase the game associated with this IWAD.\n"
-				"Wadseeker will not download commercial IWADs.\n\n");
-		}
+		missingWads << error.missingIwad();
 	}
-
 	if (!error.missingWads().isEmpty())
 	{
-		filesMissingMessage += tr("PWADS: %1").arg(error.missingWads().join(", "));
+		missingWads << error.missingWads();
 	}
-
-	QStringList downloadableWads = allDownloadableWads(error);
-	QMessageBox::StandardButtons ret = (QMessageBox::StandardButtons)
-		displayMissingWadsMessage(downloadableWads, filesMissingMessage);
-	if (ret == QMessageBox::Yes)
+	MissingWadsDialog dialog(missingWads, d->parentWidget);
+	if (dialog.exec() == QDialog::Accepted)
 	{
-		if (!gWadseekerShow->checkWadseekerValidity(d->parentWidget))
+		if (dialog.decision() == MissingWadsDialog::Install)
 		{
-			return Cancel;
+			if (!gWadseekerShow->checkWadseekerValidity(d->parentWidget))
+			{
+				return MissingWadsDialog::Cancel;
+			}
+			WadseekerInterface *wadseeker = WadseekerInterface::create(d->server);
+			this->connect(wadseeker, SIGNAL(finished(int)), SLOT(onWadseekerDone(int)));
+			wadseeker->setWads(dialog.filesToDownload());
+			wadseeker->setAttribute(Qt::WA_DeleteOnClose);
+			wadseeker->show();
 		}
-
-		WadseekerInterface *wadseeker = WadseekerInterface::create(d->server);
-		wadseeker->setWads(downloadableWads);
-		wadseeker->setAttribute(Qt::WA_DeleteOnClose);
-		// As Wadseeker window is asynchronous the control of game joining
-		// is delegated to the WadseekerShow singleton. The join process
-		// will be restarted once all WADs download and user still wishes
-		// to connect.
-		gWadseekerShow->registerWadseekerWithServer(d->server, wadseeker);
-		wadseeker->show();
-		return Cancel;
 	}
-	return ret == QMessageBox::Ignore ? Ignore : Cancel;
+	return dialog.decision();
 }
 
 bool JoinCommandLineBuilder::isConfigurationError() const
@@ -250,38 +231,27 @@ bool JoinCommandLineBuilder::isConfigurationError() const
 	return d->configurationError;
 }
 
-QString JoinCommandLineBuilder::mkDemoName()
+void JoinCommandLineBuilder::missingWadsClicked(QAbstractButton *button)
 {
-	// port-iwad-date-wad
-	QString demoName;
-	if (d->demo == Managed)
-	{
-		demoName = gDefaultDataPaths->demosDirectoryPath() + QDir::separator();
-	}
-	demoName += QString("%1_%2").
-		arg(d->server->engineName()).
-		arg(QDateTime::currentDateTime().toString("dd.MM.yyyy_hh.mm.ss"));
-	if (!d->server->plugin()->data()->demoExtensionAutomatic)
-	{
-		demoName += QString(".%1").arg(d->server->plugin()->data()->demoExtension);
-	}
-	return demoName;
+	d->lastButtonClicked = d->buttonBox->standardButton(button);
 }
 
-CommandLineInfo JoinCommandLineBuilder::obtainJoinCommandLine()
+void JoinCommandLineBuilder::obtainJoinCommandLine()
 {
 	assert(d->server != NULL);
 	d->cli = CommandLineInfo();
 
 	if (!checkServerStatus())
 	{
-		return CommandLineInfo();
+		failBuild();
+		return;
 	}
 
 	ServerConnectParams params;
 	if (!buildServerConnectParams(params))
 	{
-		return CommandLineInfo();
+		failBuild();
+		return;
 	}
 	GameClientRunner* gameRunner = d->server->gameRunner();
 	JoinError joinError = gameRunner->createJoinCommandLine(d->cli, params);
@@ -290,12 +260,14 @@ CommandLineInfo JoinCommandLineBuilder::obtainJoinCommandLine()
 	switch (joinError.type())
 	{
 		case JoinError::Terminate:
-			return CommandLineInfo();
+			failBuild();
+			return;
 		case JoinError::ConfigurationError:
 		case JoinError::Critical:
 		{
 			handleError(joinError);
-			return CommandLineInfo();
+			failBuild();
+			return;
 		}
 
 		case JoinError::CanAutomaticallyInstallGame:
@@ -304,31 +276,40 @@ CommandLineInfo JoinCommandLineBuilder::obtainJoinCommandLine()
 			{
 				obtainJoinCommandLine();
 			}
-			break;
+			else
+			{
+				failBuild();
+			}
+			return;
 		}
 
 		case JoinError::MissingWads:
 		{
-			MissingWadsProceed proceed = handleMissingWads(joinError);
+			MissingWadsDialog::MissingWadsProceed proceed =
+				handleMissingWads(joinError);
 			switch (proceed)
 			{
-				case Cancel:
-					return CommandLineInfo();
-				case Ignore:
+				case MissingWadsDialog::Cancel:
+					failBuild();
+					return;
+				case MissingWadsDialog::Ignore:
 					break;
-				case Retry:
-					return obtainJoinCommandLine();
+				case MissingWadsDialog::Install:
+					// async process; will call slot
+					return;
 				default:
 					gLog << "Bug: not sure how to proceed after \"MissingWads\".";
-					return CommandLineInfo();
+					failBuild();
+					return;
 			}
 			// Intentional fall through
 		}
 
 		case JoinError::NoError:
-			if (d->demo == Managed && gConfig.doomseeker.bRecordDemo)
+			if (d->demo == GameDemo::Managed)
 			{
-				saveDemoMetaData(mkDemoName());
+				GameDemo::saveDemoMetaData(d->demoName, *d->server->plugin(),
+					d->server->iwad(), d->server->wads());
 			}
 			break;
 
@@ -337,38 +318,34 @@ CommandLineInfo JoinCommandLineBuilder::obtainJoinCommandLine()
 			break;
 	}
 
-	return d->cli;
+	emit commandLineBuildFinished();
 }
 
-void JoinCommandLineBuilder::saveDemoMetaData(const QString& demoName)
+void JoinCommandLineBuilder::onWadseekerDone(int result)
 {
-	QString metaFileName;
-	// If the extension is automatic we need to add it here
-	if(d->server->plugin()->data()->demoExtensionAutomatic)
+	qDebug() << "onWadseekerDone:" << result;
+	if (result == QDialog::Accepted)
 	{
-		metaFileName = QString("%1.%2.ini").arg(demoName)
-			.arg(d->server->plugin()->data()->demoExtension);
+		obtainJoinCommandLine();
 	}
 	else
 	{
-		metaFileName = demoName + ".ini";
+		failBuild();
 	}
+}
 
-	QSettings settings(metaFileName, QSettings::IniFormat);
-	SettingsProviderQt settingsProvider(&settings);
-	Ini metaFile(&settingsProvider);
-	IniSection metaSection = metaFile.createSection("meta");
+ServerPtr JoinCommandLineBuilder::server() const
+{
+	return d->server;
+}
 
-	// Get a list of wads for demo name:
-	QStringList wadList;
-	for (int i = 0; i < d->server->numWads(); ++i)
-	{
-		// Also be sure to escape any underscores.
-		wadList << d->server->wad(i).name().toLower();
-	}
-
-	metaSection.createSetting("iwad", d->server->iwad().toLower());
-	metaSection.createSetting("pwads", wadList.join(";"));
+void JoinCommandLineBuilder::setPasswords(const QString &connectPassword, const QString &inGamePassword)
+{
+	d->passwordsAlreadySet = !(connectPassword.isNull() && inGamePassword.isNull());
+	if(!connectPassword.isNull())
+		d->connectPassword = connectPassword;
+	if(!inGamePassword.isNull())
+		d->inGamePassword = inGamePassword;
 }
 
 bool JoinCommandLineBuilder::tryToInstallGame()

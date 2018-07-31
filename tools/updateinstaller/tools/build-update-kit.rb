@@ -2,8 +2,25 @@
 
 #------------------------------------------------------------------------------
 # build-update-kit-win32.rb
+#------------------------------------------------------------------------------
 #
-# Copyright (C) 2013 "Zalewa" <zalewapl@gmail.com>
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301  USA
+#
+#------------------------------------------------------------------------------
+# Copyright (C) 2013 - 2015 "Zalewa" <zalewapl@gmail.com>
 #------------------------------------------------------------------------------
 
 # Instructions of use:
@@ -13,7 +30,6 @@
 # What this does:
 # 1. For every package that is returned by program when --version-json arg
 #    is used, there is a call to CREATE_PACKAGE_SCRIPT_NAME script.
-#    Wadseeker package is ignored as it is distributed as a part of Doomseeker.
 #    Platform, display version and suffix information is passed to this script
 #    as arguments.
 # 2. An output directory is determined basing on current timestamp and randomly
@@ -22,7 +38,7 @@
 # 3. CREATE_PACKAGE_SCRIPT_NAME script creates two files in the output
 #    directory. One file is a package .zip archive, the other is a Mendeley
 #    updater's XML script. Files are named basing on internal package name,
-#    revision, channel and platform.
+#    human-readable version, revision, channel and platform.
 # 4. If at least one package was created successfully, this script will
 #    create an "update-info.js" file. This file contains information on
 #    all packages for current channel. Doomseeker downloads this file each time
@@ -34,19 +50,25 @@
 # Requirements:
 # Following requirements must be met for this script to work correctly:
 # - "ruby" executable must be in ENV["PATH"].
-# - 'OS' gem must be installed:
-#   `gem install OS`
+# - 'os' gem must be installed:
+#   `gem install os`
 # - CREATE_PACKAGE_SCRIPT_NAME must exist in current working directory and its
 #   requirements must be met.
 # - PACKAGE_CONFIGS_DIR must exist and contain .js files, one for each package.
 #   .js files must be compliant with config-template.js. Files must be named
-#   after internal package names (doomseeker.js, p-chocolatedoom.js, etc.).
+#   after internal package names (doomseeker-core.js, p-chocolatedoom.js, etc.).
 # - Doomseeker binary packages need to be compiled beforehand and placed in
 #   a directory in a structure that is the same as after deployment on end-user
 #   system. All Doomseeker requirements and peripheral files must also be
 #   located in this directory (translations, plugins, runtime DLLs, etc.).
 #   `make install`, or INSTALL target in Visual Studio, should take care of
 #   creating appropriate structure.
+#
+# Usage from build script:
+#   Just run 'package_beta' or 'package_stable' targets. It'll take care of
+#   prior building and installation and spawn update packages in
+#   ${CMAKE_BUILD_DIR}. The exact, full, absolute path is always printed
+#   to stderr (console output) so check there if you can't find your package.
 #
 # Usage:
 #    Call pattern & arguments:
@@ -80,7 +102,7 @@ elsif OS.mac?
     MAIN_EXECUTABLE_FILENAME = "Contents/MacOS/doomseeker"
 end
 CREATE_PACKAGE_SCRIPT_NAME = "create-packages.rb"
-URL_BASE = "http://doomseeker.drdteam.org/updates/"
+URL_BASE = "https://doomseeker.drdteam.org/updates/"
 
 
 ###############################################################################
@@ -115,12 +137,16 @@ def obtain_version_information(binary_dir)
     end
 end
 
-def package_suffix(revision, channel, platform)
-    return "_#{revision}-#{channel}_#{platform}"
+def package_suffix(display_version, revision, channel, platform)
+    suffix = "#{revision}-#{channel}_#{platform}"
+    if display_version != revision
+        suffix = "#{display_version}_#{suffix}"
+    end
+    return "_#{suffix}"
 end
 
-def package_filename(pkg_name, revision, channel, platform)
-    return "#{pkg_name}#{package_suffix(revision, channel, platform)}.zip"
+def package_filename(pkg_name, display_version, revision, channel, platform)
+    return "#{pkg_name}#{package_suffix(display_version, revision, channel, platform)}.zip"
 end
 
 def extract_display_version(pkg_data)
@@ -131,17 +157,18 @@ end
 def process_package(pkg_name, channel, version_data, binary_dir, output_dir)
     # Create the package archive and .xml script by calling
     # the "create-packages" script.
-    
+
     # Extract necessary information on the package.
     revision = version_data["revision"]
     display_version = extract_display_version(version_data)
-    suffix = package_suffix(revision, channel, PACKAGE_PLATFORM)
+    suffix = package_suffix(display_version, revision, channel, PACKAGE_PLATFORM)
     # Get path to the .js config file required by the script.
     cfg_file_path = File.join(PACKAGE_CONFIGS_DIR, "#{pkg_name}.js")
     # Run script.
-    result = system("ruby", CREATE_PACKAGE_SCRIPT_NAME, "-p", PACKAGE_PLATFORM,
-        "-v", display_version, "--suffix", suffix,
-        binary_dir, cfg_file_path, output_dir)
+    scriptdir = File.dirname(__FILE__)
+    result = system("ruby", "#{scriptdir}/#{CREATE_PACKAGE_SCRIPT_NAME}",
+        "-p", PACKAGE_PLATFORM, "-v", display_version, "--suffix", suffix,
+        binary_dir, "#{scriptdir}/#{cfg_file_path}", output_dir)
     raise "Package generation failed." if !result
 end
 
@@ -151,8 +178,9 @@ def dump_update_info(output_path, channel, version_data)
     update_info = {}
     version_data.each do |pkg, pkg_info|
         revision = pkg_info["revision"]
-        filename = package_filename(pkg, revision, channel, PACKAGE_PLATFORM)
-        url = File.join(URL_BASE, filename)
+        display_version = extract_display_version(pkg_info)
+        filename = package_filename(pkg, display_version, revision, channel, PACKAGE_PLATFORM)
+        url = File.join(URL_BASE, PACKAGE_PLATFORM, channel, filename)
         update_info[pkg] = {
             "revision" => revision,
             "display-version" => extract_display_version(pkg_info),
@@ -168,7 +196,12 @@ def dump_update_info(output_path, channel, version_data)
 end
 
 def filter_blacklisted_packages(versions)
-    return versions.select {|pkg, data| pkg != "wadseeker"}
+    # TODO: blacklist doomseeker for 'beta' update channel,
+    # then hardcode a final doomseeker.zip package in the update-info file.
+    # This final doomseeker.zip should already be aware of split
+    # packages (qt.zip, wadseeker.zip, doomseeker-core.zip).
+    # And don't forget that Mac and Windows can be different here.
+    return versions
 end
 ###############################################################################
 # Script Contents
@@ -208,14 +241,19 @@ end
 
 versions = obtain_version_information(binary_dir)
 output_dir = spawn_unique_dir("upkgs-#{target_channel}")
+packages_output_dir = File.join(output_dir, PACKAGE_PLATFORM, target_channel)
 
 # Process packages.
 successes = []
 failures = []
 versions.each do |pkg_name, version_data|
+    if pkg_name == "doomseeker"
+        $stderr.puts "==== Skipping: #{pkg_name}"
+        next
+    end
     begin
         $stderr.puts "==== Now processing: #{pkg_name}"
-        process_package(pkg_name, target_channel, version_data, binary_dir, output_dir)
+        process_package(pkg_name, target_channel, version_data, binary_dir, packages_output_dir)
         successes << pkg_name
     rescue
         puts $@, $!
@@ -237,6 +275,8 @@ end
 
 if !successes.empty?
     $stderr.puts "Created packages are in directory: #{output_dir}"
+    fullpath = File.expand_path(output_dir)
+    $stderr.puts "#{fullpath}"
     # If at least one package was successful create the update-info.js file.
     update_info_path = File.join(output_dir, "update-info_#{PACKAGE_PLATFORM}_#{target_channel}.js")
     $stderr.puts "Creating update info file: #{update_info_path}"

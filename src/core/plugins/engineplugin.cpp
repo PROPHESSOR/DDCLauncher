@@ -2,33 +2,37 @@
 // engineplugin.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2011 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2011 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
-#include "gui/configuration/engineconfigurationbasebox.h"
+#include "gui/configuration/engineconfigpage.h"
+#include "ini/ini.h"
 #include "irc/entities/ircnetworkentity.h"
+#include "pathfinder/pathfind.h"
+#include "plugins/enginedefaults.h"
 #include "plugins/engineplugin.h"
 #include "serverapi/gameexefactory.h"
+#include "serverapi/gamefile.h"
 #include "serverapi/gamehost.h"
 #include "serverapi/server.h"
 #include "log.h"
-#include "strings.h"
+#include "strings.hpp"
 
 #include <cstdarg>
 #include <QPixmap>
@@ -36,23 +40,27 @@
 EnginePlugin::Data::Data()
 {
 	// Init the defaults.
-	allDMFlags = NULL;
 	allowsConnectPassword = false;
+	allowsClientSlots = true;
+	allowsPlayerSlots = true;
 	allowsEmail = false;
 	allowsJoinPassword = false;
 	allowsMOTD = false;
 	allowsRConPassword = false;
 	allowsURL = false;
+	allowsUpnp = false;
+	allowsUpnpPort = false;
+	broadcast = NULL;
 	clientOnly = false;
 	createDMFlagsPagesAutomatic = true;
 	defaultServerPort = 10666;
 	demoExtensionAutomatic = true;
 	demoExtension = "lmp";
-	gameModes = NULL;
-	gameModifiers = NULL;
-	hasMasterServer = false;
+	hasIwad = true;
+	hasMapList = true;
 	icon = NULL;
 	inGameFileDownloads = false;
+	masterClient = NULL;
 	pConfig = NULL;
 	refreshThreshold = 2;
 	supportsRandomMapRotation = false;
@@ -66,7 +74,8 @@ EnginePlugin::EnginePlugin()
 {
 	d = new Data;
 
-	d->gameExeFactory = new GameExeFactory(this);
+	d->gameExeFactory = QSharedPointer<GameExeFactory>(new GameExeFactory(this));
+	d->difficulty = QSharedPointer<DefaultDifficultyProvider>(new DefaultDifficultyProvider());
 
 	// At the moment I can't think of how we would support any ABI other than
 	// the current, but I suppose we might as well keep track of it?
@@ -77,18 +86,37 @@ EnginePlugin::~EnginePlugin()
 {
 	delete d->icon;
 	delete d->pConfig;
-	delete d->gameExeFactory;
 	delete d;
 }
 
-ConfigurationBaseBox* EnginePlugin::configuration(QWidget *parent) const
+ConfigPage* EnginePlugin::configuration(QWidget *parent)
 {
-	return new EngineConfigurationBaseBox(this, *d->pConfig, parent);
+	return new EngineConfigPage(this, *d->pConfig, parent);
+}
+
+QList<DMFlagsSection> EnginePlugin::dmFlags() const
+{
+	return QList<DMFlagsSection>();
+}
+
+GameExeFactory* EnginePlugin::gameExe()
+{
+	return data()->gameExeFactory.data();
 }
 
 GameHost* EnginePlugin::gameHost()
 {
 	return new GameHost(this);
+}
+
+QList<GameMode> EnginePlugin::gameModes() const
+{
+	return QList<GameMode>();
+}
+
+QList<GameCVar> EnginePlugin::gameModifiers() const
+{
+	return QList<GameCVar>();
 }
 
 void EnginePlugin::init(const char* name, const char* const icon[], ...)
@@ -118,9 +146,6 @@ void EnginePlugin::init(const char* name, const char* const icon[], ...)
 				d->version = va_arg(va, unsigned int);
 				break;
 
-			case EP_AllDMFlags:
-				d->allDMFlags = va_arg(va, const QList<DMFlagsSection>*);
-				break;
 			case EP_AllowsConnectPassword:
 				d->allowsConnectPassword = true;
 				break;
@@ -139,6 +164,15 @@ void EnginePlugin::init(const char* name, const char* const icon[], ...)
 			case EP_AllowsMOTD:
 				d->allowsMOTD = true;
 				break;
+			case EP_AllowsUpnp:
+				d->allowsUpnp = true;
+				break;
+			case EP_AllowsUpnpPort:
+				d->allowsUpnpPort = true;
+				break;
+			case EP_Broadcast:
+				d->broadcast = va_arg(va, Broadcast*);
+				break;
 			case EP_ClientOnly:
 				d->clientOnly = true;
 				break;
@@ -152,17 +186,11 @@ void EnginePlugin::init(const char* name, const char* const icon[], ...)
 				d->demoExtensionAutomatic = va_arg(va, unsigned int);
 				d->demoExtension = va_arg(va, const char*);
 				break;
+			case EP_DifficultyProvider:
+				d->difficulty = QSharedPointer<GameCVarProvider>(va_arg(va, GameCVarProvider*));
+				break;
 			case EP_DontCreateDMFlagsPagesAutomatic:
 				d->createDMFlagsPagesAutomatic = false;
-				break;
-			case EP_GameModes:
-				d->gameModes = va_arg(va, QList<GameMode>*);
-				break;
-			case EP_GameModifiers:
-				d->gameModifiers = va_arg(va, QList<GameCVar>*);
-				break;
-			case EP_HasMasterServer:
-				d->hasMasterServer = true;
 				break;
 			case EP_InGameFileDownloads:
 				d->inGameFileDownloads = true;
@@ -184,6 +212,21 @@ void EnginePlugin::init(const char* name, const char* const icon[], ...)
 					d->ircChannels << entity;
 				break;
 			}
+			case EP_MasterClient:
+				d->masterClient = va_arg(va, MasterClient*);
+				break;
+			case EP_NoClientSlots:
+				d->allowsClientSlots = false;
+				break;
+			case EP_NoPlayerSlots:
+				d->allowsPlayerSlots = false;
+				break;
+			case EP_NoIwad:
+				d->hasIwad = false;
+				break;
+			case EP_NoMapList:
+				d->hasMapList = false;
+				break;
 			case EP_SupportsRandomMapRotation:
 				d->supportsRandomMapRotation = true;
 				break;
@@ -193,6 +236,18 @@ void EnginePlugin::init(const char* name, const char* const icon[], ...)
 			case EP_RefreshThreshold:
 				d->refreshThreshold = va_arg(va, unsigned int);
 				break;
+			case EP_ClientExeName:
+				d->clientExeName = va_arg(va, const char*);
+				break;
+			case EP_ServerExeName:
+				d->serverExeName = va_arg(va, const char*);
+				break;
+			case EP_GameFileSearchSuffixes:
+			{
+				QString suffixes = va_arg(va, const char*);
+				d->gameFileSearchSuffixes = suffixes.split(";", QString::SkipEmptyParts);
+				break;
+			}
 		}
 	}
 
@@ -205,6 +260,14 @@ void EnginePlugin::masterHost(QString &host, unsigned short &port) const
 	Strings::translateServerAddress(str, host, port, d->defaultMaster);
 }
 
+QString EnginePlugin::nameCanonical() const
+{
+	QString name = data()->name;
+	name = name.toLower();
+	name = name.replace(QRegExp("\\s"), "_");
+	return name;
+}
+
 ServerPtr EnginePlugin::server(const QHostAddress &address, unsigned short port) const
 {
 	ServerPtr server = mkServer(address, port);
@@ -212,11 +275,51 @@ ServerPtr EnginePlugin::server(const QHostAddress &address, unsigned short port)
 	return server;
 }
 
-void EnginePlugin::setConfig(IniSection &ini) const
+void EnginePlugin::setConfig(IniSection &ini)
 {
 	d->pConfig = new IniSection(ini);
 
 	ini.createSetting("Masterserver", data()->defaultMaster);
+	findGameFiles(ini);
 
 	setupConfig(ini);
+}
+
+void EnginePlugin::setupConfig(IniSection &config)
+{
+}
+
+void EnginePlugin::setGameExeFactory(QSharedPointer<GameExeFactory> factory)
+{
+	d->gameExeFactory = factory;
+}
+
+void EnginePlugin::findGameFiles(IniSection &ini)
+{
+	foreach (const GameFile &file, gameExe()->gameFiles().asQList())
+	{
+		if (!ini.hasSetting(file.configName()))
+		{
+			QString path = PathFind::findGameFile(collectKnownPaths(ini), file);
+			ini[file.configName()] = path;
+		}
+	}
+}
+
+QStringList EnginePlugin::collectKnownPaths(const IniSection &ini) const
+{
+	QStringList paths;
+	foreach (const GameFile &file, data()->gameExeFactory->gameFiles().asQList())
+	{
+		QString path = ini.retrieveSetting(file.configName()).valueString();
+		if (!path.isEmpty())
+		{
+			paths << path;
+		}
+	}
+	return paths;
+}
+
+void EnginePlugin::start()
+{
 }

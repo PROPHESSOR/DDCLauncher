@@ -2,63 +2,82 @@
 // mainwindow.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "configuration/doomseekerconfig.h"
+#include "configuration/queryspeed.h"
 #include "gui/configuration/irc/ircconfigurationdialog.h"
 #include "gui/configuration/doomseekerconfigurationdialog.h"
 #include "gui/helpers/playersdiagram.h"
+#include "gui/irc/ircdock.h"
 #include "gui/irc/ircsounds.h"
+#include "gui/models/serverlistmodel.h"
 #include "gui/widgets/serversstatuswidget.h"
 #include "gui/aboutdialog.h"
 #include "gui/copytextdlg.h"
 #include "gui/createserverdialog.h"
 #include "gui/demomanager.h"
 #include "gui/dockBuddiesList.h"
+#include "gui/helpers/taskbarbutton.h"
+#include "gui/helpers/taskbarprogress.h"
+#include "gui/freedoomdialog.h"
 #include "gui/ip2cupdatebox.h"
+#include "gui/logdock.h"
 #include "gui/mainwindow.h"
-#include "gui/passwordDlg.h"
+#include "gui/programargshelpdialog.h"
 #include "gui/serverdetailsdock.h"
 #include "gui/serverfilterdock.h"
+#include "gui/serverlist.h"
 #include "gui/wadseekerinterface.h"
 #include "gui/wadseekershow.h"
 #include "ip2c/ip2cloader.h"
+#include "irc/configuration/chatnetworkscfg.h"
 #include "irc/configuration/ircconfig.h"
 #include "pathfinder/pathfinder.h"
 #include "plugins/engineplugin.h"
+#include "plugins/pluginloader.h"
 #include "refresher/refresher.h"
+#include "serverapi/broadcast.h"
+#include "serverapi/broadcastmanager.h"
 #include "serverapi/gameclientrunner.h"
+#include "serverapi/mastermanager.h"
 #include "serverapi/message.h"
 #include "serverapi/server.h"
+#include "serverapi/serverlistcounttracker.h"
 #include "updater/autoupdater.h"
 #include "updater/updatechannel.h"
 #include "updater/updateinstaller.h"
 #include "updater/updatepackage.h"
+#include "apprunner.h"
 #include "commandline.h"
 #include "connectionhandler.h"
 #include "customservers.h"
+#include "datapaths.h"
 #include "doomseekerfilepaths.h"
 #include "fileutils.h"
+#include "gamedemo.h"
 #include "joincommandlinebuilder.h"
+#include "pathfinder/wadpathfinder.h"
 #include "log.h"
 #include "main.h"
-#include "strings.h"
+#include "strings.hpp"
+#include "ui_mainwindow.h"
 #include <cassert>
 #include <QAction>
 #include <QApplication>
@@ -66,39 +85,143 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 #include <QFileInfo>
-#include <QIcon>
 #include <QHeaderView>
+#include <QIcon>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QPointer>
+#include <QProgressBar>
 #include <QToolBar>
 #include <QSizePolicy>
 
-const QString MainWindow::HELP_SITE_URL = "http://doomseeker.drdteam.org/help";
+const QString MainWindow::HELP_SITE_URL = "https://doomseeker.drdteam.org/help";
+
+/**
+ *	@brief Menu action for Query Menu
+ *
+ *	Replaces the original QAction to make toggling of master clients easier.
+ *	The constructor automatically connects the passed MasterClient's
+ *	setEnabled() slot to this QueryMenuAction toggled() signal.
+ */
+class QueryMenuAction : public QAction
+{
+	public:
+		QueryMenuAction(const EnginePlugin *plugin, ServersStatusWidget *statusWidget, QObject* parent = NULL)
+		:QAction(parent)
+		{
+			this->pPlugin = plugin;
+
+			if (plugin != NULL)
+			{
+				connect(this, SIGNAL( toggled(bool) ), plugin->data()->masterClient,
+					SLOT( setEnabled(bool) ) );
+				connect(this, SIGNAL( toggled(bool) ), statusWidget, SLOT( setMasterEnabledStatus(bool) ) );
+			}
+		}
+
+		const EnginePlugin* plugin() const
+		{
+			return pPlugin;
+		}
+
+	private:
+		const EnginePlugin* pPlugin;
+};
+
+DClass<MainWindow> : public Ui::MainWindowWnd
+{
+public:
+	PrivData() : bTotalRefreshInProcess(false), buddiesList(NULL),
+	bWasMaximized(false), bWantToQuit(false), logDock(NULL),
+	masterManager(NULL), trayIcon(NULL), trayIconMenu(NULL)
+	{
+	}
+
+	QApplication* application;
+	QTimer autoRefreshTimer;
+
+	AutoUpdater* autoUpdater;
+	QWidget* autoUpdaterStatusBarWidget;
+	QPushButton* autoUpdaterAbortButton;
+	QLabel* autoUpdaterLabel;
+	QProgressBar* autoUpdaterFileProgressBar;
+	QProgressBar* autoUpdaterOverallProgressBar;
+
+	/**
+	 * Set to true by btnGetServers_click() process and to false
+	 * when refreshing thread enters sleep mode.
+	 */
+	bool bTotalRefreshInProcess;
+
+	DockBuddiesList* buddiesList;
+	BroadcastManager *broadcastManager;
+
+	/**
+	 * This is required so tray icon knows how to bring the window back.
+	 */
+	bool bWasMaximized;
+
+	/**
+	 * If set to true the closeEvent() method will ignore tray icon
+	 * settings and proceed to close the MainWindow. This is set by
+	 * quitProgram() slot.
+	 */
+	bool bWantToQuit;
+
+	IP2CLoader* ip2cLoader;
+	QProgressBar* ip2cUpdateProgressBar;
+	IRCDock* ircDock;
+	LogDock* logDock;
+	ServerDetailsDock* detailsDock;
+	QPointer<FreedoomDialog> freedoomDialog;
+	ServerFilterDock* serverFilterDock;
+	ServerList* serverList;
+
+	MasterManager* masterManager;
+	QHash<const EnginePlugin*, QueryMenuAction*> queryMenuPorts;
+	QHash<const EnginePlugin*, ServersStatusWidget*> serversStatusesWidgets;
+	QAction* toolBarGetServers;
+	QSystemTrayIcon* trayIcon;
+	QMenu* trayIconMenu;
+	/// Update should be discarded if this changes.
+	UpdateChannel* updateChannelOnUpdateStart;
+	int updaterInstallerErrorCode;
+
+	ConnectionHandler *connectionHandler;
+	QDockWidget *mainDock;
+
+	TaskbarProgress *taskbarProgress;
+	TaskbarButton *taskbarButton;
+};
+
+DPointeredNoCopy(MainWindow)
 
 MainWindow::MainWindow(QApplication* application, int argc, char** argv)
-: bTotalRefreshInProcess(false), buddiesList(NULL), bWasMaximized(false),
-  bWantToQuit(false), logDock(NULL), masterManager(NULL),
-  trayIcon(NULL), trayIconMenu(NULL)
 {
-	autoUpdater = NULL;
-	mainDock = NULL;
-	connectionHandler = NULL;
-	updateChannelOnUpdateStart = new UpdateChannel();
-	updaterInstallerErrorCode = 0;
+	d->autoUpdater = NULL;
+	d->mainDock = NULL;
+	d->connectionHandler = NULL;
+	d->updateChannelOnUpdateStart = new UpdateChannel();
+	d->updaterInstallerErrorCode = 0;
 
-	this->application = application;
+	d->application = application;
 
 	this->setAttribute(Qt::WA_DeleteOnClose, true);
-	setupUi(this);
+	d->setupUi(this);
+
+	d->taskbarButton = new TaskbarButton(this);
+	d->taskbarProgress = d->taskbarButton->progress();
+
 	setupIcons();
 
 	initAutoUpdaterWidgets();
 
-	updatesConfirmationWidget->hide();
-	updatesDownloadedWidget->hide();
+	d->updatesConfirmationWidget->hide();
+	d->updatesDownloadedWidget->hide();
 
 	// Hide menu options which aren't supported on target platform.
 	#ifndef WITH_AUTOUPDATES
-		menuActionCheckForUpdates->setVisible(false);
+		d->menuActionCheckForUpdates->setVisible(false);
 	#endif
 
 	if (gPlugins->numPlugins() == 0)
@@ -116,75 +239,59 @@ MainWindow::MainWindow(QApplication* application, int argc, char** argv)
 	initIP2CUpdater();
 
 	// The buddies list must always be available so we can perform certain operations on it
-	buddiesList = new DockBuddiesList(this);
-	menuView->addAction(buddiesList->toggleViewAction());
-	buddiesList->toggleViewAction()->setText(tr("&Buddies"));
-	buddiesList->toggleViewAction()->setShortcut(tr("CTRL+B"));
+	d->buddiesList = new DockBuddiesList(this);
+	d->menuView->addAction(d->buddiesList->toggleViewAction());
+	d->buddiesList->toggleViewAction()->setText(tr("&Buddies"));
+	d->buddiesList->toggleViewAction()->setShortcut(tr("CTRL+B"));
 
-	connect(buddiesList, SIGNAL( joinServer(ServerPtr) ), this, SLOT( runGame(ServerPtr) ));
-	buddiesList->hide();
-	this->addDockWidget(Qt::LeftDockWidgetArea, buddiesList);
+	connect(d->buddiesList, SIGNAL(joinServer(ServerPtr)), this, SLOT(runGame(ServerPtr)));
+	d->buddiesList->hide();
+	this->addDockWidget(Qt::LeftDockWidgetArea, d->buddiesList);
 	initLogDock();
 	initIRCDock();
 	initServerFilterDock();
 	initMainDock();
-	splitDockWidget(mainDock, serverFilterDock, Qt::Horizontal);
+	splitDockWidget(d->mainDock, d->serverFilterDock, Qt::Horizontal);
 
 	// Spawn Server Table Handler.
-	serverTableHandler = new ServerListHandler(tableServers, this);
+	d->serverList = new ServerList(d->tableServers, this);
 	connectEntities();
 
+	d->broadcastManager = new BroadcastManager(this);
+	d->serverList->connect(d->broadcastManager,
+		SIGNAL(newServerDetected(ServerPtr, int)), SLOT(registerServer(ServerPtr)));
+	d->serverList->connect(d->broadcastManager,
+		SIGNAL(serverLost(ServerPtr)), SLOT(removeServer(ServerPtr)));
+
 	initServerDetailsDock();
-	tabifyDockWidget(ircDock, detailsDock);
-
-	// Calculate screen center.
-	int screenWidth = QApplication::desktop()->width();
-	int screenHeight = QApplication::desktop()->height();
-
-	// Window geometry settings
-	if (!gConfig.doomseeker.areMainWindowSizeSettingsValid(screenWidth, screenHeight))
-	{
-		gConfig.doomseeker.mainWindowX = (screenWidth - width()) / 2;
-		gConfig.doomseeker.mainWindowY = (screenHeight - height()) / 2;
-		gConfig.doomseeker.mainWindowWidth = width();
-		gConfig.doomseeker.mainWindowHeight = height();
-	}
-	else if (gConfig.doomseeker.mainWindowY < 0)
-	{
-		// Do not allow y values less than zero anyway.
-		// We do not want to loose the titlebar.
-		gConfig.doomseeker.mainWindowY = 0;
-	}
-
-	move(gConfig.doomseeker.mainWindowX, gConfig.doomseeker.mainWindowY);
-	resize(gConfig.doomseeker.mainWindowWidth, gConfig.doomseeker.mainWindowHeight);
-
-	restoreState(QByteArray::fromBase64(gConfig.doomseeker.mainWindowState.toAscii()));
+	tabifyDockWidget(d->ircDock, d->detailsDock);
 
 	// Restore checked states.
-	menuActionRecordDemo->setChecked(gConfig.doomseeker.bRecordDemo);
+	d->menuActionRecordDemo->setChecked(gConfig.doomseeker.bRecordDemo);
 
 	// Get the master
-	masterManager = new MasterManager();
-	buddiesList->scan(masterManager);
-	connect(masterManager, SIGNAL( masterMessage(MasterClient*, const QString&, const QString&, bool) ),
+	d->masterManager = new MasterManager();
+	d->buddiesList->scan(d->masterManager);
+	connect(d->masterManager, SIGNAL( masterMessage(MasterClient*, const QString&, const QString&, bool) ),
 		this, SLOT( masterManagerMessages(MasterClient*, const QString&, const QString&, bool) ) );
-	connect(masterManager, SIGNAL( masterMessageImportant(MasterClient*, const Message&) ),
+	connect(d->masterManager, SIGNAL( masterMessageImportant(MasterClient*, const Message&) ),
 		this, SLOT( masterManagerMessagesImportant(MasterClient*, const Message&) ));
 
 	// Allow us to enable and disable ports.
-	fillQueryMenu(masterManager);
+	fillQueryMenu(d->masterManager);
 
 	// Init custom servers
-	masterManager->customServs()->readConfig(serverTableHandler,
-		SLOT(serverUpdated(ServerPtr, int)),
-		SLOT(serverBegunRefreshing(ServerPtr)) );
+	QList<ServerPtr> customServers = d->masterManager->customServs()->readConfig();
+	foreach (ServerPtr server, customServers)
+	{
+		d->serverList->registerServer(server);
+	}
 
 	setWindowIcon(QIcon(":/icon.png"));
 
 	// Auto refresh timer
 	initAutoRefreshTimer();
-	connect(&autoRefreshTimer, SIGNAL( timeout() ), this, SLOT( autoRefreshTimer_timeout() ));
+	connect(&d->autoRefreshTimer, SIGNAL( timeout() ), this, SLOT( autoRefreshTimer_timeout() ));
 
 	// Tray icon
 	initTrayIcon();
@@ -192,13 +299,16 @@ MainWindow::MainWindow(QApplication* application, int argc, char** argv)
 	setupToolBar();
 
 	// Player diagram styles
-	int slotStyle = gConfig.doomseeker.slotStyle;
-	PlayersDiagram::loadImages(slotStyle);
+	PlayersDiagram::loadImages(gConfig.doomseeker.slotStyle);
 
 	// IP2C
-	ip2cLoader = new IP2CLoader();
-	connectIP2CLoader(ip2cLoader);
-	ip2cLoader->load();
+	d->menuActionUpdateIP2C->setEnabled(false);
+	d->ip2cLoader = new IP2CLoader();
+	connectIP2CLoader(d->ip2cLoader);
+	d->ip2cLoader->load();
+
+	restoreState(QByteArray::fromBase64(gConfig.doomseeker.mainWindowState.toUtf8()));
+	restoreGeometry(gConfig.doomseeker.mainWindowGeometry);
 
 	// Start first refresh from a timer. We want the main window fully
 	// set up before refresh.
@@ -207,35 +317,26 @@ MainWindow::MainWindow(QApplication* application, int argc, char** argv)
 
 MainWindow::~MainWindow()
 {
-	if (updateChannelOnUpdateStart != NULL)
-	{
-		delete updateChannelOnUpdateStart;
-	}
-	if (autoUpdater != NULL)
-	{
-		autoUpdater->disconnect();
-		delete autoUpdater;
-	}
-	if(connectionHandler)
-		delete connectionHandler;
-
 	// Window geometry settings
-	gConfig.doomseeker.bMainWindowMaximized = isMaximized();
-	if (!isMaximized() && !isMinimized())
-	{
-		gConfig.doomseeker.mainWindowX = x();
-		gConfig.doomseeker.mainWindowY = y();
-		gConfig.doomseeker.mainWindowWidth = width();
-		gConfig.doomseeker.mainWindowHeight = height();
-	}
-
+	gConfig.doomseeker.mainWindowGeometry = saveGeometry();
 	gConfig.doomseeker.mainWindowState = saveState().toBase64();
 
-	QList<QAction*> menuQueryActions = menuQuery->actions();
-	QList<QAction*>::iterator it;
-	for (it = menuQueryActions.begin(); it != menuQueryActions.end(); ++it)
+	if (d->updateChannelOnUpdateStart != NULL)
 	{
-		QAction* action = *it;
+		delete d->updateChannelOnUpdateStart;
+	}
+	if (d->autoUpdater != NULL)
+	{
+		d->autoUpdater->disconnect();
+		delete d->autoUpdater;
+	}
+	if(d->connectionHandler)
+		delete d->connectionHandler;
+
+	QList<QAction*> menuQueryActions = d->menuQuery->actions();
+	QList<QAction*>::iterator it;
+	foreach (QAction *action, menuQueryActions)
+	{
 		QString pluginName = action->text();
 
 		if (!pluginName.isEmpty())
@@ -245,37 +346,37 @@ MainWindow::~MainWindow()
 		}
 	}
 
-	if (trayIcon != NULL)
+	if (d->trayIcon != NULL)
 	{
-		trayIcon->setVisible(false);
-		delete trayIcon;
-		trayIcon = NULL;
+		d->trayIcon->setVisible(false);
+		delete d->trayIcon;
+		d->trayIcon = NULL;
 	}
 
-	if (trayIconMenu != NULL)
+	if (d->trayIconMenu != NULL)
 	{
-		delete trayIconMenu;
-		trayIconMenu = NULL;
+		delete d->trayIconMenu;
+		d->trayIconMenu = NULL;
 	}
 
-	delete serverTableHandler;
+	delete d->serverList;
 
-	if(masterManager != NULL)
+	if(d->masterManager != NULL)
 	{
-		delete masterManager;
+		delete d->masterManager;
 	}
 
-	if (ip2cLoader != NULL)
+	if (d->ip2cLoader != NULL)
 	{
-		delete ip2cLoader;
+		delete d->ip2cLoader;
 	}
 }
 
 void MainWindow::abortAutoUpdater()
 {
-	if (autoUpdater != NULL)
+	if (d->autoUpdater != NULL)
 	{
-		autoUpdater->abort();
+		d->autoUpdater->abort();
 	}
 }
 
@@ -294,15 +395,19 @@ void MainWindow::autoRefreshTimer_timeout()
 
 void MainWindow::blockRefreshButtons()
 {
-	toolBarGetServers->setEnabled(false);
-	toolBarRefreshAll->setEnabled(false);
+	d->toolBarGetServers->setEnabled(false);
+}
+
+DockBuddiesList *MainWindow::buddiesList()
+{
+	return d->buddiesList;
 }
 
 void MainWindow::changeEvent(QEvent* event)
 {
 	if (event->type() == QEvent::ActivationChange && isActiveWindow() && !isMinimized() && !isHidden())
 	{
-		serverTableHandler->cleanUp();
+		d->serverList->cleanUp();
 		event->accept();
 	}
 	QMainWindow::changeEvent(event);
@@ -310,9 +415,9 @@ void MainWindow::changeEvent(QEvent* event)
 
 void MainWindow::checkForUpdates(bool bUserTriggered)
 {
-	if (autoUpdater != NULL)
+	if (d->autoUpdater != NULL)
 	{
-		if (autoUpdater->isRunning())
+		if (d->autoUpdater->isRunning())
 		{
 			QMessageBox::warning(this, tr("Doomseeker - Auto Update"),
 				tr("Update is already in progress."));
@@ -320,8 +425,8 @@ void MainWindow::checkForUpdates(bool bUserTriggered)
 		}
 		else
 		{
-			delete autoUpdater;
-			autoUpdater = NULL;
+			delete d->autoUpdater;
+			d->autoUpdater = NULL;
 		}
 	}
 	gLog << tr("Removing old update packages from local temporary space.");
@@ -329,33 +434,35 @@ void MainWindow::checkForUpdates(bool bUserTriggered)
 	FileUtils::rmAllFiles(DoomseekerFilePaths::updatePackagesStorageDir(),
 		removeFilter);
 
-	gLog << tr("Checking for updates...");
-	autoUpdater = new AutoUpdater();
-	this->connect(autoUpdater, SIGNAL(finished()),
+	showAndLogStatusMessage(tr("Checking for updates..."));
+	d->autoUpdater = new AutoUpdater();
+	this->connect(d->autoUpdater, SIGNAL(statusMessage(QString)),
+		SLOT(showAndLogStatusMessage(QString)));
+	this->connect(d->autoUpdater, SIGNAL(finished()),
 		SLOT(onAutoUpdaterFinish()));
-	this->connect(autoUpdater, SIGNAL(downloadAndInstallConfirmationRequested()),
+	this->connect(d->autoUpdater, SIGNAL(downloadAndInstallConfirmationRequested()),
 		SLOT(onAutoUpdaterDownloadAndInstallConfirmationRequest()));
-	this->connect(autoUpdater, SIGNAL(overallProgress(int, int, const QString&)),
+	this->connect(d->autoUpdater, SIGNAL(overallProgress(int, int, const QString&)),
 		SLOT(onAutoUpdaterOverallProgress(int, int, const QString&)));
-	this->connect(autoUpdater, SIGNAL(packageDownloadProgress(qint64, qint64)),
+	this->connect(d->autoUpdater, SIGNAL(packageDownloadProgress(qint64, qint64)),
 		SLOT(onAutoUpdaterFileProgress(qint64, qint64)));
 
-	QMap<QString, QList<unsigned long long> > ignoredPackagesRevisions;
+	QMap<QString, QList<QString> > ignoredPackagesRevisions;
 	if (!bUserTriggered)
 	{
 		foreach (const QString& package, gConfig.autoUpdates.lastKnownUpdateRevisions.keys())
 		{
-			unsigned long long revision = gConfig.autoUpdates.lastKnownUpdateRevisions[package];
-			QList<unsigned long long> list;
+			QString revision = gConfig.autoUpdates.lastKnownUpdateRevisions[package];
+			QList<QString> list;
 			list << revision;
 			ignoredPackagesRevisions.insert(package, list);
 		}
 	}
-	autoUpdater->setIgnoreRevisions(ignoredPackagesRevisions);
+	d->autoUpdater->setIgnoreRevisions(ignoredPackagesRevisions);
 
 	UpdateChannel channel = UpdateChannel::fromName(gConfig.autoUpdates.updateChannelName);
-	autoUpdater->setChannel(channel);
-	*updateChannelOnUpdateStart = channel;
+	d->autoUpdater->setChannel(channel);
+	*d->updateChannelOnUpdateStart = channel;
 
 	bool bRequireConfirmation = true;
 	if (!bUserTriggered)
@@ -363,9 +470,9 @@ void MainWindow::checkForUpdates(bool bUserTriggered)
 		bRequireConfirmation = (gConfig.autoUpdates.updateMode
 			!= DoomseekerConfig::AutoUpdates::UM_FullAuto);
 	}
-	autoUpdater->setRequireDownloadAndInstallConfirmation(bRequireConfirmation);
-	autoUpdaterStatusBarWidget->show();
-	autoUpdater->start();
+	d->autoUpdater->setRequireDownloadAndInstallConfirmation(bRequireConfirmation);
+	d->autoUpdaterStatusBarWidget->show();
+	d->autoUpdater->start();
 }
 
 
@@ -385,10 +492,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
 	// Check if tray icon is available and if we want to minimize to tray icon
 	// when 'X' button is pressed. Real quit requests are handled by
-	// quitProgram() method. This method sets bWantToQuit to true.
-	if (trayIcon != NULL && gConfig.doomseeker.bCloseToTrayIcon && !bWantToQuit)
+	// quitProgram() method. This method sets d->bWantToQuit to true.
+	if (d->trayIcon != NULL && gConfig.doomseeker.bCloseToTrayIcon && !d->bWantToQuit)
 	{
-		bWasMaximized = isMaximized();
+		d->bWasMaximized = isMaximized();
 		event->ignore();
 		hide();
 	}
@@ -400,30 +507,30 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::confirmUpdateInstallation()
 {
-	assert(autoUpdater != NULL && "MainWindow::confirmUpdateInstallation()");
-	updatesConfirmationWidget->hide();
-	autoUpdater->confirmDownloadAndInstall();
+	assert(d->autoUpdater != NULL && "MainWindow::confirmUpdateInstallation()");
+	d->updatesConfirmationWidget->hide();
+	d->autoUpdater->confirmDownloadAndInstall();
 }
 
 void MainWindow::connectIP2CLoader(IP2CLoader* loader)
 {
-	this->connect(ip2cLoader, SIGNAL( finished() ), SLOT( ip2cJobsFinished()));
-	this->connect(ip2cLoader, SIGNAL( downloadProgress(qint64, qint64) ),
+	this->connect(d->ip2cLoader, SIGNAL( finished() ), SLOT( ip2cJobsFinished()));
+	this->connect(d->ip2cLoader, SIGNAL( downloadProgress(qint64, qint64) ),
 		SLOT( ip2cDownloadProgress(qint64, qint64) ) );
 }
 
 void MainWindow::discardUpdates()
 {
-	assert(autoUpdater != NULL && "MainWindow::confirmUpdateInstallation()");
-	updatesConfirmationWidget->hide();
+	assert(d->autoUpdater != NULL && "MainWindow::confirmUpdateInstallation()");
+	d->updatesConfirmationWidget->hide();
 	// User rejected this update so let's add the packages
 	// to the ignore list so user won't be nagged again.
-	const QList<UpdatePackage>& pkgList = autoUpdater->newUpdatePackages();
+	const QList<UpdatePackage>& pkgList = d->autoUpdater->newUpdatePackages();
 	foreach (const UpdatePackage& pkg, pkgList)
 	{
 		gConfig.autoUpdates.lastKnownUpdateRevisions.insert(pkg.name, pkg.revision);
 	}
-	autoUpdater->abort();
+	d->autoUpdater->abort();
 }
 
 void MainWindow::connectEntities()
@@ -432,65 +539,77 @@ void MainWindow::connectEntities()
 	connect(gRefresher, SIGNAL( block() ), this, SLOT( blockRefreshButtons() ) );
 	connect(gRefresher, SIGNAL( finishedQueryingMaster(MasterClient*) ), this, SLOT( finishedQueryingMaster(MasterClient*) ) );
 	connect(gRefresher, SIGNAL( sleepingModeEnter() ), this, SLOT( refreshThreadEndsWork() ) );
-	connect(gRefresher, SIGNAL( sleepingModeEnter() ), buddiesList, SLOT( scan() ) );
+	connect(gRefresher, SIGNAL( sleepingModeEnter() ), d->buddiesList, SLOT( scan() ) );
 	connect(gRefresher, SIGNAL( sleepingModeExit() ), this, SLOT( refreshThreadBeginsWork() ) );
 
 	// Controls
-	connect(menuActionAbout, SIGNAL( triggered() ), this, SLOT( menuHelpAbout() ));
-	connect(menuActionAboutQt, SIGNAL( triggered() ), application, SLOT( aboutQt() ));
-	connect(menuActionBuddies, SIGNAL( triggered() ), this, SLOT( menuBuddies() ));
-	connect(menuActionConfigure, SIGNAL( triggered() ), this, SLOT( menuOptionsConfigure() ));
-	connect(menuActionCreateServer, SIGNAL( triggered() ), this, SLOT( menuCreateServer() ));
-	connect(menuActionHelp, SIGNAL( triggered() ), this, SLOT ( menuHelpHelp() ) );
-	connect(menuActionIRCOptions, SIGNAL( triggered() ), this, SLOT( menuIRCOptions() ) );
-	connect(menuActionLog, SIGNAL( triggered() ), this, SLOT( menuLog() ));
-	connect(menuActionManageDemos, SIGNAL( triggered() ), this, SLOT( menuManageDemos() ) );
-	connect(menuActionRecordDemo, SIGNAL( triggered() ), this, SLOT( menuRecordDemo() ) );
-	connect(menuActionUpdateIP2C, SIGNAL( triggered() ), this, SLOT( menuUpdateIP2C() ) );
-	connect(menuActionQuit, SIGNAL( triggered() ), this, SLOT( quitProgram() ));
-	connect(menuActionViewIRC, SIGNAL( triggered() ) , this, SLOT( menuViewIRC() ));
-	connect(menuActionWadseeker, SIGNAL( triggered() ), this, SLOT( menuWadSeeker() ));
-	connect(serverFilterDock, SIGNAL(filterUpdated(const ServerListFilterInfo&)),
+	connect(d->menuActionAbout, SIGNAL( triggered() ), this, SLOT( menuHelpAbout() ));
+	connect(d->menuActionAboutQt, SIGNAL( triggered() ), d->application, SLOT( aboutQt() ));
+	connect(d->menuActionBuddies, SIGNAL( triggered() ), this, SLOT( menuBuddies() ));
+	connect(d->menuActionConfigure, SIGNAL( triggered() ), this, SLOT( menuOptionsConfigure() ));
+	connect(d->menuActionCreateServer, SIGNAL( triggered() ), this, SLOT( menuCreateServer() ));
+	connect(d->menuActionHelp, SIGNAL( triggered() ), this, SLOT ( menuHelpHelp() ) );
+	connect(d->menuActionIRCOptions, SIGNAL( triggered() ), this, SLOT( menuIRCOptions() ) );
+	connect(d->menuActionLog, SIGNAL( triggered() ), this, SLOT( menuLog() ));
+	connect(d->menuActionManageDemos, SIGNAL( triggered() ), this, SLOT( menuManageDemos() ) );
+	connect(d->menuActionRecordDemo, SIGNAL( triggered() ), this, SLOT( menuRecordDemo() ) );
+	connect(d->menuActionUpdateIP2C, SIGNAL( triggered() ), this, SLOT( menuUpdateIP2C() ) );
+	connect(d->menuActionQuit, SIGNAL( triggered() ), this, SLOT( quitProgram() ));
+	connect(d->menuActionViewIRC, SIGNAL( triggered() ) , this, SLOT( menuViewIRC() ));
+	connect(d->menuActionWadseeker, SIGNAL( triggered() ), this, SLOT( menuWadSeeker() ));
+	connect(d->serverFilterDock, SIGNAL(filterUpdated(const ServerListFilterInfo&)),
 		this, SLOT(updateServerFilter(const ServerListFilterInfo&)) );
-	connect(serverFilterDock, SIGNAL(nonEmptyServerGroupingAtTopToggled(bool)),
-		serverTableHandler, SLOT(setGroupServersWithPlayersAtTop(bool)) );
-	connect(serverTableHandler, SIGNAL(serverFilterModified(ServerListFilterInfo)),
-		serverFilterDock, SLOT(setFilterInfo(ServerListFilterInfo)));
-	connect(serverTableHandler, SIGNAL( serverDoubleClicked(ServerPtr) ), this, SLOT( runGame(ServerPtr) ) );
-	connect(serverTableHandler, SIGNAL( displayServerJoinCommandLine(ServerPtr) ), this, SLOT( showServerJoinCommandLine(ServerPtr) ) );
-	connect(serverTableHandler, SIGNAL( serverInfoUpdated(ServerPtr) ), this, SLOT( serverAddedToList(ServerPtr) ) );
+	connect(d->serverFilterDock, SIGNAL(nonEmptyServerGroupingAtTopToggled(bool)),
+		d->serverList, SLOT(setGroupServersWithPlayersAtTop(bool)) );
+	connect(d->serverList, SIGNAL(serverFilterModified(ServerListFilterInfo)),
+		d->serverFilterDock, SLOT(setFilterInfo(ServerListFilterInfo)));
+	connect(d->serverList, SIGNAL( serverDoubleClicked(ServerPtr) ), this, SLOT( runGame(ServerPtr) ) );
+	connect(d->serverList, SIGNAL( displayServerJoinCommandLine(const ServerPtr&) ), this, SLOT( showServerJoinCommandLine(const ServerPtr&) ) );
+	connect(d->serverList, SIGNAL( findMissingWADs(const ServerPtr&) ), this, SLOT( findMissingWADs(const ServerPtr&) ) );
+	connect(d->serverList, SIGNAL( serverInfoUpdated(ServerPtr) ), this, SLOT( serverAddedToList(ServerPtr) ) );
+	connect(d->buddiesList, SIGNAL(scanCompleted()), d->serverList, SLOT(redraw()));
 }
 
 void MainWindow::fillQueryMenu(MasterManager* masterManager)
 {
 	// This is called only once from the constructor. No clears to
-	// queryMenuPorts are ever performed. Not even in the destructor.
+	// d->queryMenuPorts are ever performed. Not even in the destructor.
 	for(unsigned i = 0; i < gPlugins->numPlugins(); ++i)
 	{
 		const EnginePlugin* plugin = gPlugins->info(i);
-		if(!plugin->data()->hasMasterServer)
+		if(!plugin->data()->hasMasterClient() && !plugin->data()->hasBroadcast())
 		{
 			continue;
 		}
 
-		MasterClient* pMasterClient = plugin->masterClient();
-		pMasterClient->updateAddress();
-		masterManager->addMaster(pMasterClient);
+		if (plugin->data()->hasMasterClient())
+		{
+			MasterClient* pMasterClient = plugin->data()->masterClient;
+			pMasterClient->updateAddress();
+			masterManager->addMaster(pMasterClient);
+		}
+
+		if (plugin->data()->hasBroadcast())
+		{
+			d->broadcastManager->registerPlugin(plugin);
+		}
 
 		// Now is a good time to also populate the status bar widgets
-		ServersStatusWidget *statusWidget = new ServersStatusWidget(plugin->icon(), pMasterClient);
-		serversStatusesWidgets.insert(pMasterClient, statusWidget);
+		ServersStatusWidget *statusWidget = new ServersStatusWidget(plugin, d->serverList);
+		d->serversStatusesWidgets.insert(plugin, statusWidget);
 
-		this->connect(statusWidget, SIGNAL( clicked(MasterClient*) ) ,
-			SLOT( toggleMasterClientEnabled(MasterClient*) ) );
+		this->connect(statusWidget, SIGNAL( clicked(const EnginePlugin*) ) ,
+			SLOT( togglePluginQueryEnabled(const EnginePlugin*) ) );
+		this->connect(statusWidget, SIGNAL(counterUpdated()),
+			SLOT(updateRefreshProgress()));
 
 		statusBar()->addPermanentWidget(statusWidget);
 
 		QString name = gPlugins->info(i)->data()->name;
-		QQueryMenuAction* query = new QQueryMenuAction(pMasterClient, statusWidget, menuQuery);
-		queryMenuPorts.insert(pMasterClient, query);
+		QueryMenuAction* query = new QueryMenuAction(plugin, statusWidget, d->menuQuery);
+		d->queryMenuPorts.insert(plugin, query);
 
-		menuQuery->addAction(query);
+		d->menuQuery->addAction(query);
 
 		query->setCheckable(true);
 		query->setIcon(plugin->icon());
@@ -501,14 +620,52 @@ void MainWindow::fillQueryMenu(MasterManager* masterManager)
 		if (!pluginConfig.retrieveSetting("Query").value().isNull())
 		{
 			bool enabled = pluginConfig["Query"];
-			setQueryMasterServerEnabled(pMasterClient, enabled);
+			setQueryPluginEnabled(plugin, enabled);
 		}
 		else
 		{
 			// if no setting is found for this engine
 			// set default to true:
-			setQueryMasterServerEnabled(pMasterClient, true);
+			setQueryPluginEnabled(plugin, true);
 		}
+	}
+}
+
+void MainWindow::findMissingWADs(const ServerPtr &server)
+{
+	// Display a message if all WADs are present.
+	QList<PWad> wads = server->wads();
+	wads << server->iwad();
+	PathFinder pathFinder = server->wadPathFinder();
+	WadPathFinder wadFinder(pathFinder);
+	QList<PWad> missingWads;
+	foreach(const PWad &wad, wads)
+	{
+		if(!wadFinder.find(wad.name()).isValid())
+		{
+			PWad optionalWad = PWad(wad.name(), true);
+			missingWads << optionalWad;
+		}
+	}
+	if (missingWads.isEmpty())
+	{
+		QMessageBox::information(this, tr("All WADs found"), tr("All of the WADs used by this server are present."));
+		return;
+	}
+
+	MissingWadsDialog dialog(missingWads, this);
+	dialog.setAllowIgnore(false);
+	if (dialog.exec() == QDialog::Accepted && dialog.decision() == MissingWadsDialog::Install)
+	{
+		if (!gWadseekerShow->checkWadseekerValidity(this))
+		{
+			return;
+		}
+		WadseekerInterface *wadseeker = WadseekerInterface::createAutoNoGame();
+		wadseeker->setCustomSite(server->webSite());
+		wadseeker->setWads(dialog.filesToDownload());
+		wadseeker->setAttribute(Qt::WA_DeleteOnClose);
+		wadseeker->show();
 	}
 }
 
@@ -516,26 +673,31 @@ void MainWindow::finishConfiguration(DoomseekerConfigurationDialog &configDialog
 {
 	// In case the master server addresses changed, notify the master clients.
 	updateMasterAddresses();
+	gRefresher->setDelayBetweenResends(gConfig.doomseeker.querySpeed().delayBetweenSingleServerAttempts);
 
 	// If appearance changed - update the widgets.
 	if (configDialog.appearanceChanged())
 	{
-		tableServers->setShowGrid(gConfig.doomseeker.bDrawGridInServerTable);
-		serverTableHandler->redraw();
+		d->tableServers->setShowGrid(gConfig.doomseeker.bDrawGridInServerTable);
+		d->serverList->redraw();
 		initTrayIcon();
 	}
 
 	// Do the following only if setting changed from false to true.
 	if (lookupHostsChanged)
 	{
-		serverTableHandler->lookupHosts();
+		d->serverList->lookupHosts();
 	}
 
 	// Refresh custom servers list:
 	if (configDialog.customServersChanged())
 	{
-		serverTableHandler->serverModel()->removeCustomServers();
-		masterManager->customServs()->readConfig(serverTableHandler, SLOT(serverUpdated(ServerPtr, int)), SLOT(serverBegunRefreshing(ServerPtr)) );
+		d->serverList->removeCustomServers();
+		QList<ServerPtr> servers = d->masterManager->customServs()->readConfig();
+		foreach (ServerPtr server, servers)
+		{
+			d->serverList->registerServer(server);
+		}
 		refreshCustomServers();
 	}
 }
@@ -549,12 +711,16 @@ void MainWindow::finishedQueryingMaster(MasterClient* master)
 
 	for(int i = 0;i < master->numServers();i++)
 	{
-		connect((*master)[i].data(), SIGNAL(updated(ServerPtr, int)),
-			serverTableHandler, SLOT(serverUpdated(ServerPtr, int)) );
-
-		connect((*master)[i].data(), SIGNAL(begunRefreshing(ServerPtr)),
-			serverTableHandler, SLOT(serverBegunRefreshing(ServerPtr)) );
+		d->serverList->registerServer((*master)[i]);
 	}
+}
+
+void MainWindow::fixIconsDpi()
+{
+	// http://blog.qt.io/blog/2013/04/25/retina-display-support-for-mac-os-ios-and-x11/
+	QIcon icon(":/icons/exclamation_16.png");
+	d->lblExclamation1->setPixmap(icon.pixmap(16));
+	d->lblExclamation2->setPixmap(icon.pixmap(16));
 }
 
 void MainWindow::getServers()
@@ -585,13 +751,12 @@ void MainWindow::getServers()
 		return;
 	}
 
-	bTotalRefreshInProcess = true;
-	autoRefreshTimer.stop();
+	d->bTotalRefreshInProcess = true;
+	d->autoRefreshTimer.stop();
 	gLog << tr("Total refresh process initialized!");
-	serverTableHandler->clearTable();
+	d->serverList->removeNonSpecialServers();
 	refreshCustomServers();
-
-	bool bAtLeastOneEnabled = false;
+	refreshLanServers();
 
 	if (!isAnyMasterEnabled())
 	{
@@ -599,10 +764,10 @@ void MainWindow::getServers()
 			"Check your Query menu or \"engines/\" directory. Custom servers will still refresh.");
 	}
 
-	masterManager->clearServers();
-	for (int i = 0; i < masterManager->numMasters(); ++i)
+	d->masterManager->clearServers();
+	for (int i = 0; i < d->masterManager->numMasters(); ++i)
 	{
-		MasterClient* pMaster = (*masterManager)[i];
+		MasterClient* pMaster = (*d->masterManager)[i];
 
 		if (pMaster->isEnabled())
 		{
@@ -613,7 +778,7 @@ void MainWindow::getServers()
 
 bool MainWindow::hasCustomServers() const
 {
-	CustomServers* customServers = masterManager->customServs();
+	CustomServers* customServers = d->masterManager->customServs();
 	return customServers->numServers() > 0;
 }
 
@@ -626,7 +791,7 @@ void MainWindow::initAutoRefreshTimer()
 
 	if (!bEnabled)
 	{
-		autoRefreshTimer.stop();
+		d->autoRefreshTimer.stop();
 	}
 	else
 	{
@@ -646,8 +811,8 @@ void MainWindow::initAutoRefreshTimer()
 
 		unsigned delayMs = delay * 1000;
 
-		autoRefreshTimer.setSingleShot(false);
-		autoRefreshTimer.start(delayMs);
+		d->autoRefreshTimer.setSingleShot(false);
+		d->autoRefreshTimer.start(delayMs);
 	}
 }
 
@@ -656,76 +821,76 @@ void MainWindow::initAutoUpdaterWidgets()
 	static const int FILE_BAR_WIDTH = 50;
 	static const int OVERALL_BAR_WIDTH = 180;
 
-	autoUpdaterStatusBarWidget = new QWidget(statusBar());
-	autoUpdaterStatusBarWidget->setLayout(new QHBoxLayout(autoUpdaterStatusBarWidget));
-	autoUpdaterStatusBarWidget->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
-	statusBar()->addPermanentWidget(autoUpdaterStatusBarWidget);
-	autoUpdaterStatusBarWidget->hide();
+	d->autoUpdaterStatusBarWidget = new QWidget(statusBar());
+	d->autoUpdaterStatusBarWidget->setLayout(new QHBoxLayout(d->autoUpdaterStatusBarWidget));
+	d->autoUpdaterStatusBarWidget->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
+	statusBar()->addPermanentWidget(d->autoUpdaterStatusBarWidget);
+	d->autoUpdaterStatusBarWidget->hide();
 
-	autoUpdaterLabel = new QLabel(autoUpdaterStatusBarWidget);
-	autoUpdaterLabel->setText(tr("Auto Updater:"));
-	autoUpdaterStatusBarWidget->layout()->addWidget(autoUpdaterLabel);
+	d->autoUpdaterLabel = new QLabel(d->autoUpdaterStatusBarWidget);
+	d->autoUpdaterLabel->setText(tr("Auto Updater:"));
+	d->autoUpdaterStatusBarWidget->layout()->addWidget(d->autoUpdaterLabel);
 
-	autoUpdaterFileProgressBar = mkStdProgressBarForStatusBar();
-	autoUpdaterFileProgressBar->setFormat("%p%");
-	autoUpdaterFileProgressBar->setMaximumWidth(FILE_BAR_WIDTH);
-	autoUpdaterFileProgressBar->setMinimumWidth(FILE_BAR_WIDTH);
-	autoUpdaterStatusBarWidget->layout()->addWidget(autoUpdaterFileProgressBar);
+	d->autoUpdaterFileProgressBar = mkStdProgressBarForStatusBar();
+	d->autoUpdaterFileProgressBar->setFormat("%p%");
+	d->autoUpdaterFileProgressBar->setMaximumWidth(FILE_BAR_WIDTH);
+	d->autoUpdaterFileProgressBar->setMinimumWidth(FILE_BAR_WIDTH);
+	d->autoUpdaterStatusBarWidget->layout()->addWidget(d->autoUpdaterFileProgressBar);
 
-	autoUpdaterOverallProgressBar = mkStdProgressBarForStatusBar();
-	autoUpdaterOverallProgressBar->setMaximumWidth(OVERALL_BAR_WIDTH);
-	autoUpdaterOverallProgressBar->setMinimumWidth(OVERALL_BAR_WIDTH);
-	autoUpdaterStatusBarWidget->layout()->addWidget(autoUpdaterOverallProgressBar);
+	d->autoUpdaterOverallProgressBar = mkStdProgressBarForStatusBar();
+	d->autoUpdaterOverallProgressBar->setMaximumWidth(OVERALL_BAR_WIDTH);
+	d->autoUpdaterOverallProgressBar->setMinimumWidth(OVERALL_BAR_WIDTH);
+	d->autoUpdaterStatusBarWidget->layout()->addWidget(d->autoUpdaterOverallProgressBar);
 
-	autoUpdaterAbortButton = new QPushButton(statusBar());
-	autoUpdaterAbortButton->setToolTip(tr("Abort update."));
-	autoUpdaterAbortButton->setIcon(QIcon(":/icons/x.png"));
-	this->connect(autoUpdaterAbortButton, SIGNAL(clicked()),
+	d->autoUpdaterAbortButton = new QPushButton(statusBar());
+	d->autoUpdaterAbortButton->setToolTip(tr("Abort update."));
+	d->autoUpdaterAbortButton->setIcon(QIcon(":/icons/x.png"));
+	this->connect(d->autoUpdaterAbortButton, SIGNAL(clicked()),
 		SLOT(abortAutoUpdater()));
-	autoUpdaterStatusBarWidget->layout()->addWidget(autoUpdaterAbortButton);
+	d->autoUpdaterStatusBarWidget->layout()->addWidget(d->autoUpdaterAbortButton);
 }
 
 void MainWindow::initIP2CUpdater()
 {
 	static const int PROGRESSBAR_WIDTH = 220;
 
-	ip2cUpdateProgressBar = mkStdProgressBarForStatusBar();
-	ip2cUpdateProgressBar->setFormat(tr("IP2C Update"));
-	ip2cUpdateProgressBar->hide();
-	ip2cUpdateProgressBar->setMaximumWidth(PROGRESSBAR_WIDTH);
-	ip2cUpdateProgressBar->setMinimumWidth(PROGRESSBAR_WIDTH);
-	statusBar()->addPermanentWidget(ip2cUpdateProgressBar);
+	d->ip2cUpdateProgressBar = mkStdProgressBarForStatusBar();
+	d->ip2cUpdateProgressBar->setFormat(tr("IP2C Update"));
+	d->ip2cUpdateProgressBar->hide();
+	d->ip2cUpdateProgressBar->setMaximumWidth(PROGRESSBAR_WIDTH);
+	d->ip2cUpdateProgressBar->setMinimumWidth(PROGRESSBAR_WIDTH);
+	statusBar()->addPermanentWidget(d->ip2cUpdateProgressBar);
 }
 
 void MainWindow::initIRCDock()
 {
-	ircDock = new IRCDock(this);
-	menuView->addAction(ircDock->toggleViewAction());
-	ircDock->toggleViewAction()->setText(tr("&IRC"));
-	ircDock->toggleViewAction()->setShortcut(tr("CTRL+I"));
-	ircDock->hide();
-	this->addDockWidget(Qt::BottomDockWidgetArea, ircDock);
+	d->ircDock = new IRCDock(this);
+	d->menuView->addAction(d->ircDock->toggleViewAction());
+	d->ircDock->toggleViewAction()->setText(tr("&IRC"));
+	d->ircDock->toggleViewAction()->setShortcut(tr("CTRL+I"));
+	d->ircDock->hide();
+	this->addDockWidget(Qt::BottomDockWidgetArea, d->ircDock);
 
-	if (gIRCConfig.isAutojoinNetworksEnabled())
+	if (ChatNetworksCfg().isAnyNetworkOnAutoJoin())
 	{
-		this->ircDock->setVisible(true);
-		this->ircDock->performNetworkAutojoins();
+		this->d->ircDock->setVisible(true);
+		this->d->ircDock->performNetworkAutojoins();
 	}
 }
 
 void MainWindow::initLogDock()
 {
-	logDock = new LogDock(this);
-	menuView->addAction(logDock->toggleViewAction());
-	logDock->toggleViewAction()->setText(tr("&Log"));
-	logDock->toggleViewAction()->setShortcut(tr("CTRL+L"));
-	logDock->hide();
-	this->addDockWidget(Qt::BottomDockWidgetArea, logDock);
+	d->logDock = new LogDock(this);
+	d->menuView->addAction(d->logDock->toggleViewAction());
+	d->logDock->toggleViewAction()->setText(tr("&Log"));
+	d->logDock->toggleViewAction()->setShortcut(tr("CTRL+L"));
+	d->logDock->hide();
+	this->addDockWidget(Qt::BottomDockWidgetArea, d->logDock);
 
-	connect(&gLog, SIGNAL( newEntry(const QString&) ), logDock, SLOT( appendLogEntry(const QString&) ) );
+	connect(&gLog, SIGNAL( newEntry(const QString&) ), d->logDock, SLOT( appendLogEntry(const QString&) ) );
 
 	// Also add anything that already might be in the log to the box.
-	logDock->appendLogEntry(gLog.content());
+	d->logDock->appendLogEntry(gLog.content());
 }
 
 void MainWindow::initMainDock()
@@ -734,34 +899,34 @@ void MainWindow::initMainDock()
 
 	// Make a dock out of the central MainWindow widget and drop that widget
 	// from the MainWindow itself.
-	mainDock = new QDockWidget(tr("Servers"));
-	mainDock->setTitleBarWidget(new QWidget(this));
-	mainDock->setObjectName("ServerList");
-	mainDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-	mainDock->setWidget(centralWidget());
+	d->mainDock = new QDockWidget(tr("Servers"));
+	d->mainDock->setTitleBarWidget(new QWidget(this));
+	d->mainDock->setObjectName("ServerList");
+	d->mainDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+	d->mainDock->setWidget(centralWidget());
 	setCentralWidget(0);
-	addDockWidget(Qt::RightDockWidgetArea, mainDock);
+	addDockWidget(Qt::RightDockWidgetArea, d->mainDock);
 }
 
 void MainWindow::initServerDetailsDock()
 {
-	detailsDock = new ServerDetailsDock(this);
-	menuView->addAction(detailsDock->toggleViewAction());
-	detailsDock->toggleViewAction()->setText(tr("Server &Details"));
-	detailsDock->toggleViewAction()->setShortcut(tr("CTRL+D"));
-	detailsDock->hide();
-	addDockWidget(Qt::BottomDockWidgetArea, detailsDock);
+	d->detailsDock = new ServerDetailsDock(this);
+	d->menuView->addAction(d->detailsDock->toggleViewAction());
+	d->detailsDock->toggleViewAction()->setText(tr("Server &Details"));
+	d->detailsDock->toggleViewAction()->setShortcut(tr("CTRL+D"));
+	d->detailsDock->hide();
+	addDockWidget(Qt::BottomDockWidgetArea, d->detailsDock);
 
-	detailsDock->connect(serverTableHandler, SIGNAL( serversSelected(QList<ServerPtr>&) ), SLOT( displaySelection(QList<ServerPtr> &) ));
+	d->detailsDock->connect(d->serverList, SIGNAL( serversSelected(QList<ServerPtr>&) ), SLOT( displaySelection(QList<ServerPtr> &) ));
 }
 
 void MainWindow::initServerFilterDock()
 {
-	serverFilterDock = new ServerFilterDock(this);
+	d->serverFilterDock = new ServerFilterDock(this);
 
-	menuView->addAction(serverFilterDock->toggleViewAction());
-	serverFilterDock->hide();
-	this->addDockWidget(Qt::RightDockWidgetArea, serverFilterDock);
+	d->menuView->addAction(d->serverFilterDock->toggleViewAction());
+	d->serverFilterDock->hide();
+	this->addDockWidget(Qt::RightDockWidgetArea, d->serverFilterDock);
 }
 
 void MainWindow::initTrayIcon()
@@ -769,70 +934,70 @@ void MainWindow::initTrayIcon()
 	bool isEnabled = gConfig.doomseeker.bUseTrayIcon;
 	if (!isEnabled || !QSystemTrayIcon::isSystemTrayAvailable())
 	{
-		if (trayIcon != NULL)
+		if (d->trayIcon != NULL)
 		{
-			delete trayIcon;
-			trayIcon = NULL;
+			delete d->trayIcon;
+			d->trayIcon = NULL;
 		}
 
-		if (trayIconMenu != NULL)
+		if (d->trayIconMenu != NULL)
 		{
-			delete trayIconMenu;
-			trayIconMenu = NULL;
+			delete d->trayIconMenu;
+			d->trayIconMenu = NULL;
 		}
 	}
-	else if (trayIcon == NULL)
+	else if (d->trayIcon == NULL)
 	{
 		QAction* trayAction;
-		trayIconMenu = new QMenu(this);
-		trayAction = trayIconMenu->addAction("Exit");
+		d->trayIconMenu = new QMenu(this);
+		trayAction = d->trayIconMenu->addAction("Exit");
 		connect(trayAction, SIGNAL( triggered() ), this, SLOT( quitProgram() ) );
 
 		// This should be automatically deleted when main window closes
-		trayIcon = new QSystemTrayIcon(this);
-		connect(trayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( trayIcon_activated(QSystemTrayIcon::ActivationReason) ) );
+		d->trayIcon = new QSystemTrayIcon(this);
+		connect(d->trayIcon, SIGNAL( activated(QSystemTrayIcon::ActivationReason) ), this, SLOT( trayIcon_activated(QSystemTrayIcon::ActivationReason) ) );
 
 		updateTrayIconTooltipAndLogTotalRefresh();
 
-		trayIcon->setContextMenu(trayIconMenu);
-		trayIcon->setIcon(QIcon(":/icon.png"));
-		trayIcon->setVisible(true);
+		d->trayIcon->setContextMenu(d->trayIconMenu);
+		d->trayIcon->setIcon(QIcon(":/icon.png"));
+		d->trayIcon->setVisible(true);
 	}
 }
 
 void MainWindow::ip2cDownloadProgress(qint64 current, qint64 max)
 {
-	ip2cUpdateProgressBar->setMaximum(max);
-	ip2cUpdateProgressBar->setValue(current);
+	d->ip2cUpdateProgressBar->setMaximum(max);
+	d->ip2cUpdateProgressBar->setValue(current);
 }
 
 void MainWindow::ip2cJobsFinished()
 {
-	menuActionUpdateIP2C->setEnabled(true);
-	serverTableHandler->updateCountryFlags();
-	ip2cUpdateProgressBar->hide();
+	d->menuActionUpdateIP2C->setEnabled(true);
+	d->serverList->updateCountryFlags();
+	d->ip2cUpdateProgressBar->hide();
 
-	if (ip2cLoader != NULL)
+	if (d->ip2cLoader != NULL)
 	{
-		delete ip2cLoader;
-		ip2cLoader = NULL;
+		delete d->ip2cLoader;
+		d->ip2cLoader = NULL;
 	}
 }
 
 void MainWindow::ip2cStartUpdate()
 {
-	if (ip2cLoader != NULL)
+	if (d->ip2cLoader != NULL)
 	{
 		// If update is currently in progress then prevent re-starting.
 		return;
 	}
 
-	menuActionUpdateIP2C->setEnabled(false);
-	ip2cUpdateProgressBar->show();
+	d->menuActionUpdateIP2C->setEnabled(false);
+	d->ip2cUpdateProgressBar->show();
 
-	ip2cLoader = new IP2CLoader();
-	connectIP2CLoader(ip2cLoader);
-	ip2cLoader->update();
+	d->ip2cLoader = new IP2CLoader();
+	connectIP2CLoader(d->ip2cLoader);
+	d->ip2cLoader->update();
 }
 
 bool MainWindow::isAnythingToRefresh() const
@@ -842,9 +1007,9 @@ bool MainWindow::isAnythingToRefresh() const
 
 bool MainWindow::isAnyMasterEnabled() const
 {
-	for (int i = 0; i < masterManager->numMasters(); ++i)
+	for (int i = 0; i < d->masterManager->numMasters(); ++i)
 	{
-		MasterClient* pMaster = (*masterManager)[i];
+		MasterClient* pMaster = (*d->masterManager)[i];
 
 		if (pMaster->isEnabled())
 		{
@@ -870,21 +1035,15 @@ void MainWindow::masterManagerMessages(MasterClient* pSender, const QString& tit
 
 void MainWindow::masterManagerMessagesImportant(MasterClient* pSender, const Message& objMessage)
 {
-	QString strFullMessage = tr("Master server for %1: %2")
+	QString strFullMessage = tr("%1: %2")
 		.arg(pSender->plugin()->data()->name)
 		.arg(objMessage.contents());
-
-	if (objMessage.isError())
-	{
-		strFullMessage = "<font color=\"#ff0000\">" + strFullMessage + "</font>";
-	}
-
-	importantMessagesWidget->addMessage(strFullMessage, objMessage.timestamp());
+	d->importantMessagesWidget->addMessage(strFullMessage, objMessage.timestamp());
 }
 
 void MainWindow::menuBuddies()
 {
-	buddiesList->setVisible(!buddiesList->isVisible());
+	d->buddiesList->setVisible(!d->buddiesList->isVisible());
 }
 
 void MainWindow::menuCreateServer()
@@ -898,7 +1057,7 @@ void MainWindow::menuCreateServer()
 void MainWindow::menuHelpAbout()
 {
 	AboutDialog dlg(this);
-	autoRefreshTimer.stop();
+	d->autoRefreshTimer.stop();
 	dlg.exec();
 	initAutoRefreshTimer();
 }
@@ -926,25 +1085,26 @@ void MainWindow::menuIRCOptions()
 	dialog.initOptionsList();
 	dialog.exec();
 
-	if (ircDock != NULL)
+	if (d->ircDock != NULL)
 	{
-		ircDock->applyAppearanceSettings();
+		d->ircDock->applyAppearanceSettings();
 
 		// This could probably be optimized to not re-read files from drive
 		// if audio options didn't change but currently there are only two
 		// files, so no harm should be done.
-		ircDock->sounds().loadFromConfig();
+		d->ircDock->sounds().loadFromConfig();
 	}
 }
 
 void MainWindow::menuLog()
 {
-	logDock->setVisible(!logDock->isVisible());
+	d->logDock->setVisible(!d->logDock->isVisible());
 }
 
 void MainWindow::menuManageDemos()
 {
 	DemoManagerDlg dm;
+	dm.setWindowIcon(this->windowIcon());
 	dm.exec();
 }
 
@@ -955,7 +1115,7 @@ void MainWindow::menuOptionsConfigure()
 
 void MainWindow::menuRecordDemo()
 {
-	gConfig.doomseeker.bRecordDemo = menuActionRecordDemo->isChecked();
+	gConfig.doomseeker.bRecordDemo = d->menuActionRecordDemo->isChecked();
 }
 
 void MainWindow::menuUpdateIP2C()
@@ -969,7 +1129,7 @@ void MainWindow::menuUpdateIP2C()
 
 void MainWindow::menuViewIRC()
 {
-	ircDock->setVisible(!ircDock->isVisible());
+	d->ircDock->setVisible(!d->ircDock->isVisible());
 }
 
 void MainWindow::menuWadSeeker()
@@ -996,34 +1156,34 @@ void MainWindow::notifyFirstRun()
 	// On first run prompt configuration box.
 	QMessageBox::information(NULL, tr("Welcome to Doomseeker"),
 		tr("Before you start browsing for servers, please ensure that Doomseeker is properly configured."));
-	menuActionConfigure->trigger();
+	d->menuActionConfigure->trigger();
 }
 
 void MainWindow::onAutoUpdaterDownloadAndInstallConfirmationRequest()
 {
-	updatesConfirmationWidget->show();
+	d->updatesConfirmationWidget->show();
 }
 
 void MainWindow::onAutoUpdaterFileProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-	autoUpdaterFileProgressBar->setValue(bytesReceived);
-	autoUpdaterFileProgressBar->setMaximum(bytesTotal);
+	d->autoUpdaterFileProgressBar->setValue(bytesReceived);
+	d->autoUpdaterFileProgressBar->setMaximum(bytesTotal);
 }
 
 void MainWindow::onAutoUpdaterFinish()
 {
-	gLog << tr("Program update detection & download finished with status: [%1] %2")
-		.arg((int)autoUpdater->errorCode()).arg(autoUpdater->errorString());
+	showAndLogStatusMessage(tr("Program update detection & download finished with status: [%1] %2")
+		.arg((int)d->autoUpdater->errorCode()).arg(d->autoUpdater->errorString()));
 	gConfig.autoUpdates.bPerformUpdateOnNextRun = false;
-	if (autoUpdater->errorCode() == AutoUpdater::EC_Ok)
+	if (d->autoUpdater->errorCode() == AutoUpdater::EC_Ok)
 	{
 		UpdateChannel channel = UpdateChannel::fromName(gConfig.autoUpdates.updateChannelName);
-		if (channel == *updateChannelOnUpdateStart)
+		if (channel == *d->updateChannelOnUpdateStart)
 		{
-			if (!autoUpdater->downloadedPackagesFilenames().isEmpty())
+			if (!d->autoUpdater->downloadedPackagesFilenames().isEmpty())
 			{
 				gLog << tr("Updates will be installed on next program start.");
-				updatesDownloadedWidget->show();
+				d->updatesDownloadedWidget->show();
 				gConfig.autoUpdates.bPerformUpdateOnNextRun = true;
 			}
 		}
@@ -1033,24 +1193,26 @@ void MainWindow::onAutoUpdaterFinish()
 		}
 	}
 	gConfig.saveToFile();
-	autoUpdaterStatusBarWidget->hide();
-	updatesConfirmationWidget->hide();
-	autoUpdater->deleteLater();
-	autoUpdater = NULL;
+	d->autoUpdaterStatusBarWidget->hide();
+	d->updatesConfirmationWidget->hide();
+	d->autoUpdater->deleteLater();
+	d->autoUpdater = NULL;
 }
 
 void MainWindow::onAutoUpdaterOverallProgress(int current, int total,
 	const QString& msg)
 {
-	autoUpdaterOverallProgressBar->setValue(current);
-	autoUpdaterOverallProgressBar->setMaximum(total);
-	autoUpdaterOverallProgressBar->setFormat(msg);
+	d->autoUpdaterOverallProgressBar->setValue(current);
+	d->autoUpdaterOverallProgressBar->setMaximum(total);
+	d->autoUpdaterOverallProgressBar->setFormat(msg);
 }
 
 void MainWindow::postInitAppStartup()
 {
 	// Load server filter from config.
-	serverFilterDock->setFilterInfo(gConfig.serverFilter.info);
+	d->serverFilterDock->setFilterInfo(gConfig.serverFilter.info);
+
+	fixIconsDpi();
 
 	// Check query on statup
 	// Let's see if we have any plugins first. If not, display error.
@@ -1100,16 +1262,16 @@ void MainWindow::postInitAppStartup()
 	}
 }
 
-QQueryMenuAction* MainWindow::queryMenuActionForMasterClient(MasterClient* pClient)
+QueryMenuAction* MainWindow::queryMenuActionForPlugin(const EnginePlugin* plugin)
 {
-	if (pClient == NULL)
+	if (plugin == NULL)
 	{
 		return NULL;
 	}
 
-	if (queryMenuPorts.contains(pClient))
+	if (d->queryMenuPorts.contains(plugin))
 	{
-		return queryMenuPorts[pClient];
+		return d->queryMenuPorts[plugin];
 	}
 
 	return NULL;
@@ -1117,50 +1279,52 @@ QQueryMenuAction* MainWindow::queryMenuActionForMasterClient(MasterClient* pClie
 
 void MainWindow::quitProgram()
 {
-	bWantToQuit = true;
-	close();
-}
-
-void dupa(ServerPtr a) {
+	d->bWantToQuit = true;
+	QApplication::closeAllWindows();
 }
 
 void MainWindow::refreshCustomServers()
 {
-	CustomServers* customServers = masterManager->customServs();
+	CustomServers* customServers = d->masterManager->customServs();
 
 	for(int i = 0;i < customServers->numServers();i++)
 	{
 		ServerPtr server = (*customServers)[i];
-		serverTableHandler->serverUpdated(server, Server::RESPONSE_NO_RESPONSE_YET);
+		gRefresher->registerServer(server.data());
+	}
+}
+
+void MainWindow::refreshLanServers()
+{
+	foreach (ServerPtr server, d->broadcastManager->servers())
+	{
 		gRefresher->registerServer(server.data());
 	}
 }
 
 void MainWindow::refreshThreadBeginsWork()
 {
-	// disable refresh.
-	serverTableHandler->serverTable()->setAllowAllRowsRefresh(false);
 	statusBar()->showMessage(tr("Querying..."));
+	d->taskbarProgress->show();
 }
 
 void MainWindow::refreshThreadEndsWork()
 {
-	toolBarGetServers->setEnabled(true);
-	toolBarRefreshAll->setEnabled(true);
+	d->toolBarGetServers->setEnabled(true);
 
-	serverTableHandler->serverTable()->setAllowAllRowsRefresh(true);
-	serverTableHandler->cleanUpForce();
+	d->serverList->cleanUpForce();
 	statusBar()->showMessage(tr("Done"));
 	updateTrayIconTooltipAndLogTotalRefresh();
+	d->taskbarProgress->hide();
 
-	if (bTotalRefreshInProcess)
+	if (d->bTotalRefreshInProcess)
 	{
 		initAutoRefreshTimer();
 	}
 
-	bTotalRefreshInProcess = false;
-	QList<ServerPtr> selectedServers = serverTableHandler->selectedServers();
-	detailsDock->displaySelection(selectedServers);
+	d->bTotalRefreshInProcess = false;
+	QList<ServerPtr> selectedServers = d->serverList->selectedServers();
+	d->detailsDock->displaySelection(selectedServers);
 }
 
 void MainWindow::restartAndInstallUpdatesNow()
@@ -1171,23 +1335,30 @@ void MainWindow::restartAndInstallUpdatesNow()
 
 void MainWindow::runGame(const ServerPtr &server)
 {
-	if(connectionHandler)
-		delete connectionHandler;
+	if(d->connectionHandler)
+		delete d->connectionHandler;
 
-	connectionHandler = new ConnectionHandler(server, this);
-	connectionHandler->run();
+	d->connectionHandler = new ConnectionHandler(server, this);
+	d->connectionHandler->run();
 }
 
-void MainWindow::setQueryMasterServerEnabled(MasterClient* pClient, bool bEnabled)
+void MainWindow::setQueryPluginEnabled(const EnginePlugin* plugin, bool bEnabled)
 {
-	assert(pClient != NULL);
+	assert(plugin != NULL);
 
-	QQueryMenuAction* pAction = queryMenuActionForMasterClient(pClient);
+	QueryMenuAction* pAction = queryMenuActionForPlugin(plugin);
 	if (pAction != NULL)
 	{
 		pAction->setChecked(bEnabled);
-		pClient->setEnabled(bEnabled);
-		serversStatusesWidgets[pClient]->setMasterEnabledStatus(bEnabled);
+		if (plugin->data()->hasMasterClient())
+		{
+			plugin->data()->masterClient->setEnabled(bEnabled);
+		}
+		if (plugin->data()->hasBroadcast())
+		{
+			plugin->data()->broadcast->setEnabled(bEnabled);
+		}
+		d->serversStatusesWidgets[plugin]->setMasterEnabledStatus(bEnabled);
 	}
 }
 
@@ -1196,23 +1367,23 @@ void MainWindow::serverAddedToList(const ServerPtr &pServer)
 	if (pServer->isKnown())
 	{
 		const QString& gameMode = pServer->gameMode().name();
-		serverFilterDock->addGameModeToComboBox(gameMode);
+		d->serverFilterDock->addGameModeToComboBox(gameMode);
 	}
 }
 
 void MainWindow::setDisplayUpdaterProcessFailure(int errorCode)
 {
-	assert(this->updaterInstallerErrorCode == 0 &&
+	assert(this->d->updaterInstallerErrorCode == 0 &&
 		"MainWindow::setDisplayUpdaterProcessFailure()");
-	this->updaterInstallerErrorCode = errorCode;
+	this->d->updaterInstallerErrorCode = errorCode;
 	QTimer::singleShot(0, this, SLOT(showUpdaterProcessErrorDialog()));
 }
 
 void MainWindow::setDisplayUpdateInstallerError(int errorCode)
 {
-	assert(this->updaterInstallerErrorCode == 0 &&
+	assert(this->d->updaterInstallerErrorCode == 0 &&
 		"MainWindow::setDisplayUpdateInstallerError()");
-	this->updaterInstallerErrorCode = errorCode;
+	this->d->updaterInstallerErrorCode = errorCode;
 	QTimer::singleShot(0, this, SLOT(showUpdateInstallErrorDialog()));
 }
 
@@ -1221,11 +1392,11 @@ void MainWindow::setupIcons()
 	QStyle& style = *QApplication::style();
 
 	// File menu.
-	menuActionQuit->setIcon(style.standardIcon(QStyle::SP_TitleBarCloseButton));
+	d->menuActionQuit->setIcon(style.standardIcon(QStyle::SP_TitleBarCloseButton));
 
 	// Help menu.
-	menuActionHelp->setIcon(style.standardIcon(QStyle::SP_MessageBoxQuestion));
-	menuActionAbout->setIcon(style.standardIcon(QStyle::SP_MessageBoxInformation));
+	d->menuActionHelp->setIcon(style.standardIcon(QStyle::SP_MessageBoxQuestion));
+	d->menuActionAbout->setIcon(style.standardIcon(QStyle::SP_MessageBoxInformation));
 }
 
 void MainWindow::setupToolBar()
@@ -1235,35 +1406,33 @@ void MainWindow::setupToolBar()
 	pToolBar->setObjectName("Toolbar");
 
 	// Refresh buttons
-	toolBarGetServers = new QAction(QIcon(":/icons/arrow-down-double.png"), tr("Get Servers"), pToolBar);
-	toolBarRefreshAll = new QAction(QIcon(":/icons/view-refresh-2.png"), tr("Refresh All"), pToolBar);
+	d->toolBarGetServers = new QAction(QIcon(":/icons/refresh.png"), tr("Get Servers"), pToolBar);
 
 	// Setup menu
 	// Refresh buttons
-	pToolBar->addAction(toolBarGetServers);
-	pToolBar->addAction(toolBarRefreshAll);
+	pToolBar->addAction(d->toolBarGetServers);
 
 	// File menu buttons.
 	pToolBar->addSeparator();
-	pToolBar->addAction(menuActionCreateServer);
-	pToolBar->addAction(menuActionWadseeker);
+	pToolBar->addAction(d->menuActionCreateServer);
+	pToolBar->addAction(d->menuActionWadseeker);
 
 	// Demo buttons
 	pToolBar->addSeparator();
-	pToolBar->addAction(menuActionManageDemos);
-	pToolBar->addAction(menuActionRecordDemo);
+	pToolBar->addAction(d->menuActionManageDemos);
+	pToolBar->addAction(d->menuActionRecordDemo);
 
 	pToolBar->addSeparator();
 
 	// Dockable windows buttons.
-	pToolBar->addAction(buddiesList->toggleViewAction());
-	pToolBar->addAction(logDock->toggleViewAction());
-	pToolBar->addAction(ircDock->toggleViewAction());
-	pToolBar->addAction(serverFilterDock->toggleViewAction());
-	pToolBar->addAction(detailsDock->toggleViewAction());
+	pToolBar->addAction(d->buddiesList->toggleViewAction());
+	pToolBar->addAction(d->logDock->toggleViewAction());
+	pToolBar->addAction(d->ircDock->toggleViewAction());
+	pToolBar->addAction(d->serverFilterDock->toggleViewAction());
+	pToolBar->addAction(d->detailsDock->toggleViewAction());
 
 	// Quick Search
-	QLineEdit *qs = serverFilterDock->createQuickSearch();
+	QLineEdit *qs = d->serverFilterDock->createQuickSearch();
 	qs->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 	qs->setMinimumWidth(175);
 	qs->setMaximumWidth(175);
@@ -1279,11 +1448,55 @@ void MainWindow::setupToolBar()
 	connect(pToolBar, SIGNAL( actionTriggered(QAction*) ), this, SLOT( toolBarAction(QAction*) ) );
 }
 
+void MainWindow::showAndLogStatusMessage(const QString &message)
+{
+	gLog << message;
+	statusBar()->showMessage(message);
+}
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+#if QT_VERSION >= 0x050000
+	// http://stackoverflow.com/a/26910648/1089357
+	d->taskbarButton->setWindow(windowHandle());
+#endif
+}
+
+void MainWindow::showInstallFreedoomDialog()
+{
+	if (!d->freedoomDialog.isNull())
+	{
+		d->freedoomDialog->activateWindow();
+		return;
+	}
+	FreedoomDialog *dialog = new FreedoomDialog(NULL);
+	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	dialog->show();
+	d->freedoomDialog = dialog;
+}
+
+void MainWindow::showProgramArgsHelp()
+{
+	ProgramArgsHelpDialog *dialog = new ProgramArgsHelpDialog(this);
+	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	dialog->show();
+}
+
 void MainWindow::showServerJoinCommandLine(const ServerPtr &server)
 {
 	CommandLineInfo cli;
 	ConnectionHandler connectionHandler(server, this);
-	if (connectionHandler.obtainJoinCommandLine(cli, tr("Doomseeker - join command line"), false))
+	GameDemo demo = gConfig.doomseeker.bRecordDemo ? GameDemo::Unmanaged : GameDemo::NoDemo;
+	JoinCommandLineBuilder *builder = new JoinCommandLineBuilder(server, demo, this);
+	this->connect(builder, SIGNAL(commandLineBuildFinished()), SLOT(showServerJoinCommandLineOnBuilderFinished()));
+	builder->obtainJoinCommandLine();
+}
+
+void MainWindow::showServerJoinCommandLineOnBuilderFinished()
+{
+	JoinCommandLineBuilder *builder = static_cast<JoinCommandLineBuilder*>(sender());
+	CommandLineInfo cli = builder->builtCommandLine();
+	if (cli.isValid())
 	{
 		QString execPath = cli.executable.absoluteFilePath();
 		QStringList args = cli.args;
@@ -1291,18 +1504,27 @@ void MainWindow::showServerJoinCommandLine(const ServerPtr &server)
 		CommandLine::escapeExecutable(execPath);
 		CommandLine::escapeArgs(args);
 
-		CopyTextDlg ctd(execPath + " " + args.join(" "), server->name(), this);
+		CopyTextDlg ctd(execPath + " " + args.join(" "), builder->server()->name(), this);
 		ctd.exec();
 	}
+	else
+	{
+		if (!builder->error().isEmpty())
+		{
+			QMessageBox::critical(this, tr("Doomseeker - show join command line"),
+				tr("Command line cannot be built:\n%1").arg(builder->error()));
+		}
+	}
+	builder->deleteLater();
 }
 
 void MainWindow::showUpdaterProcessErrorDialog()
 {
 	QString explanation;
-	if (this->updaterInstallerErrorCode != UpdateInstaller::PEC_GeneralFailure)
+	if (this->d->updaterInstallerErrorCode != UpdateInstaller::PEC_GeneralFailure)
 	{
 		QString errorCodeExplanation = UpdateInstaller::processErrorCodeToStr(
-			(UpdateInstaller::ProcessErrorCode) this->updaterInstallerErrorCode);
+			(UpdateInstaller::ProcessErrorCode) this->d->updaterInstallerErrorCode);
 		explanation = tr("Update installation problem:\n%1").arg(errorCodeExplanation);
 	}
 	else
@@ -1317,35 +1539,28 @@ void MainWindow::showUpdateInstallErrorDialog()
 {
 	QString msg = tr("Update install problem:\n%1\n\nRemaining updates have been discarded.")
 		.arg(UpdateInstaller::errorCodeToStr(
-			(UpdateInstaller::ErrorCode)this->updaterInstallerErrorCode));
+			(UpdateInstaller::ErrorCode)this->d->updaterInstallerErrorCode));
 	QMessageBox::critical(this, tr("Doomseeker - Auto Update problem"), msg);
 }
 
-void MainWindow::toggleMasterClientEnabled(MasterClient* pClient)
+void MainWindow::stopAutoRefreshTimer()
 {
-	QQueryMenuAction* pAction = queryMenuActionForMasterClient(pClient);
+	d->autoRefreshTimer.stop();
+}
+
+void MainWindow::togglePluginQueryEnabled(const EnginePlugin *plugin)
+{
+	QueryMenuAction* pAction = queryMenuActionForPlugin(plugin);
 	assert(pAction != NULL);
 
-	setQueryMasterServerEnabled(pClient, !pAction->isChecked());
+	setQueryPluginEnabled(plugin, !pAction->isChecked());
 }
 
 void MainWindow::toolBarAction(QAction* pAction)
 {
-	if (pAction == toolBarGetServers)
+	if (pAction == d->toolBarGetServers)
 	{
 		getServers();
-	}
-	else if (pAction == toolBarRefreshAll)
-	{
-		if (serverTableHandler->hasAtLeastOneServer())
-		{
-			serverTableHandler->refreshAll();
-		}
-		else
-		{
-			gLog << "Attempted a refresh on an empty table. Getting servers instead.";
-			getServers();
-		}
 	}
 }
 
@@ -1355,7 +1570,7 @@ void MainWindow::trayIcon_activated(QSystemTrayIcon::ActivationReason reason)
 	{
 		if (isMinimized() || !isVisible())
 		{
-			bWasMaximized == true ? showMaximized() : showNormal();
+			d->bWasMaximized == true ? showMaximized() : showNormal();
 			activateWindow();
 		}
 		else if (gConfig.doomseeker.bCloseToTrayIcon)
@@ -1373,36 +1588,59 @@ void MainWindow::trayIcon_activated(QSystemTrayIcon::ActivationReason reason)
 //       MainWindow class?
 void MainWindow::updateMasterAddresses()
 {
-	for(int i = 0;i < masterManager->numMasters();i++)
+	for(int i = 0;i < d->masterManager->numMasters();i++)
 	{
-		(*masterManager)[i]->updateAddress();
+		(*d->masterManager)[i]->updateAddress();
 	}
-
 }
 
 void MainWindow::updateServerFilter(const ServerListFilterInfo& filterInfo)
 {
-	serverTableHandler->applyFilter(filterInfo);
-	lblServerFilterApplied->setVisible(filterInfo.isFilteringAnything());
+	d->serverList->applyFilter(filterInfo);
+	d->lblServerFilterApplied->setVisible(filterInfo.isFilteringAnything());
+}
+
+ServerListCount MainWindow::sumServerListCount() const
+{
+	ServerListCount count;
+	foreach (const ServersStatusWidget *status, d->serversStatusesWidgets.values())
+	{
+		count += status->count();
+	}
+	return count;
+}
+
+void MainWindow::updateRefreshProgress()
+{
+	ServerListCount count = sumServerListCount();
+	d->taskbarProgress->setMaximum(count.numServers);
+	d->taskbarProgress->setValue(count.numServers - count.numRefreshing);
+	updateTrayIconTooltip(count);
+}
+
+void MainWindow::updateTrayIconTooltip(const ServerListCount &count)
+{
+	if (d->trayIcon != NULL)
+	{
+		QString tip;
+		tip += tr("Generic servers: %1\n").arg(count.numGenericServers);
+		tip += tr("Custom servers: %1\n").arg(count.numCustomServers);
+		tip += tr("LAN servers: %1\n").arg(count.numLanServers);
+		tip += tr("Human players: %1").arg(count.numHumanPlayers);
+		d->trayIcon->setToolTip(tip);
+	}
 }
 
 void MainWindow::updateTrayIconTooltipAndLogTotalRefresh()
 {
-	int numServers = masterManager->numServers();
-	int numCustoms = masterManager->customServs()->numServers();
-	int numPlayers = masterManager->numPlayers() + masterManager->customServs()->numPlayers();
+	ServerListCount count = sumServerListCount();
+	updateTrayIconTooltip(count);
 
-	if (trayIcon != NULL)
+	if (d->bTotalRefreshInProcess)
 	{
-		QString tip;
-		tip += "Servers: " + QString::number(numServers) + " + " + QString::number(numCustoms) + " custom\n";
-		tip += "Players: " + QString::number(numPlayers);
-		trayIcon->setToolTip(tip);
-	}
-
-	if (bTotalRefreshInProcess)
-	{
-		gLog << tr("Finished refreshing. Servers on the list: %1 (+ %2 custom). Players: %3.")
-			.arg(numServers).arg(numCustoms).arg(numPlayers);
+		gLog << tr("Finished refreshing. Servers on the list: %1 "
+			"(+%2 custom, +%3 LAN). Players: %4.")
+			.arg(count.numGenericServers).arg(count.numCustomServers)
+			.arg(count.numLanServers).arg(count.numHumanPlayers);
 	}
 }

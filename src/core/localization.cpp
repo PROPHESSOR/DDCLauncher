@@ -1,3 +1,23 @@
+//-----------------------------------------------------------------------------
+// localization.cpp
+//-----------------------------------------------------------------------------
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+// 02110-1301  USA
+//-----------------------------------------------------------------------------
+// Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
+//-----------------------------------------------------------------------------
 #include "localization.h"
 
 #include <QApplication>
@@ -9,6 +29,8 @@
 #include <QTranslator>
 #include <QSet>
 #include <QStringList>
+#include "plugins/engineplugin.h"
+#include "plugins/pluginloader.h"
 #include "datapaths.h"
 #include "log.h"
 
@@ -23,7 +45,7 @@ class Localization::LocalizationLoader
 {
 	public:
 		LocalizationLoader() {};
-		
+
 		QList<LocalizationInfo> loadLocalizationsList(const QStringList& definitionsFileSearchDirs);
 
 	private:
@@ -59,42 +81,77 @@ bool Localization::loadTranslation(const QString& localeName)
 	// Out with the old.
 	qDeleteAll(currentlyLoadedTranslations);
 	currentlyLoadedTranslations.clear();
+	if (localeName == "en_EN")
+		return true;
 	// In with the new.
 	QStringList searchPaths = DataPaths::staticDataSearchDirs(
 		TRANSLATIONS_LOCATION_SUBDIR);
 	// Qt library translator.
-	// First let's try to load translation that is bundled with program.
-	// This behavior is valid for Windows.
-	QTranslator* qtTranslator = loadTranslationFile("qt_" + localeName, searchPaths);
-	if (qtTranslator == NULL)
-	{
-		// If Qt translation is not bundled with program then try to load
-		// it from system location. This behavior is valid for Linux.
-		qtTranslator = new QTranslator();
-		qtTranslator->load("qt_" + localeName,
-			QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-		QCoreApplication::installTranslator(qtTranslator);
-	}
-	currentlyLoadedTranslations.append(qtTranslator);
+	installQtTranslations(localeName, searchPaths);
 
 	// Doomseeker translator.
-	QTranslator* myappTranslator = loadTranslationFile(localeName, searchPaths);
-	if (myappTranslator != NULL)
+	bool installed = installTranslation(localeName, searchPaths);
+
+	// Plugins translators.
+	foreach (const PluginLoader::Plugin *plugin, gPlugins->plugins())
 	{
-		currentlyLoadedTranslations.append(myappTranslator);
+		QString name = plugin->info()->nameCanonical();
+		QTranslator *pluginTranslator = loadTranslationFile(
+			QString("%1_%2").arg(name, localeName),
+			searchPaths);
+		if (pluginTranslator)
+		{
+			gLog << QString("Loaded translation for plugin %1").arg(name);
+			QCoreApplication::installTranslator(pluginTranslator);
+			currentlyLoadedTranslations.append(pluginTranslator);
+		}
 	}
-	return myappTranslator != NULL;
+	return installed;
 }
 
-QTranslator* Localization::loadTranslationFile(const QString& localeName, const QStringList& searchPaths)
+void Localization::installQtTranslations(const QString &localeName, QStringList searchPaths)
+{
+	// First let's try to load translation that is bundled with program.
+	// This behavior is valid for Windows.
+	//
+	// If Qt translation is not bundled with program then try to load
+	// it from system location. This behavior is valid for Linux.
+	searchPaths << QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
+	// https://sourceforge.net/p/nootka/hg/ci/d00c13d9223b5bf74802aaec209ebc171efb27ce/tree/src/libs/core/tinitcorelib.cpp?diff=ce9e1fc25b8c23c9713c0cfa4c350d5ac2452fab
+	installTranslation("qt_" + localeName, searchPaths);
+#else
+	installTranslation("qtbase_" + localeName, searchPaths);
+	installTranslation("qtmultimedia_" + localeName, searchPaths);
+#endif
+}
+
+bool Localization::installTranslation(const QString &translationName, const QStringList &searchPaths)
+{
+	QTranslator* translator = loadTranslationFile(translationName, searchPaths);
+	if (translator != NULL)
+	{
+		QCoreApplication::installTranslator(translator);
+		currentlyLoadedTranslations.append(translator);
+		return true;
+	}
+	else
+	{
+		gLog << QString("Translation '%1' not found.").arg(translationName);
+		return false;
+	}
+}
+
+QTranslator* Localization::loadTranslationFile(const QString& translationName, const QStringList& searchPaths)
 {
 	QTranslator* pTranslator = new QTranslator();
 	bool bLoaded = false;
 	foreach (const QString& dir, searchPaths)
 	{
-		if (pTranslator->load(localeName, dir))
+		if (pTranslator->load(translationName, dir))
 		{
-			QCoreApplication::installTranslator(pTranslator);
+			gLog << QString("Found translation '%1' in dir '%2'.").arg(translationName, dir);
 			bLoaded = true;
 			break;
 		}
@@ -183,7 +240,7 @@ int Localization::LocalizationLoader::obtainVersion(QIODevice& io)
 	int version = -1;
 	if (!line.isNull())
 	{
-		// First line contains protocol version.
+		// First line contains PROTOCOL_VERSION.
 		QStringList tokens = line.split("=");
 		if (tokens.size() == NUM_VALID_VERSION_TOKENS)
 		{

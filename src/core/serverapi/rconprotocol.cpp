@@ -2,30 +2,30 @@
 // rconprotocol.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "rconprotocol.h"
 #include "serverapi/server.h"
 
 #include <cassert>
 
-class RConProtocol::PrivData
+DClass<RConProtocol>
 {
 	public:
 		bool connected;
@@ -37,12 +37,12 @@ class RConProtocol::PrivData
 		void (RConProtocol::*disconnectFromServer)();
 		void (RConProtocol::*sendCommand)(const QString&);
 		void (RConProtocol::*sendPassword)(const QString&);
-		void (RConProtocol::*packetReady)();
 };
+
+DPointeredNoCopy(RConProtocol)
 
 RConProtocol::RConProtocol(ServerPtr server)
 {
-	d = new PrivData();
 	d->connected = false;
 	d->serverAddress = server->address();
 	d->serverPort = server->port();
@@ -52,19 +52,16 @@ RConProtocol::RConProtocol(ServerPtr server)
 	set_disconnectFromServer(&RConProtocol::disconnectFromServer_default);
 	set_sendCommand(&RConProtocol::sendCommand_default);
 	set_sendPassword(&RConProtocol::sendPassword_default);
-	set_packetReady(&RConProtocol::packetReady_default);
 }
 
 RConProtocol::~RConProtocol()
 {
 	d->socket.close();
-	delete d;
 }
 
 POLYMORPHIC_DEFINE(void, RConProtocol, disconnectFromServer, (), ());
 POLYMORPHIC_DEFINE(void, RConProtocol, sendCommand, (const QString& cmd), (cmd));
 POLYMORPHIC_DEFINE(void, RConProtocol, sendPassword, (const QString& password), (password));
-POLYMORPHIC_DEFINE(void, RConProtocol, packetReady, (), ());
 
 const QHostAddress &RConProtocol::address() const
 {
@@ -79,11 +76,6 @@ void RConProtocol::disconnectFromServer_default()
 bool RConProtocol::isConnected() const
 {
 	return d->connected;
-}
-
-void RConProtocol::packetReady_default()
-{
-	assert(0 && "RConProtocol::packetReady() is not implemented");
 }
 
 quint16 RConProtocol::port() const

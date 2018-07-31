@@ -2,29 +2,31 @@
 // ircnetworkadapter.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "ircnetworkadapter.h"
+#include "irc/configuration/chatnetworkscfg.h"
+#include "irc/configuration/ircconfig.h"
 #include "irc/entities/ircuserprefix.h"
+#include "irc/ops/ircdelayedoperationban.h"
 #include "irc/ircchanneladapter.h"
 #include "irc/ircglobal.h"
-#include "irc/ircglobalmessages.h"
 #include "irc/ircisupportparser.h"
 #include "irc/ircmessageclass.h"
 #include "irc/ircprivadapter.h"
@@ -35,8 +37,9 @@
 #include "log.h"
 #include <QDateTime>
 
-IRCNetworkAdapter::IRCNetworkAdapter()
+IRCNetworkAdapter::IRCNetworkAdapter(IRCNetworkConnectionInfo connectionInfo)
 {
+	this->connectionInfo = connectionInfo;
 	this->bIsJoining = false;
 	this->bEmitAllIRCMessages = false;
 
@@ -94,6 +97,8 @@ IRCNetworkAdapter::IRCNetworkAdapter()
 		SIGNAL(printWithClass(const QString&, const QString&, const IRCMessageClass&)),
 		this, SLOT(printWithClass(const QString&, const QString&, const IRCMessageClass&)),
 		Qt::DirectConnection);
+	QObject::connect(ircResponseParser, SIGNAL(printToNetworksCurrentChatBox(QString, IRCMessageClass)),
+		SIGNAL(messageToNetworksCurrentChatBox(QString, IRCMessageClass)));
 
 	QObject::connect(ircResponseParser, SIGNAL ( privMsgReceived(const QString&, const QString&, const QString&) ),
 		this, SLOT( privMsgReceived(const QString&, const QString&, const QString&) ) );
@@ -106,6 +111,9 @@ IRCNetworkAdapter::IRCNetworkAdapter()
 	QObject::connect(ircResponseParser, SIGNAL ( userChangesNickname(const QString&, const QString&) ),
 		this, SLOT( userChangesNickname(const QString&, const QString&) ) );
 
+	QObject::connect(ircResponseParser, SIGNAL(userIdleTime(QString, int)),
+		this, SLOT(userIdleTime(QString, int)));
+
 	QObject::connect(ircResponseParser, SIGNAL ( userJoinsChannel(const QString&, const QString&, const QString&) ),
 		this, SLOT( userJoinsChannel(const QString&, const QString&, const QString&) ) );
 
@@ -113,6 +121,9 @@ IRCNetworkAdapter::IRCNetworkAdapter()
 		SIGNAL(userModeChanged(const QString&, const QString&, const QList<char>&, const QList<char>&)),
 		this,
 		SLOT(userModeChanged(const QString&, const QString&, const QList<char>&, const QList<char>&)));
+
+	QObject::connect(ircResponseParser, SIGNAL(userNetworkJoinDateTime(QString, QDateTime)),
+		this, SLOT(userNetworkJoinDateTime(QString, QDateTime)));
 
 	QObject::connect(ircResponseParser, SIGNAL ( userPartsChannel(const QString&, const QString&, const QString&) ),
 		this, SLOT( userPartsChannel(const QString&, const QString&, const QString&) ) );
@@ -126,7 +137,7 @@ IRCNetworkAdapter::IRCNetworkAdapter()
 
 IRCNetworkAdapter::~IRCNetworkAdapter()
 {
-	disconnect();
+	disconnect(gIRCConfig.personal.quitMessage);
 
 	killAllChatWindows();
 	delete this->ircResponseParser;
@@ -143,18 +154,23 @@ void IRCNetworkAdapter::appendISupportLine(const QString &line)
 
 void IRCNetworkAdapter::banUser(const QString& nickname, const QString& reason, const QString& channel)
 {
-	IRCDelayedOperation operation(IRCDelayedOperation::Ban,
-		userPrefixes().cleanNickname(nickname), channel);
-	operation.setAttribute("reason", reason);
-	delayedOperations << operation;
-
-	this->sendMessage(QString("/whois %1").arg(
-		userPrefixes().cleanNickname(nickname)));
+	IRCDelayedOperationBan *op = new IRCDelayedOperationBan(this, channel, nickname, this);
+	op->setReason(reason);
+	op->start();
 }
 
-void IRCNetworkAdapter::connect(const IRCNetworkConnectionInfo& connectionInfo)
+QList<IRCAdapterBase*> IRCNetworkAdapter::childrenAdapters()
 {
-	this->connectionInfo = connectionInfo;
+	QList<IRCAdapterBase*> result;
+	foreach (IRCChatAdapter *adapter, chatWindows.values())
+	{
+		result << adapter;
+	}
+	return result;
+}
+
+void IRCNetworkAdapter::connect()
+{
 	emit titleChange();
 	ircClient.connect(connectionInfo.networkEntity.address(), connectionInfo.networkEntity.port());
 }
@@ -232,8 +248,6 @@ void IRCNetworkAdapter::echoPrivmsg(const QString& recipient, const QString& con
 
 IRCChatAdapter* IRCNetworkAdapter::getChatAdapter(const QString& recipient)
 {
-	IRCChatAdapter* pAdapter = NULL;
-
 	if (recipient.isEmpty())
 	{
 		emit error("Doomseeker error: getChatAdapter() received empty recipient.");
@@ -251,8 +265,6 @@ IRCChatAdapter* IRCNetworkAdapter::getChatAdapter(const QString& recipient)
 
 const IRCChatAdapter* IRCNetworkAdapter::getChatAdapter(const QString& recipient) const
 {
-	const IRCChatAdapter* pAdapter = NULL;
-
 	if (recipient.isEmpty())
 	{
 		return NULL;
@@ -330,7 +342,10 @@ void IRCNetworkAdapter::helloClient(const QString& nickname)
 	}
 	foreach (const QString& command, network.autojoinCommands())
 	{
-		this->sendMessage(command);
+		if (!command.trimmed().isEmpty())
+		{
+			this->sendMessage(command);
+		}
 	}
 
 	foreach (const QString& channel, network.autojoinChannels())
@@ -343,6 +358,11 @@ void IRCNetworkAdapter::helloClient(const QString& nickname)
 
 	// Emit this just to be safe.
 	emit titleChange();
+}
+
+const PatternList &IRCNetworkAdapter::ignoredUsersPatterns() const
+{
+	return connection().networkEntity.ignoredUsers();
 }
 
 void IRCNetworkAdapter::ircServerResponse(const QString& message)
@@ -487,24 +507,24 @@ void IRCNetworkAdapter::namesListEndReceived(const QString& channel)
 
 void IRCNetworkAdapter::nicknameInUse(const QString& nickname)
 {
-	IRCGlobalMessages::instance().emitMessageWithClass(tr("Nickname %1 is already taken.").arg(nickname), IRCMessageClass::NetworkAction, this);
+	emit messageToNetworksCurrentChatBox(tr("Nickname %1 is already taken.").arg(nickname), IRCMessageClass::Error);
 	if (this->bIsJoining)
 	{
 		const QString& altNick = this->connectionInfo.alternateNick;
 
 		if (this->connectionInfo.nick.compare(altNick, Qt::CaseInsensitive) == 0)
 		{
-			IRCGlobalMessages::instance().emitError(tr("Both nickname and alternate nickname are taken on this network."), this);
+			emit messageWithClass(tr("Both nickname and alternate nickname are taken on this network."), IRCMessageClass::Error);
 		}
 		else if (altNick.isEmpty())
 		{
-			IRCGlobalMessages::instance().emitError(tr("No alternate nickname specified."), this);
+			emit messageWithClass(tr("No alternate nickname specified."), IRCMessageClass::Error);
 		}
 		else
 		{
 			this->connectionInfo.nick = altNick;
 
-			IRCGlobalMessages::instance().emitMessageWithClass(tr("Using alternate nickname %1 to join.").arg(altNick), IRCMessageClass::NetworkAction, this);
+			emit messageWithClass(tr("Using alternate nickname %1 to join.").arg(altNick), IRCMessageClass::NetworkAction);
 			QString message = QString("/nick %1").arg(altNick);
 			sendMessage(message);
 		}
@@ -513,7 +533,7 @@ void IRCNetworkAdapter::nicknameInUse(const QString& nickname)
 
 void IRCNetworkAdapter::noSuchNickname(const QString& nickname)
 {
-	IRCGlobalMessages::instance().emitError(tr("User %1 is not logged in.").arg(nickname), this);
+	emit messageToNetworksCurrentChatBox(tr("User %1 is not logged in.").arg(nickname), IRCMessageClass::Error);
 }
 
 void IRCNetworkAdapter::openNewAdapter(const QString& recipientName)
@@ -581,6 +601,11 @@ void IRCNetworkAdapter::printWithClass(const QString& printWhat,
 	}
 }
 
+void IRCNetworkAdapter::printToCurrentChatBox(const QString& printWhat, const IRCMessageClass& msgClass)
+{
+	emit messageToNetworksCurrentChatBox(printWhat, msgClass);
+}
+
 void IRCNetworkAdapter::privMsgReceived(const QString& recipient, const QString& sender, const QString& content)
 {
 	IRCChatAdapter* pAdapter = this->getOrCreateNewChatAdapter(recipient);
@@ -592,6 +617,26 @@ void IRCNetworkAdapter::printMsgLiteral(const QString& recipient, const QString&
 {
 	this->getOrCreateNewChatAdapter(recipient);
 	printWithClass(content, recipient, msgClass);
+}
+
+void IRCNetworkAdapter::reloadNetworkEntityFromConfig()
+{
+	ChatNetworksCfg cfg;
+	IRCNetworkEntity entity = cfg.network(connectionInfo.networkEntity.description());
+	if (entity.isValid())
+	{
+		setNetworkEntity(entity);
+	}
+}
+
+void IRCNetworkAdapter::setNetworkEntity(const IRCNetworkEntity &entity)
+{
+	IRCNetworkEntity oldEntity = connectionInfo.networkEntity;
+	connectionInfo.networkEntity = entity;
+	if (oldEntity.description() != entity.description())
+	{
+		emit titleChange();
+	}
 }
 
 void IRCNetworkAdapter::sendCtcp(const QString &nickname, const QString &command)
@@ -631,11 +676,10 @@ QString IRCNetworkAdapter::title() const
 
 void IRCNetworkAdapter::userChangesNickname(const QString& oldNickname, const QString& newNickname)
 {
-	emit messageWithClass(QString("User changed nickname: %1 to %2.").arg(oldNickname, newNickname), IRCMessageClass::NetworkAction);
-
 	if (isMyNickname(oldNickname))
 	{
-		emit messageWithClass(tr("Updated own nickname."), IRCMessageClass::NetworkAction);
+		emit messageToNetworksCurrentChatBox(tr("Updated own nickname to %1.").arg(newNickname),
+			IRCMessageClass::NetworkAction);
 		connectionInfo.nick = newNickname;
 
 		emit titleChange();
@@ -677,6 +721,13 @@ void IRCNetworkAdapter::userJoinsChannel(const QString& channel, const QString& 
 	}
 }
 
+void IRCNetworkAdapter::userIdleTime(const QString &nick, int secondsIdle)
+{
+	QString msg = tr("Last activity of user %1 was %2 ago.").arg(
+		nick, Strings::formatTime(secondsIdle));
+	emit messageToNetworksCurrentChatBox(msg, IRCMessageClass::NetworkAction);
+}
+
 void IRCNetworkAdapter::userModeChanged(const QString& channel, const QString& nickname,
 	const QList<char> &addedFlags, const QList<char> &removedFlags)
 {
@@ -685,6 +736,13 @@ void IRCNetworkAdapter::userModeChanged(const QString& channel, const QString& n
 		IRCChatAdapter* pAdapter = this->getOrCreateNewChatAdapter(channel);
 		pAdapter->userModeChanges(nickname, addedFlags, removedFlags);
 	}
+}
+
+void IRCNetworkAdapter::userNetworkJoinDateTime(const QString &nick, const QDateTime &timeOfJoin)
+{
+	QString msg = tr("%1 joined the network on %2").arg(nick,
+		timeOfJoin.toString("yyyy-MM-dd HH:mm:ss"));
+	emit messageToNetworksCurrentChatBox(msg, IRCMessageClass::NetworkAction);
 }
 
 void IRCNetworkAdapter::userPartsChannel(const QString& channel, const QString& nickname, const QString& farewellMessage)
@@ -712,8 +770,6 @@ const IRCUserPrefix &IRCNetworkAdapter::userPrefixes() const
 
 void IRCNetworkAdapter::userQuitsNetwork(const QString& nickname, const QString& farewellMessage)
 {
-	emit messageWithClass(QString("User %1 quits network.").arg(nickname), IRCMessageClass::ChannelAction);
-
 	// We need to iterate through EVERY adapter and notify them
 	// about this quit.
 	// Implementation of each adapter should recognize if this quit actually
@@ -728,31 +784,16 @@ void IRCNetworkAdapter::userQuitsNetwork(const QString& nickname, const QString&
 void IRCNetworkAdapter::userPing(const QString &nickname, qint64 ping)
 {
 	qint64 delta = QDateTime::currentMSecsSinceEpoch() - ping;
-	ircGlobalMsg.emitMessageWithClass(
+	emit messageToNetworksCurrentChatBox(
 		tr("Ping to user %1: %2ms").arg(nickname).arg(delta),
-		IRCMessageClass::Ctcp, this);
+		IRCMessageClass::Ctcp);
 }
 
 void IRCNetworkAdapter::whoIsUser(const QString& nickname, const QString& user, const QString& hostName, const QString& realName)
 {
-	// Deliver pending bans.
-	while(true)
-	{
-		const IRCDelayedOperation* pBanOperation = 
-			delayedOperations.operationForNickname(IRCDelayedOperation::Ban,
-			userPrefixes().cleanNickname(nickname));
-		if (pBanOperation == NULL)
-		{
-			break;
-		}
-
-		QString banString = "*!*@" + hostName;
-		QString reason = pBanOperation->attribute("reason");
-		this->sendMessage(QString("/mode %1 +b %2").arg(pBanOperation->channel(), banString));
-		this->sendMessage(QString("/kick %1 %2 %3").arg(pBanOperation->channel(), nickname, reason));
-
-		delayedOperations.remove(pBanOperation);
-	}
+	emit messageToNetworksCurrentChatBox(
+		QString("%1 %2 %3 %4").arg(nickname, user, hostName, realName),
+		IRCMessageClass::NetworkAction);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -766,7 +807,7 @@ void IRCSocketSignalsAdapter::connected()
 
 	QString messagePass = "/PASS %1";
 	QString messageNick = "/NICK %1";
-	QString messageUser = "/USER %1 %2 %3 :%4";
+	QString messageUser = "/USER %1 0 * :%2"; // RFC 2812
 
 	IRCNetworkEntity& network = connectionInfo.networkEntity;
 
@@ -776,7 +817,7 @@ void IRCSocketSignalsAdapter::connected()
 	}
 
 	pParent->sendMessage(messageNick.arg(connectionInfo.nick));
-	pParent->sendMessage(messageUser.arg(connectionInfo.nick).arg(connectionInfo.nick).arg(connectionInfo.nick).arg(connectionInfo.realName));
+	pParent->sendMessage(messageUser.arg(connectionInfo.userName).arg(connectionInfo.realName));
 }
 
 void IRCSocketSignalsAdapter::disconnected()
@@ -795,18 +836,4 @@ void IRCSocketSignalsAdapter::infoMessage(const QString& message)
 {
 	gLog << message;
 	emit pParent->message(message);
-}
-
-void IRCSocketSignalsAdapter::hostLookupError(QHostInfo::HostInfoError errorValue)
-{
-	switch (errorValue)
-	{
-		case QHostInfo::HostNotFound:
-			emit pParent->error("Host lookup error: host not found.");
-			break;
-
-		default:
-			emit pParent->error("Unknown host lookup error.");
-			break;
-	}
 }

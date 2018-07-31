@@ -2,26 +2,28 @@
 // updaterscriptparser.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef DOOMSEEKER_UPDATER_UPDATERSCRIPTPARSER_H
 #define DOOMSEEKER_UPDATER_UPDATERSCRIPTPARSER_H
+
+#include "dptr.h"
 
 #include <QDomDocument>
 #include <QString>
@@ -48,8 +50,8 @@ class UpdaterScriptParser
 		 * that the source document is either completely empty or already
 		 * a valid updater script. These nodes get merged:
 		 *
-		 * - /packages/*
-		 * - /install/*
+		 * - /packages/ *
+		 * - /install/ *
 		 *
 		 * The merge is done by making deep copies.
 		 *
@@ -70,19 +72,17 @@ class UpdaterScriptParser
 		 * - /install/file[*]/package/#text - "file[*]" means every "file"
 		 *   element.
 		 *
-		 * @return A null QString if successful. If failed then QString 
+		 * @return A null QString if successful. If failed then QString
 		 *         contains error message.
 		 */
 		QString setPackageName(const QString& name);
 
 	private:
-		class PrivData;
-
 		static QDomNode installNode(const QDomDocument& doc);
 		static QString msgMainElementMissingError();
 		static QDomNode packagesNode(const QDomDocument& doc);
 
-		PrivData* d;
+		DPtr<UpdaterScriptParser> d;
 
 		QDomElement mainElement();
 		QString setPackageNameInFiles(const QString& name);

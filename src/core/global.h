@@ -1,8 +1,28 @@
+//-----------------------------------------------------------------------------
+// global.h
+//-----------------------------------------------------------------------------
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+// 02110-1301  USA
+//-----------------------------------------------------------------------------
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
+//-----------------------------------------------------------------------------
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
 
 #include <QtGlobal>
-#include "dpointer.h"
+#include <QThread>
 
 static inline quint32 READINT32(const char *pointer)
 {
@@ -49,7 +69,7 @@ static inline quint32 MAKEID(quint8 a, quint8 b, quint8 c, quint8 d)
 
 // Now we set it up so symbols are properly exported/imported on Windows
 #ifdef Q_OS_WIN32
-#ifdef MODE_MAIN
+#ifdef doomseeker_EXPORTS
 #define MAIN_EXPORT __declspec(dllexport)
 #define PLUGIN_EXPORT __declspec(dllimport)
 #else
@@ -60,5 +80,14 @@ static inline quint32 MAKEID(quint8 a, quint8 b, quint8 c, quint8 d)
 #define MAIN_EXPORT
 #define PLUGIN_EXPORT
 #endif
+
+class Sleep : private QThread
+{
+public:
+	static void sleep(int time)
+	{
+		QThread::sleep(time);
+	}
+};
 
 #endif /* __GLOBAL_H__ */

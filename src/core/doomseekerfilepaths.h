@@ -1,14 +1,32 @@
 //------------------------------------------------------------------------------
 // doomseekerfilepaths.h
+//------------------------------------------------------------------------------
 //
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+// 02110-1301  USA
+//
+//------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef __DOOMSEEKERFILEPATHS_H__
 #define __DOOMSEEKERFILEPATHS_H__
 
-#include "datapaths.h"
 #include "global.h"
 #include <QString>
+
+class DataPaths;
 
 /**
  * @ingroup group_pluginapi
@@ -21,6 +39,7 @@
 class MAIN_EXPORT DoomseekerFilePaths
 {
 	public:
+		static const QString CACERTS_FILENAME;
 		static const QString IP2C_DATABASE_FILENAME;
 		static const QString IP2C_QT_SEARCH_PATH;
 		static const QString TEMP_SERVER_CONFIG_FILENAME;
@@ -30,6 +49,7 @@ class MAIN_EXPORT DoomseekerFilePaths
 
 		static DataPaths* pDataPaths;
 
+		static QString cacerts();
 		static QString ini();
 		static QString ircIni();
 		static QString ip2cDatabase();

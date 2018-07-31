@@ -2,20 +2,20 @@
 // serverlistproxymodel.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2011 "Zalewa" <zalewapl@gmail.com>
@@ -24,18 +24,21 @@
 
 #include "gui/entity/serverlistfilterinfo.h"
 #include "gui/models/serverlistcolumn.h"
+#include "gui/models/serverlistmodel.h"
 #include "gui/serverlist.h"
 #include "serverapi/playerslist.h"
 #include "serverapi/server.h"
 #include "serverapi/serverstructs.h"
 
-class ServerListProxyModel::PrivData
+#include <QWidget>
+
+DClass<ServerListProxyModel>
 {
 	public:
 		QList<ColumnSort> additionalSortColumns;
 		bool groupServersWithPlayersAtTop;
 		int mainSortColumn;
-		ServerListHandler* parentHandler;
+		ServerList* parentHandler;
 		ServerListFilterInfo filterInfo;
 		Qt::SortOrder sortOrder;
 
@@ -63,10 +66,11 @@ class ServerListProxyModel::PrivData
 		}
 };
 
-ServerListProxyModel::ServerListProxyModel(ServerListHandler* serverListHandler)
+DPointered(ServerListProxyModel)
+
+ServerListProxyModel::ServerListProxyModel(ServerList* serverListHandler)
 : QSortFilterProxyModel(serverListHandler)
 {
-	d = new PrivData();
 	d->groupServersWithPlayersAtTop = true;
 	d->mainSortColumn = -1;
 	d->parentHandler = serverListHandler;
@@ -74,7 +78,6 @@ ServerListProxyModel::ServerListProxyModel(ServerListHandler* serverListHandler)
 
 ServerListProxyModel::~ServerListProxyModel()
 {
-	delete d;
 }
 
 void ServerListProxyModel::addAdditionalColumnSorting(int column, Qt::SortOrder order)
@@ -168,6 +171,16 @@ bool ServerListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex& so
 	{
 		return false;
 	}
+
+	const QString& nameFilter = d->filterInfo.serverName;
+	if (!nameFilter.isEmpty())
+	{
+		if (!s->name().contains(nameFilter, Qt::CaseInsensitive))
+		{
+			return false;
+		}
+	}
+
 	if (!d->filterInfo.bEnabled)
 	{
 		return true;
@@ -203,13 +216,13 @@ bool ServerListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex& so
 			return false;
 		}
 
-		const QString& nameFilter = d->filterInfo.serverName;
-		if (!nameFilter.isEmpty())
+		if (d->filterInfo.testingServers == Doomseeker::ShowOnly && !s->isTestingServer())
 		{
-			if (!s->name().contains(nameFilter, Qt::CaseInsensitive))
-			{
-				return false;
-			}
+			return false;
+		}
+		else if (d->filterInfo.testingServers == Doomseeker::ShowNone && s->isTestingServer())
+		{
+			return false;
 		}
 
 		if (!d->filterInfo.gameModes.isEmpty())
@@ -248,7 +261,6 @@ bool ServerListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex& so
 
 		if (!d->filterInfo.wadsExcluded.isEmpty())
 		{
-			bool bWadFound = false;
 			foreach (const QString& filteredWad, d->filterInfo.wadsExcluded)
 			{
 				if (s->anyWadnameContains(filteredWad))
@@ -296,6 +308,15 @@ bool ServerListProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 			return d->sortOrder == Qt::AscendingOrder;
 		}
 		else if (!s1->isCustom() && s2->isCustom())
+		{
+			return d->sortOrder == Qt::DescendingOrder;
+		}
+
+		if (s1->isLan() && !s2->isLan())
+		{
+			return d->sortOrder == Qt::AscendingOrder;
+		}
+		else if (!s1->isLan() && s2->isLan())
 		{
 			return d->sortOrder == Qt::DescendingOrder;
 		}

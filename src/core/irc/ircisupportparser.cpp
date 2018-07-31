@@ -2,20 +2,20 @@
 // ircisupportparser.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
@@ -26,7 +26,7 @@
 #include <QByteArray>
 #include <QStringList>
 
-class IRCISupportParser::PrivData
+DClass<IRCISupportParser>
 {
 public:
 	class State
@@ -44,14 +44,14 @@ public:
 	State state;
 };
 
+DPointered(IRCISupportParser)
+
 IRCISupportParser::IRCISupportParser()
 {
-	d = new PrivData();
 }
 
 IRCISupportParser::~IRCISupportParser()
 {
-	delete d;
 }
 
 void IRCISupportParser::appendLine(const QString &line)
@@ -82,7 +82,7 @@ QString IRCISupportParser::findValue(const QString &key)
 
 void IRCISupportParser::parse()
 {
-	d->state = PrivData::State();
+	d->state = PrivData<IRCISupportParser>::State();
 	parsePrefix();
 }
 
@@ -99,8 +99,8 @@ void IRCISupportParser::parsePrefix()
 	{
 		return;
 	}
-	QByteArray modes = regex.cap(1).toAscii();
-	QByteArray prefixes = regex.cap(2).toAscii();
+	QByteArray modes = regex.cap(1).toUtf8();
+	QByteArray prefixes = regex.cap(2).toUtf8();
 	if (modes.size() != prefixes.size())
 	{
 		return;

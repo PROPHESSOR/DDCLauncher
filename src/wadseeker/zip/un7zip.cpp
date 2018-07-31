@@ -18,7 +18,7 @@
 // 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include <QFile>
@@ -29,6 +29,7 @@
 
 #include <QBuffer>
 #include <QFile>
+#include <QStringList>
 
 SZByteStream::SZByteStream(QIODevice *buffer) : buffer(buffer)
 {
@@ -82,7 +83,7 @@ void *Un7Zip::SzAlloc(void *p, size_t size) { return malloc(size); }
 void Un7Zip::SzFree(void *p, void *address) { free(address); }
 ISzAlloc Un7Zip::alloc = { SzAlloc, SzFree };
 
-Un7Zip::Un7Zip(QIODevice *device) 
+Un7Zip::Un7Zip(QIODevice *device)
 : UnArchive(device), out(NULL), outSize(0), valid(true)
 {
 	Init();
@@ -102,7 +103,7 @@ bool Un7Zip::extract(int file, const QString &where)
 	UInt32 blockIndex = 0xFFFFFFFF; // Not sure what this is, but this is what ZDoom uses.
 	size_t offset, outSizeProcessed;
 
-	SRes res = SzAr_Extract(&db, &lookStream.s, file, &blockIndex, &out, &outSize, &offset, &outSizeProcessed, &alloc, &alloc);
+	SRes res = SzArEx_Extract(&db, &lookStream.s, file, &blockIndex, &out, &outSize, &offset, &outSizeProcessed, &alloc, &alloc);
 	if(res == SZ_OK)
 	{
 		QFile outputFile(where);
@@ -116,20 +117,34 @@ bool Un7Zip::extract(int file, const QString &where)
 
 QString Un7Zip::fileNameFromIndex(int file)
 {
-	if(file < 0 || file >= static_cast<int> (db.db.NumFiles))
+	if(file < 0 || file >= static_cast<int> (db.NumFiles))
 		return QString();
-	return QString(db.db.Files[file].Name);
+	size_t nameLen = SzArEx_GetFileNameUtf16(&db, file, NULL);
+	UInt16 *name = NULL;
+	name = (UInt16 *)SzAlloc(NULL, nameLen * sizeof(name[0]));
+	SzArEx_GetFileNameUtf16(&db, file, name);
+	QString qname = QString::fromUtf16(name);
+	SzFree(NULL, name);
+	return qname;
 }
 
 int Un7Zip::findFileEntry(const QString &entryName)
 {
-	for(unsigned int i = 0;i < db.db.NumFiles;i++)
+	for(unsigned int i = 0;i < db.NumFiles;i++)
 	{
-		const CSzFileItem &file = db.db.Files[i];
-		if(entryName.compare(file.Name, Qt::CaseInsensitive) == 0)
+		QString archiveFileName = fileNameFromIndex(i);
+		if(entryName.compare(archiveFileName, Qt::CaseInsensitive) == 0)
 			return i;
 	}
 	return -1;
+}
+
+QStringList Un7Zip::files()
+{
+	QStringList files;
+	for (unsigned int i = 0; i < db.NumFiles; i++)
+		files << fileNameFromIndex(i);
+	return files;
 }
 
 void Un7Zip::Init()

@@ -2,23 +2,23 @@
 // masterclient.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "masterclient.h"
 
@@ -36,7 +36,7 @@
 #include <QMessageBox>
 #include <QUdpSocket>
 
-class MasterClient::PrivData
+DClass<MasterClient>
 {
 	public:
 		QHostAddress address;
@@ -57,15 +57,21 @@ class MasterClient::PrivData
 		{
 			return cache != NULL && cache->isWritable();
 		}
+
+		QString (MasterClient::*masterBanHelp)() const;
 };
+
+DPointered(MasterClient)
+
+POLYMORPHIC_DEFINE_CONST(QString, MasterClient, masterBanHelp, (), ());
 
 MasterClient::MasterClient()
 {
-	d = new PrivData();
 	d->cache = NULL;
 	d->timeouted = false;
 	d->enabled = true;
 	d->port = 0;
+	set_masterBanHelp(&MasterClient::masterBanHelp_default);
 }
 
 MasterClient::~MasterClient()
@@ -76,7 +82,11 @@ MasterClient::~MasterClient()
 	{
 		delete d->cache;
 	}
-	delete d;
+}
+
+QHostAddress MasterClient::address() const
+{
+	return d->address;
 }
 
 void MasterClient::clearServers()
@@ -86,7 +96,20 @@ void MasterClient::clearServers()
 
 bool MasterClient::isAddressSame(const QHostAddress &address, unsigned short port) const
 {
-	return (d->address == address && d->port == port);
+	return (d->address.toIPv4Address() == address.toIPv4Address() && d->port == port);
+}
+
+void MasterClient::emitBannedMessage()
+{
+	Message msg = Message(Message::Type::BANNED_FROM_MASTERSERVER);
+	QString helpMsg = masterBanHelp();
+	if (!helpMsg.trimmed().isEmpty())
+	{
+		msg = Message(Message::Type::CUSTOM_ERROR, tr("%1 %2").arg(
+			msg.contents(), helpMsg.trimmed()));
+	}
+	emit message(engineName(), msg.contents(), true);
+	emit messageImportant(msg);
 }
 
 void MasterClient::emptyServerList()
@@ -117,6 +140,11 @@ bool MasterClient::isTimeouted() const
 	return d->timeouted;
 }
 
+QString MasterClient::masterBanHelp_default() const
+{
+	return QString();
+}
+
 void MasterClient::notifyResponse(Response response)
 {
 	switch(response)
@@ -125,14 +153,12 @@ void MasterClient::notifyResponse(Response response)
 			break;
 		case RESPONSE_BANNED:
 		{
-			Message msg = Message(Message::Type::BANNED_FROM_MASTERSERVER);
-			emit message(engineName(), msg.contents(), true);
-			emit messageImportant(msg);
+			emitBannedMessage();
 			break;
 		}
 		case RESPONSE_WAIT:
 			emit message(engineName(), tr("Could not fetch a new server list from the "
-				"master because not enough time has past."), true);
+				"master because not enough time has passed."), true);
 			readPacketCache();
 			break;
 		case RESPONSE_BAD:
@@ -147,19 +173,6 @@ void MasterClient::notifyResponse(Response response)
 	}
 }
 
-int MasterClient::numPlayers() const
-{
-	int players = 0;
-	foreach(ServerPtr server, d->servers)
-	{
-		if (server != NULL)
-		{
-			players += server->players().numClients();
-		}
-	}
-	return players;
-}
-
 int MasterClient::numServers() const
 {
 	return d->servers.size();
@@ -168,6 +181,11 @@ int MasterClient::numServers() const
 ServerPtr MasterClient::operator[](int index) const
 {
 	return d->servers[index];
+}
+
+unsigned short MasterClient::port() const
+{
+	return d->port;
 }
 
 bool MasterClient::preparePacketCache(bool write)
@@ -181,7 +199,7 @@ bool MasterClient::preparePacketCache(bool write)
 
 		if(d->cache == NULL)
 		{
-			QString cacheFile = gDefaultDataPaths->programsDataDirectoryPath() + "/"
+			QString cacheFile = gDefaultDataPaths->cacheLocationPath() + "/"
 				+ QString(plugin()->data()->name).replace(' ', "");
 			d->cache = new QFile(cacheFile);
 		}

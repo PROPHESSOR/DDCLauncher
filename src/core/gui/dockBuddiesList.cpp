@@ -2,66 +2,106 @@
 // dockBuddiesList.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "dockBuddiesList.h"
+#include "ui_addBuddyDlg.h"
+#include "ui_dockBuddiesList.h"
 #include "configuration/doomseekerconfig.h"
-#include "serverapi/masterclient.h"
+#include "serverapi/mastermanager.h"
 #include "serverapi/playerslist.h"
 #include "serverapi/server.h"
-#include "strings.h"
+#include "patternlist.h"
+#include "strings.hpp"
 #include <QMenu>
 #include <QMessageBox>
 #include <QRegExp>
+#include <QStandardItemModel>
+
+class BuddyLocationInfo
+{
+public:
+	BuddyLocationInfo(const Player &buddy, ServerPtr location);
+	~BuddyLocationInfo();
+
+	const Player &buddy() const;
+	ServerPtr location() const;
+
+	bool operator==(const BuddyLocationInfo &other) const;
+
+private:
+	DPtr<BuddyLocationInfo> d;
+};
+
+// [BL] This was moved earlier in the file in order to prevent double specialization
+// with some compilers
+DClass<BuddyLocationInfo>
+{
+public:
+	Player buddy;
+	ServerPtr server;
+};
+
+DPointered(BuddyLocationInfo)
+
+DClass<DockBuddiesList> : public Ui::DockBuddiesList
+{
+public:
+	QList<BuddyLocationInfo> buddies;
+	QStandardItemModel *buddiesTableModel;
+	PatternList pBuddies;
+};
+
+DPointered(DockBuddiesList)
 
 DockBuddiesList::DockBuddiesList(QWidget *parent)
 : QDockWidget(parent), masterClient(NULL), save(false)
 {
-	setupUi(this);
+	d->setupUi(this);
 	this->toggleViewAction()->setIcon(QIcon(":/icons/buddies.png"));
 
 	// Set up the model
-	buddiesTableModel = new QStandardItemModel();
+	d->buddiesTableModel = new QStandardItemModel();
 
 	// Not working yet.
 	QStringList columns;
 	columns << tr("ID");
 	columns << tr("Buddy");
 	columns << tr("Location");
-	buddiesTableModel->setHorizontalHeaderLabels(columns);
+	d->buddiesTableModel->setHorizontalHeaderLabels(columns);
 
-	buddiesTable->setModel(buddiesTableModel);
-	buddiesTable->setColumnHidden(0, true); // Hide the ID
+	d->buddiesTable->setModel(d->buddiesTableModel);
+	d->buddiesTable->setColumnHidden(0, true); // Hide the ID
 
 	// Read config
 	const QVector<BuddyInfo>& buddies = gConfig.doomseeker.buddiesList;
 
 	foreach (const BuddyInfo& buddy, buddies)
 	{
-		pBuddies << buddy.pattern;
-		patternsList->addItem(buddy.pattern.pattern());
+		d->pBuddies << buddy.pattern;
+		d->patternsList->addItem(buddy.pattern.pattern());
 	}
 
-	connect(addButton, SIGNAL( clicked() ), this, SLOT( addBuddy() ));
-	connect(buddiesTable, SIGNAL( doubleClicked(const QModelIndex &) ), this, SLOT( followBuddy(const QModelIndex &) ));
-	connect(deleteButton, SIGNAL( clicked() ), this, SLOT( deleteBuddy() ));
-	connect(patternsList, SIGNAL( customContextMenuRequested(const QPoint &) ), this, SLOT( patternsListContextMenu(const QPoint &) ));
+	connect(d->addButton, SIGNAL( clicked() ), this, SLOT( addBuddy() ));
+	connect(d->buddiesTable, SIGNAL( doubleClicked(const QModelIndex &) ), this, SLOT( followBuddy(const QModelIndex &) ));
+	connect(d->deleteButton, SIGNAL( clicked() ), this, SLOT( deleteBuddy() ));
+	connect(d->patternsList, SIGNAL( customContextMenuRequested(const QPoint &) ), this, SLOT( patternsListContextMenu(const QPoint &) ));
 }
 
 DockBuddiesList::~DockBuddiesList()
@@ -69,12 +109,10 @@ DockBuddiesList::~DockBuddiesList()
 	// See if we made any modification since modifying the setting will cause a
 	// write cycle.
 	if(!save)
-	{
 		return;
-	}
 
 	gConfig.doomseeker.buddiesList.clear();
-	foreach (QRegExp pattern, pBuddies)
+	foreach (QRegExp pattern, d->pBuddies)
 	{
 		BuddyInfo buddyInfo;
 
@@ -96,11 +134,11 @@ void DockBuddiesList::addBuddy()
 
 	if(pattern.isValid())
 	{
-		pBuddies << pattern;
+		d->pBuddies << pattern;
 		scan(masterClient);
 	}
 
-	patternsList->addItem(dlg.pattern());
+	d->patternsList->addItem(dlg.pattern());
 
 	save = true;
 }
@@ -108,14 +146,14 @@ void DockBuddiesList::addBuddy()
 void DockBuddiesList::deleteBuddy()
 {
 	// Do nothing if nothing is selected.
-	if(patternsList->selectionModel()->selectedIndexes().size() <= 0)
+	if(d->patternsList->selectionModel()->selectedIndexes().size() <= 0)
 		return;
 
 	if(QMessageBox::warning(this, tr("Delete Buddy"), tr("Are you sure you want to delete this pattern?"), QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes)
 		!= QMessageBox::Yes)
 		return;
 
-	QModelIndexList selection = patternsList->selectionModel()->selectedIndexes();
+	QModelIndexList selection = d->patternsList->selectionModel()->selectedIndexes();
 	// We have to remove the bottom most row until they are all gone.
 	while(selection.size() > 0)
 	{
@@ -126,8 +164,8 @@ void DockBuddiesList::deleteBuddy()
 				largestIndex = i;
 		}
 
-		pBuddies.removeAt(selection[largestIndex].row());
-		delete patternsList->item(selection[largestIndex].row());
+		d->pBuddies.removeAt(selection[largestIndex].row());
+		delete d->patternsList->item(selection[largestIndex].row());
 		selection.removeAt(largestIndex); // remove index
 	}
 
@@ -141,14 +179,26 @@ void DockBuddiesList::followBuddy(const QModelIndex &index)
 	// Folow the buddy into the server.
 	QString error;
 
-	ServerPtr server = buddies[buddiesTableModel->item(index.row(), BLCID_ID)->data().toInt()].location();
+	ServerPtr server = d->buddies[d->buddiesTableModel->item(index.row(), BLCID_ID)->data().toInt()].location();
 	emit joinServer(server);
+}
+
+bool DockBuddiesList::hasBuddy(const ServerPtr &server)
+{
+	foreach (const BuddyLocationInfo &location, d->buddies)
+	{
+		if (location.location() == server)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void DockBuddiesList::patternsListContextMenu(const QPoint &pos) const
 {
 	// First lets get the selection since that will determine the menu.
-	QModelIndexList selection = patternsList->selectionModel()->selectedIndexes();
+	QModelIndexList selection = d->patternsList->selectionModel()->selectedIndexes();
 
 	QMenu context;
 
@@ -164,10 +214,10 @@ void DockBuddiesList::patternsListContextMenu(const QPoint &pos) const
 	}
 
 	// Finally show our menu.
-	context.exec(patternsList->mapToGlobal(pos));
+	context.exec(d->patternsList->mapToGlobal(pos));
 }
 
-void DockBuddiesList::scan(const MasterClient *master)
+void DockBuddiesList::scan(const MasterManager *master)
 {
 	if(master == NULL && masterClient == NULL)
 		return;
@@ -176,27 +226,32 @@ void DockBuddiesList::scan(const MasterClient *master)
 		masterClient = master;
 	}
 
-	buddies.clear(); //empty list
-	foreach(ServerPtr server, masterClient->servers())
+	d->buddies.clear(); //empty list
+	foreach(ServerPtr server, masterClient->allServers())
 	{
+		if (!server->isKnown())
+		{
+			continue;
+		}
 		for(int i = 0; i < server->players().numClients(); ++i)
 		{
 			const Player player = server->player(i);
-			foreach(QRegExp pattern, pBuddies)
+			if (d->pBuddies.isExactMatchAny(player.nameColorTagsStripped()))
 			{
-				if(pattern.exactMatch(player.nameColorTagsStripped()))
+				BuddyLocationInfo candidate(player, server);
+				if (!d->buddies.contains(candidate))
 				{
-					buddies << BuddyLocationInfo(player, server);
+					d->buddies << BuddyLocationInfo(player, server);
 				}
 			}
 		}
 	}
 
 	// Populate list
-	buddiesTableModel->removeRows(0, buddiesTableModel->rowCount());
-	for(int i = 0;i < buddies.size();i++)
+	d->buddiesTableModel->removeRows(0, d->buddiesTableModel->rowCount());
+	for(int i = 0;i < d->buddies.size();i++)
 	{
-		const BuddyLocationInfo &info = buddies[i];
+		const BuddyLocationInfo &info = d->buddies[i];
 		QList<QStandardItem *> columns;
 
 		for(int j = 0;j < HOW_MANY_BUDDIESLIST_COLUMNS;j++)
@@ -222,25 +277,36 @@ void DockBuddiesList::scan(const MasterClient *master)
 			}
 		}
 
-		buddiesTableModel->appendRow(columns);
+		d->buddiesTableModel->appendRow(columns);
 	}
 
 	// Fits rows to contents
-	buddiesTable->resizeRowsToContents();
+	d->buddiesTable->resizeRowsToContents();
+	emit scanCompleted();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
+DClass<AddBuddyDlg> : public Ui::AddBuddyDlg
+{
+};
+
+DPointered(AddBuddyDlg)
+
 AddBuddyDlg::AddBuddyDlg(QWidget *parent) : QDialog(parent)
 {
-	setupUi(this);
+	d->setupUi(this);
 
-	connect(buttonBox, SIGNAL( clicked(QAbstractButton *) ), this, SLOT( buttonBoxClicked(QAbstractButton *) ));
+	connect(d->buttonBox, SIGNAL( clicked(QAbstractButton *) ), this, SLOT( buttonBoxClicked(QAbstractButton *) ));
+}
+
+AddBuddyDlg::~AddBuddyDlg()
+{
 }
 
 void AddBuddyDlg::buttonBoxClicked(QAbstractButton *button)
 {
-	if(buttonBox->standardButton(button) == QDialogButtonBox::Ok)
+	if(d->buttonBox->standardButton(button) == QDialogButtonBox::Ok)
 	{
 		if(patternType() == BuddyInfo::PT_ADVANCED)
 		{
@@ -257,35 +323,42 @@ void AddBuddyDlg::buttonBoxClicked(QAbstractButton *button)
 		reject();
 }
 
+QString AddBuddyDlg::pattern() const
+{
+	return d->patternBox->text();
+}
+
+BuddyInfo::PatternType AddBuddyDlg::patternType() const
+{
+	return d->basicPattern->isChecked() ? BuddyInfo::PT_BASIC : BuddyInfo::PT_ADVANCED;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
-class DockBuddiesList::BuddyLocationInfo::PrivData
+BuddyLocationInfo::BuddyLocationInfo(const Player &buddy, ServerPtr location)
 {
-	public:
-		Player buddy;
-		ServerPtr server;
-};
-
-COPYABLE_D_POINTERED_INNER_DEFINE(DockBuddiesList::BuddyLocationInfo, BuddyLocationInfo);
-
-DockBuddiesList::BuddyLocationInfo::BuddyLocationInfo(const Player &buddy, ServerPtr location)
-{
-	d = new PrivData();
 	d->buddy = buddy;
 	d->server = location;
 }
 
-DockBuddiesList::BuddyLocationInfo::~BuddyLocationInfo()
+BuddyLocationInfo::~BuddyLocationInfo()
 {
-	delete d;
 }
 
-const Player &DockBuddiesList::BuddyLocationInfo::buddy() const
+const Player &BuddyLocationInfo::buddy() const
 {
 	return d->buddy;
 }
 
-ServerPtr DockBuddiesList::BuddyLocationInfo::location() const
+ServerPtr BuddyLocationInfo::location() const
 {
 	return d->server;
+}
+
+bool BuddyLocationInfo::operator==(const BuddyLocationInfo &other) const
+{
+	return d->buddy == other.d->buddy
+		&& d->server->address() == other.d->server->address()
+		&& d->server->port() == other.d->server->port()
+		&& d->server->plugin() == other.d->server->plugin();
 }

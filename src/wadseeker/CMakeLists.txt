@@ -1,68 +1,101 @@
-cmake_minimum_required(VERSION 2.4)
+#------------------------------------------------------------------------------
+# CMakeLists.txt
+#------------------------------------------------------------------------------
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301  USA
+#------------------------------------------------------------------------------
+# Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
+#------------------------------------------------------------------------------
 
-if(COMMAND cmake_policy)
-	cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
+cmake_minimum_required(VERSION 2.8.12)
+project(Wadseeker)
+
+if(POLICY CMP0042)
+	cmake_policy(SET CMP0042 NEW)
+endif()
 
 if (MSVC)
 	set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
-endif (MSVC)
+endif ()
 
-# If we are compiling wadseeker outside of doomseeker prepare its own project.
-if(DEFINED DOOMSEEKER_SOURCE_DIR)
-	include_directories(${DOOMSEEKER_SOURCE_DIR}/src ${DOOMSEEKER_SOURCE_DIR}/src/wadseeker/lzma/C)
-else(DEFINED DOOMSEEKER_SOURCE_DIR)
-	project(WADSEEKER)
-	include_directories(${WADSEEKER_SOURCE_DIR}/lzma/C)
-endif(DEFINED DOOMSEEKER_SOURCE_DIR)
+# Multiarch support - CMAKE_INSTALL_LIBDIR will be set by Doomseeker's CMake
+# or we will get it from GNUInstallDirs.
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+	if(UNIX AND NOT APPLE)
+		include(GNUInstallDirs)
+	else()
+		set(CMAKE_INSTALL_LIBDIR "lib")
+	endif()
+endif()
 
 add_subdirectory(lzma)
 
-if(WIN32)
-	add_definitions(-DWADSEEKER_API_EXPORT)
-endif(WIN32)
+include(${CMAKE_SOURCE_DIR}/cmake/Modules/Macros.cmake)
 
-find_package(Qt4 COMPONENTS QtCore QtNetwork REQUIRED)
-find_package(ZLIB REQUIRED)
-find_package(BZip2 REQUIRED)
+if(NOT FORCE_QT4)
+	find_package(Qt5Core)
+endif()
 
-include(${QT_USE_FILE})
-include_directories(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}	
-	${ZLIB_INCLUDE_DIR} 
-	${BZIP2_INCLUDE_DIR}
-)
+if(NOT Qt5Core_FOUND)
+	find_package(Qt4 COMPONENTS QtCore QtNetwork REQUIRED)
+	set(QT_LIBRARIES Qt4::QtCore Qt4::QtNetwork)
+else()
+	find_package(Qt5LinguistTools REQUIRED)
+	find_package(Qt5Network REQUIRED)
+	macro(qt4_add_resources)
+		qt5_add_resources(${ARGV})
+	endmacro()
+	macro(qt4_wrap_ui)
+		qt5_wrap_ui(${ARGV})
+	endmacro()
+	macro(qt4_add_translation)
+		qt5_add_translation(${ARGV})
+	endmacro()
+	macro(qt4_create_translation)
+		qt5_create_translation(${ARGV})
+	endmacro()
+	set(QT_LIBRARIES Qt5::Core Qt5::Network)
+endif()
 
-set(WADSEEKER_QT_FILES
-	protocols/idgames/idgamesreply.h
-	protocols/fixednetworkaccessmanager.h
-	protocols/fixedftpreply.h
-	protocols/networkreplysignalwrapper.h
-	protocols/networkreplytimeouter.h
-	wadretriever/wadretriever.h
-	wwwseeker/idgames.h
-	wwwseeker/wwwseeker.h
-	zip/unarchive.h
-	zip/un7zip.h
-	zip/untar.h
-	zip/unzip.h
-	wadseeker.h
-)
+if(NOT TARGET ZLIB::ZLIB)
+	find_package_ZLIB(REQUIRED)
+endif()
+if(NOT TARGET BZip2::BZip2)
+	find_package_BZip2(REQUIRED)
+endif()
+find_package(Threads REQUIRED)
+
+include("wadseekerversiondefs.cmake")
+configure_file(wadseekerversiondefs.h.in wadseekerversiondefs.h)
 
 set(WADSEEKER_FILES
 	entities/link.cpp
+	entities/modfile.cpp
+	entities/modset.cpp
 	entities/waddownloadinfo.cpp
-	protocols/entities/networkreplywrapperinfo.cpp
+	protocols/freedoom/freedoominfoparser.cpp
+	protocols/freedoom/freedoomquery.cpp
 	protocols/idgames/idgamesclient.cpp
 	protocols/idgames/idgamesfile.cpp
 	protocols/idgames/idgamesfilematcher.cpp
 	protocols/idgames/idgamesreply.cpp
 	protocols/idgames/idgamesresult.cpp
-	protocols/fixednetworkaccessmanager.cpp
-	protocols/fixedftpreply.cpp
+	protocols/wadarchive/wadarchiveclient.cpp
 	protocols/json.cpp
 	protocols/http.cpp
+	protocols/networkreply.cpp
 	protocols/networkreplysignalwrapper.cpp
 	protocols/networkreplytimeouter.cpp
 	protocols/urlprovider.cpp
@@ -77,48 +110,130 @@ set(WADSEEKER_FILES
 	zip/un7zip.cpp
 	zip/untar.cpp
 	zip/unzip.cpp
+	zip/zipfile.cpp
+	filefind.cpp
+	freedoom.cpp
 	ioutils.cpp
+	modinstall.cpp
 	wadseeker.cpp
 	wadseekerversioninfo.cpp
 )
 
 # For the purpose of generation proper project files.
 set(HEADER_FILES
-	${WADSEEKER_QT_FILES}
 	entities/link.h
+	entities/modfile.h
+	entities/modset.h
 	entities/waddownloadinfo.h
-	protocols/entities/networkreplywrapperinfo.h
+	protocols/freedoom/freedoominfoparser.h
+	protocols/freedoom/freedoomquery.h
 	protocols/idgames/idgamesclient.h
 	protocols/idgames/idgamesfile.h
 	protocols/idgames/idgamesfilematcher.h
+	protocols/idgames/idgamesreply.h
 	protocols/idgames/idgamesresult.h
+	protocols/wadarchive/wadarchiveclient.h
 	protocols/json.h
 	protocols/http.h
+	protocols/networkreply.h
+	protocols/networkreplysignalwrapper.h
+	protocols/networkreplytimeouter.h
 	protocols/urlprovider.h
 	wadretriever/wadinstaller.h
+	wadretriever/wadretriever.h
 	wwwseeker/entities/fileseekinfo.h
 	wwwseeker/htmlparser.h
+	wwwseeker/idgames.h
 	wwwseeker/urlparser.h
+	wwwseeker/wwwseeker.h
+	zip/unarchive.h
+	zip/un7zip.h
+	zip/untar.h
+	zip/unzip.h
+	zip/zipfile.h
+	filefind.h
+	freedoom.h
 	ioutils.h
-	wadseekerexportinfo.h	
+	modinstall.h
+	wadseeker.h
+	wadseekerexportinfo.h
 	wadseekermessagetype.h
-	wadseekerversioninfo.h	
+	wadseekerversiondefs.h
+	wadseekerversioninfo.h
 )
-
-include_directories(${QT_INCLUDES})
-
-qt_wrap_cpp(wadseekerQt WADSEEKER_FILES ${WADSEEKER_QT_FILES})
 
 add_library(wadseeker SHARED ${WADSEEKER_FILES} ${HEADER_FILES})
 
-target_link_libraries(wadseeker ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARIES} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} lzma)
+target_include_directories(wadseeker
+PRIVATE
+	${CMAKE_CURRENT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}
+INTERFACE
+	${CMAKE_CURRENT_SOURCE_DIR}/..
+)
 
-if(DEFINED DOOMSEEKER_BINARY_DIR)
-	set_target_properties(wadseeker PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${DOOMSEEKER_BINARY_DIR} RUNTIME_OUTPUT_DIRECTORY ${DOOMSEEKER_BINARY_DIR})
-endif(DEFINED DOOMSEEKER_BINARY_DIR)
+target_link_libraries(wadseeker
+LINK_PUBLIC
+	${QT_LIBRARIES}
+LINK_PRIVATE
+	${CMAKE_THREAD_LIBS_INIT}
+	BZip2::BZip2
+	lzma
+	ZLIB::ZLIB)
+
+set_target_properties(wadseeker PROPERTIES
+	AUTOMOC ON
+	VERSION ${WADSEEKER_LIBVERSION}
+	SOVERSION ${WADSEEKER_SOVERSION}
+)
+
+if(DEFINED Doomseeker_BINARY_DIR)
+	set_target_properties(wadseeker PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${Doomseeker_BINARY_DIR} RUNTIME_OUTPUT_DIRECTORY ${Doomseeker_BINARY_DIR})
+endif()
 
 if(NOT WIN32 AND NOT XCODE_VERSION)
-	install(TARGETS wadseeker LIBRARY DESTINATION lib)
+	install(TARGETS wadseeker LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT wadseeker NAMELINK_SKIP)
+	install(TARGETS wadseeker LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT wadseeker-dev NAMELINK_ONLY)
 elseif(WIN32)
-	install(TARGETS wadseeker RUNTIME DESTINATION .)
-endif(NOT WIN32 AND NOT XCODE_VERSION)
+	install(TARGETS wadseeker RUNTIME DESTINATION . COMPONENT wadseeker)
+endif()
+
+install(SCRIPT InstallHeaders.cmake COMPONENT wadseeker-dev)
+
+# We need a newer CPack version to get desirable results.
+if(NOT CMAKE_VERSION VERSION_LESS "3.6.0")
+	# CPack can autogenerate this file, but since we have a postprocessing step
+	# to correct the versions per component we're better off generating it
+	# manually. This means there will be a lintian error until that step is run.
+	configure_file(deb-extra/shlibs.in ${CMAKE_CURRENT_BINARY_DIR}/shlibs)
+
+	cpack_add_component(wadseeker
+		DISPLAY_NAME libwadseeker
+		DESCRIPTION "Library for automatically locating and downloading mods for Doom."
+		REQUIRED)
+	parent_scope_component(wadseeker)
+
+	set(CPACK_PACKAGE_VERSION ${VERSION_STRING})
+
+	set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
+	set(CPACK_DEBIAN_WADSEEKER_PACKAGE_NAME "libwadseeker1")
+	set(CPACK_DEBIAN_WADSEEKER_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/deb-extra/triggers;${CMAKE_CURRENT_BINARY_DIR}/shlibs")
+	set(CPACK_DEBIAN_WADSEEKER_PACKAGE_SECTION "libs")
+	set(CPACK_COMPONENT_WADSEEKER_DESCRIPTION "Library for locating and downloading Doom mods.\n Searching is done against a given list of common servers including the id\n games archive. Wadseeker is based around Qt core and does not provide a GUI\n itself.")
+	set(CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_NAME "libwadseeker-dev")
+	set(CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_DEPENDS "${CPACK_DEBIAN_WADSEEKER_PACKAGE_NAME}, qtbase5-dev")
+	set(CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_SECTION "libdevel")
+	set(CPACK_COMPONENT_WADSEEKER-DEV_DESCRIPTION "Header files for libwadseeker.\n Wadseeker is a library for locating and downloading Doom mods.")
+	if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+		set(CPACK_DEBIAN_WADSEEKER_PACKAGE_NAME ${CPACK_DEBIAN_WADSEEKER_PACKAGE_NAME} PARENT_SCOPE)
+		set(CPACK_DEBIAN_WADSEEKER_PACKAGE_CONTROL_EXTRA ${CPACK_DEBIAN_WADSEEKER_PACKAGE_CONTROL_EXTRA} PARENT_SCOPE)
+		set(CPACK_DEBIAN_WADSEEKER_PACKAGE_SECTION ${CPACK_DEBIAN_WADSEEKER_PACKAGE_SECTION} PARENT_SCOPE)
+		set(CPACK_COMPONENT_WADSEEKER_DESCRIPTION ${CPACK_COMPONENT_WADSEEKER_DESCRIPTION} PARENT_SCOPE)
+		set(CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_NAME ${CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_NAME} PARENT_SCOPE)
+		set(CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_DEPENDS ${CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_DEPENDS} PARENT_SCOPE)
+		set(CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_SECTION ${CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_SECTION} PARENT_SCOPE)
+		set(CPACK_COMPONENT_WADSEEKER-DEV_DESCRIPTION ${CPACK_COMPONENT_WADSEEKER-DEV_DESCRIPTION} PARENT_SCOPE)
+
+		file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/CPackComponent.version" "${CPACK_DEBIAN_WADSEEKER_PACKAGE_NAME} ${VERSION_STRING}\n${CPACK_DEBIAN_WADSEEKER-DEV_PACKAGE_NAME} ${VERSION_STRING}\n")
+	endif()
+endif()

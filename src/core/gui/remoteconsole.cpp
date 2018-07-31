@@ -2,28 +2,24 @@
 // remoteconsole.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
-
-#include <QMessageBox>
-#include <QScopedPointer>
-#include <QString>
 
 #include "plugins/engineplugin.h"
 #include "serverapi/rconprotocol.h"
@@ -31,14 +27,33 @@
 #include "widgets/serverconsole.h"
 #include "remoteconsole.h"
 #include "rconpassworddialog.h"
-#include "strings.h"
+#include "strings.hpp"
+#include "ui_remoteconsole.h"
 
-RemoteConsole::RemoteConsole(QWidget *parent) : QMainWindow(parent), protocol(NULL)
+#include <QKeyEvent>
+#include <QMessageBox>
+#include <QScopedPointer>
+#include <QString>
+
+DClass<RemoteConsole> : public Ui::RemoteConsole
 {
+public:
+	RConProtocol *protocol;
+	ServerConsole *serverConsole;
+	ServerPtr server;
+};
+
+DPointered(RemoteConsole)
+
+RemoteConsole::RemoteConsole(QWidget *parent) : QMainWindow(parent)
+{
+	construct();
+	show();
+
 	// Prompt for connection info & password.
 	RconPasswordDialog *dlg = new RconPasswordDialog(this, true);
 	connect(dlg, SIGNAL(rejected()), this, SLOT(close()));
-	while(protocol == NULL)
+	while(d->protocol == NULL)
 	{
 		int ret = dlg->exec();
 		if(ret == QDialog::Accepted)
@@ -47,21 +62,26 @@ RemoteConsole::RemoteConsole(QWidget *parent) : QMainWindow(parent), protocol(NU
 			unsigned short port;
 			Strings::translateServerAddress(dlg->serverAddress(), address, port, QString("localhost:%1").arg(dlg->selectedEngine()->data()->defaultServerPort));
 
-			server = dlg->selectedEngine()->server(QHostAddress(address), port);
+			ServerPtr server = dlg->selectedEngine()->server(QHostAddress(address), port);
 			if(!server->hasRcon())
 			{
-				QMessageBox::critical(this, tr("No RCon support"), tr("The source port selected has no RCon support."));
-				close();
-				return;
+				QMessageBox::critical(this, tr("No RCon support"), tr("The selected source port has no RCon support."));
+				continue;
 			}
-			protocol = server->rcon();
+			d->protocol = server->rcon();
 
-			if(protocol != NULL)
+			if(d->protocol != NULL)
 			{
-				setWindowIcon(server->icon());
+				d->server = server;
+				setWindowIcon(d->server->icon());
 				standardInit();
 
-				protocol->sendPassword(dlg->connectPassword());
+				d->protocol->sendPassword(dlg->connectPassword());
+			}
+			else
+			{
+				QMessageBox::critical(this, tr("RCon failure"), tr("Failed to create RCon protocol for the server."));
+				continue;
 			}
 		}
 		else
@@ -71,15 +91,18 @@ RemoteConsole::RemoteConsole(QWidget *parent) : QMainWindow(parent), protocol(NU
 }
 
 RemoteConsole::RemoteConsole(ServerPtr server, QWidget *parent)
-: QMainWindow(parent), protocol(server->rcon()), server(server)
+: QMainWindow(parent)
 {
-	standardInit();
+	construct();
+	d->protocol = server->rcon();
+	d->server = server;
 
 	setWindowIcon(server->icon());
 	changeServerName(server->name());
 
-	if (protocol != NULL)
+	if (d->protocol != NULL)
 	{
+		standardInit();
 		showPasswordDialog();
 	}
 	else
@@ -94,6 +117,18 @@ RemoteConsole::~RemoteConsole()
 {
 }
 
+void RemoteConsole::construct()
+{
+	d->setupUi(this);
+	d->protocol = NULL;
+	d->serverConsole = new ServerConsole();
+	d->console->layout()->addWidget(d->serverConsole);
+	connect(d->actionDisconnect, SIGNAL(triggered()), this, SLOT(disconnectFromServer()));
+
+	// delete ourself on close
+	setAttribute(Qt::WA_DeleteOnClose);
+}
+
 void RemoteConsole::changeServerName(const QString &name)
 {
 	setWindowTitle(name + tr(" - Remote Console"));
@@ -101,8 +136,8 @@ void RemoteConsole::changeServerName(const QString &name)
 
 void RemoteConsole::closeEvent(QCloseEvent *event)
 {
-	if(protocol && protocol->isConnected())
-		disconnectFromServer();
+	if(d->protocol && d->protocol->isConnected())
+		d->protocol->disconnectFromServer();
 	event->accept();
 }
 
@@ -114,8 +149,14 @@ void RemoteConsole::invalidPassword()
 
 void RemoteConsole::disconnectFromServer()
 {
-	if(protocol->isConnected())
-		protocol->disconnectFromServer();
+	if (d->protocol)
+	{
+		d->protocol->disconnectFromServer();
+	}
+	else
+	{
+		close();
+	}
 }
 
 void RemoteConsole::showPasswordDialog()
@@ -126,47 +167,34 @@ void RemoteConsole::showPasswordDialog()
 	int ret = dlg->exec();
 	if(ret == QDialog::Accepted)
 	{
-		protocol->sendPassword(dlg->connectPassword());
+		d->protocol->sendPassword(dlg->connectPassword());
 	}
 	delete dlg;
-	
+
 	// Set/Restore focus to the cmd line input.
-	serverConsole->setFocus();
+	d->serverConsole->setFocus();
 }
 
 void RemoteConsole::standardInit()
 {
-	setupUi(this);
-	serverConsole = new ServerConsole();
-	console->layout()->addWidget(serverConsole);
-
-	// delete ourself on close
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	if(protocol == NULL)
-		return;
-
-	// If we connected show the window
 	show();
-
-	connect(actionDisconnect, SIGNAL(triggered()), this, SLOT(disconnectFromServer()));
-	connect(serverConsole, SIGNAL(messageSent(const QString &)), protocol, SLOT(sendCommand(const QString &)));
-	connect(protocol, SIGNAL(disconnected()), this, SLOT(close()));
-	connect(protocol, SIGNAL(messageReceived(const QString &)), serverConsole, SLOT(appendMessage(const QString &)));
-	connect(protocol, SIGNAL(invalidPassword()), this, SLOT(invalidPassword()));
-	connect(protocol, SIGNAL(playerListUpdated()), this, SLOT(updatePlayerList()));
-	connect(protocol, SIGNAL(serverNameChanged(const QString &)), this, SLOT(changeServerName(const QString &)));
+	connect(d->serverConsole, SIGNAL(messageSent(const QString &)), d->protocol, SLOT(sendCommand(const QString &)));
+	connect(d->protocol, SIGNAL(disconnected()), this, SLOT(close()));
+	connect(d->protocol, SIGNAL(messageReceived(const QString &)), d->serverConsole, SLOT(appendMessage(const QString &)));
+	connect(d->protocol, SIGNAL(invalidPassword()), this, SLOT(invalidPassword()));
+	connect(d->protocol, SIGNAL(playerListUpdated()), this, SLOT(updatePlayerList()));
+	connect(d->protocol, SIGNAL(serverNameChanged(const QString &)), this, SLOT(changeServerName(const QString &)));
 }
 
 void RemoteConsole::updatePlayerList()
 {
-	const QList<Player> &list = protocol->players();
+	const QList<Player> &list = d->protocol->players();
 
-	playerTable->setRowCount(list.size());
+	d->playerTable->setRowCount(list.size());
 	for(int i = 0; i < list.size(); ++i)
 	{
 		QString name = list[i].nameFormatted();
 		QTableWidgetItem* newItem = new QTableWidgetItem(name);
-		playerTable->setItem(i, 0, newItem);
+		d->playerTable->setItem(i, 0, newItem);
 	}
 }

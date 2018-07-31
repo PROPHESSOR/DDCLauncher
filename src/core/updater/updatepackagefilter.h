@@ -2,20 +2,20 @@
 // updatepackagefilter.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
@@ -25,6 +25,7 @@
 
 #include "updater/updatechannel.h"
 #include "updater/updatepackage.h"
+#include "dptr.h"
 #include <QList>
 #include <QMap>
 #include <QString>
@@ -49,14 +50,16 @@
  * - Packages which have the same revision number as the ones already
  *   installed are discarded. This is hardcoded into the class.
  */
-class UpdatePackageFilter
+class UpdatePackageFilter : public QObject
 {
+	Q_OBJECT;
+
 	public:
 		UpdatePackageFilter();
 		~UpdatePackageFilter();
 
 		QList<UpdatePackage> filter(const QList<UpdatePackage>& packages);
-		void setIgnoreRevisions(const QMap<QString, QList<unsigned long long> >& packagesRevisions);
+		void setIgnoreRevisions(const QMap<QString, QList<QString> >& packagesRevisions);
 		/**
 		 * @brief After filter() flag which says if any package was ignored.
 		 *
@@ -75,14 +78,17 @@ class UpdatePackageFilter
 		bool wasAnyUpdatePackageIgnored() const;
 
 	private:
-		class PluginInfo;
-		class PrivData;
+		Q_DISABLE_COPY(UpdatePackageFilter);
 
-		PrivData* d;
+		class PluginInfo;
+
+		DPtr<UpdatePackageFilter> d;
+		friend class PrivData<UpdatePackageFilter>;
 
 		QMap<QString, PluginInfo> collectPluginInfo();
 		bool isDifferentThanInstalled(UpdatePackage& pkg) const;
-		bool isOnIgnoredList(const QString& package, unsigned long long revision) const;
+		bool isOnIgnoredList(const QString& package, const QString &revision) const;
+		bool isQtInstallOk() const;
 };
 
 #endif

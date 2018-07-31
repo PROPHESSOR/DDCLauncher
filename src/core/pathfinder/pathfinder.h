@@ -2,20 +2,20 @@
 // pathfinder.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -25,6 +25,7 @@
 #define __PATHFINDER_H_
 
 #include "pathfinder/filesearchpath.h"
+#include "dptr.h"
 #include "global.h"
 #include <QStringList>
 
@@ -41,7 +42,6 @@ class MAIN_EXPORT PathFinderResult
 {
 	public:
 		PathFinderResult();
-		COPYABLE_D_POINTERED_DECLARE(PathFinderResult);
 		virtual ~PathFinderResult();
 
 		/**
@@ -57,8 +57,7 @@ class MAIN_EXPORT PathFinderResult
 		const QStringList& missingFiles() const;
 
 	private:
-		class PrivData;
-		PrivData *d;
+		DPtr<PathFinderResult> d;
 };
 
 /**
@@ -83,8 +82,16 @@ class MAIN_EXPORT PathFinder
 {
 	public:
 		/**
+		 * @brief Generic PathFinder that looks in PATH and other common dirs.
+		 *
+		 * This PathFinder is suitable for finding game executables. What dirs
+		 * are searched depends on the platform.
+		 */
+		static PathFinder genericPathFinder(const QStringList &suffixes);
+
+		/**
 		 * @brief Constructs PathFinder where paths are read from program
-		 *        configuration.
+		 *        configuration from file (WAD) path list setting.
 		 */
 		PathFinder();
 		/**
@@ -93,9 +100,6 @@ class MAIN_EXPORT PathFinder
 		 * Program configuration is skipped here.
 		 */
 		PathFinder(const QStringList& paths);
-		// [Zalewa] This may seem strange, but I don't see any reason why
-		// PathFinder can't be copyable. All in all, it's just a set of paths.
-		COPYABLE_D_POINTERED_DECLARE(PathFinder);
 		virtual ~PathFinder();
 
 		/**
@@ -105,6 +109,14 @@ class MAIN_EXPORT PathFinder
 		 * be extracted.
 		 */
 		void addPrioritySearchDir(const QString& dir);
+		/**
+		 * @brief Adds directory where search will be performed.
+		 *
+		 * Directory is added with least search priority. If you wish
+		 * to add dir with top priority use addPrioritySearchDir()
+		 * instead.
+		 */
+		void addSearchDir(const QString& dir);
 		/**
 		 * @brief Performs a search for a single file.
 		 */
@@ -116,8 +128,7 @@ class MAIN_EXPORT PathFinder
 		PathFinderResult findFiles(const QStringList& files) const;
 
 	private:
-		class PrivData;
-		PrivData *d;
+		DPtr<PathFinder> d;
 };
 
 #endif

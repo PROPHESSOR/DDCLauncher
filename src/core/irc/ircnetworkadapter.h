@@ -1,6 +1,23 @@
 //------------------------------------------------------------------------------
 // ircnetworkadapter.h
+//------------------------------------------------------------------------------
 //
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+// 02110-1301  USA
+//
+//------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef __IRCNETWORKADAPTER_H__
@@ -8,7 +25,6 @@
 
 #include "irc/ircadapterbase.h"
 #include "irc/ircclient.h"
-#include "irc/ircdelayedoperationlist.h"
 #include "irc/ircnetworkconnectioninfo.h"
 #include "irc/ircrequestparser.h"
 #include "socketsignalsadapter.h"
@@ -32,7 +48,7 @@ class IRCNetworkAdapter : public IRCAdapterBase
 	friend class IRCSocketSignalsAdapter;
 
 	public:
-		IRCNetworkAdapter();
+		IRCNetworkAdapter(IRCNetworkConnectionInfo connectionInfo);
 		~IRCNetworkAdapter();
 
 		AdapterType adapterType() const { return NetworkAdapter; }
@@ -67,7 +83,12 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		 */
 		void banUser(const QString& nickname, const QString& reason, const QString& channel);
 
-		void connect(const IRCNetworkConnectionInfo& connectionInfo);
+		QList<IRCAdapterBase*> childrenAdapters();
+		void connect();
+		const IRCNetworkConnectionInfo &connection() const
+		{
+			return this->connectionInfo;
+		}
 
 		/**
 		 * @brief Detaches the specified IRCChatAdapter instance from this
@@ -75,7 +96,7 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		 */
 		void detachChatWindow(const IRCChatAdapter* pAdapter);
 
-		void disconnect(const QString& farewellMessage = tr("Doomseeker End Of Line"));
+		void disconnect(const QString& farewellMessage);
 
 		/**
 		 * @brief Implemented to support direct communication between client
@@ -98,6 +119,8 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		void doSendMessage(const QString& message, IRCAdapterBase* pOrigin);
 
 		bool hasRecipient(const QString& recipient) const;
+
+		const PatternList &ignoredUsersPatterns() const;
 
 		/**
 		 * @brief Checks if pAdapter equals this or is one of
@@ -126,6 +149,11 @@ class IRCNetworkAdapter : public IRCAdapterBase
 			return this;
 		}
 
+		IRCResponseParser *responseParser()
+		{
+			return ircResponseParser;
+		}
+
 		/**
 		 * @brief Sets channel flags.
 		 *
@@ -139,12 +167,14 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		void sendCtcp(const QString &nickname, const QString &command);
 
 		/**
- 		* @see bEmitAllIRCMessages
- 		*/
+		* @see bEmitAllIRCMessages
+		*/
 		void setEmitAllIRCMessagesEnabled(bool b)
 		{
 			this->bEmitAllIRCMessages = b;
 		}
+
+		void setNetworkEntity(const IRCNetworkEntity &network);
 
 		QString title() const;
 
@@ -175,6 +205,8 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		 */
 		void print(const QString& printWhat, const QString& printWhere);
 		void printWithClass(const QString& printWhat, const QString& printWhere, const IRCMessageClass& msgClass);
+		void printToCurrentChatBox(const QString& printWhat, const IRCMessageClass& msgClass);
+		void reloadNetworkEntityFromConfig();
 		void userPing(const QString &nickname, qint64 ping);
 
 	signals:
@@ -214,7 +246,6 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		 */
 		QHash<QString, IRCChatAdapter*> chatWindows;
 		IRCNetworkConnectionInfo connectionInfo;
-		IRCDelayedOperationList delayedOperations;
 		IRCClient ircClient;
 		IRCRequestParser ircRequestParser;
 		IRCResponseParser* ircResponseParser;
@@ -257,9 +288,11 @@ class IRCNetworkAdapter : public IRCAdapterBase
 		void privMsgReceived(const QString& recipient, const QString& sender, const QString& content);
 		void sendPong(const QString& toWhom);
 		void userChangesNickname(const QString& oldNickname, const QString& newNickname);
+		void userIdleTime(const QString &nick, int secondsIdle);
 		void userJoinsChannel(const QString& channel, const QString& nickname, const QString& fullSignature);
 		void userModeChanged(const QString& channel, const QString& nickname,
 			const QList<char> &addedFlags, const QList<char> &removedFlags);
+		void userNetworkJoinDateTime(const QString &nick, const QDateTime &timeOfJoin);
 		void userPartsChannel(const QString& channel, const QString& nickname, const QString& farewellMessage);
 		void userQuitsNetwork(const QString& nickname, const QString& farewellMessage);
 		void whoIsUser(const QString& nickname, const QString& user, const QString& hostName, const QString& realName);
@@ -283,7 +316,6 @@ class IRCSocketSignalsAdapter : public SocketSignalsAdapter
 		void disconnected();
 		void errorReceived(QAbstractSocket::SocketError error);
 		void infoMessage(const QString& message);
-		void hostLookupError(QHostInfo::HostInfoError errorValue);
 };
 
 #endif

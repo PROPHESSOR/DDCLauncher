@@ -1,12 +1,11 @@
 ================================================================================
-Compiling Doomseeker in Microsoft Visual Studio 2008 Express with Qt 4.x
-Written by Zalewa, June 2012
-Last update: 4th November 2012
+Compiling Doomseeker in Microsoft Visual Studio Community 2017 with Qt 5.x
+Written by Zalewa, September 2015, Updated October 2017
 ================================================================================
 1. Quick introduction.
 
-This guide describes how I compile Doomseeker on Windows. 
-This is a solution that I find efficient enough. 
+This guide describes how I compile Doomseeker on Windows.
+This is a solution that I find efficient enough.
 
 Compiling other people's programs on Windows is usually a difficult and
 frustrating task. If you follow this guide you should be able to compile
@@ -15,44 +14,47 @@ binaries for Doomseeker, Wadseeker and all plugins by yourself.
 2. Compiler.
 
 On Windows only one compiler is officially supported: the one that comes with
-Microsoft Visual Studio 2008. Forget about MinGW. MinGW is attached
-as the default compiler to such programs as Code::Blocks or Qt Creator (AFAIK). 
-Binaries created by MinGW are larger and slower than the ones created by MSVC.
-Also the debugger that comes with MinGW is awful. Don't be deceived by the fact
-that MinGW is advertised as Windows port of GCC. 
+Microsoft Visual Studio 2017.
 
 First step:
-Get Microsoft Visual Studio 2008 Express. It's free for commercial 
-and non-commercial use and you can use the same e-mail address multiple times
-to get multiple registration keys. The registration process is very simple and
-it's also free of any charge.
-
-Note:
-Visual Studio version is important. Not all libraries compiled in MSVC 2008
-will work in MSVC 2010 and vice-versa. Get MSVC 2008.
+Get Microsoft Visual Studio Community 2017. It's free for commercial
+and non-commercial use.
 ================================================================================
 3. Qt.
 
-http://qt-project.org/downloads
+This instruction was written when Qt 5.7.0 was the newest available version and
+it works against this version. Your results may vary if you use newer Qt.
+Using older Qt5 versions is discouraged as they had localization bugs and
+they linked against ICU (about 30MB of additional DLL dependency).
 
-Qt download page has several links that allow to download the Qt SDK.
-You don't want to use the first link that says "Qt SDK". The link that should
-be used will say "Qt libraries 4.x.x for Windows (VS2008, >200MB)". 
+Get Qt 5.7.0 for MSVC 2013 from Qt's official home page and install it.
+http://download.qt.io/archive/qt/5.7/
 
-This package contains all libraries that you need and the Qt Designer that 
-helps with creating GUI components.
+If, for any reason, you want to use a different Qt version, it should
+be compatible with v120_xp toolset, unless you do not care about
+Windows XP and redist problems and want to use a newer one.
 
-The "Qt SDK" URL installs trash that you don't need anyway.
+Once Qt is installed you should modify your PATH environment variable so that it
+contains path to the "bin" directory inside your Qt installation. It is possible
+that Qt installer will do this for you, but you should check anyway.
+Setting this up will allow CMake to correctly detect all modules of Qt.
+This guide will not describe how to modify environment variables in Windows.
+Once you modify the PATH variable you may have to reboot your system.
 
-Refuse any prompts that will ask you if you wish to install the MinGW compiler.
-
-Once Qt is installed you may want to modify your PATH environment variable
-so that it contains path to the "bin" directory inside your Qt installation.
-This will be helpful with CMake. This guide will not describe how to modify
-environment variables in Windows. If you decide to modify the PATH variable
-(you really should do that) you will need to reboot your system.
 ================================================================================
-4. CMake.
+4. OpenSSL
+
+Link:
+https://doomseeker.drdteam.org/files/dependencies/OpenSSL-1.0.2a-VC-32.7z
+
+Doomseeker will work without OpenSSL, but it won't be able to access HTTPS sites.
+Many of the features contact HTTPS sites, therefore lack of OpenSSL will be
+crippling and may result in additional error popups.
+
+================================================================================
+5. CMake.
+
+https://www.cmake.org/
 
 CMake is a quite useful tool that helps with creation of project files and
 makefiles for various different compilers and Operating Systems. It allows
@@ -60,13 +62,15 @@ programmers to avoid uploading all that mess that IDEs create when they
 spawn a new project. Also, it helps with keeping track of all the dependencies
 that the program needs in order to compile.
 
+CMake version 3.9.0-rc6 was used when writing this doc.
+
 Get CMake now.
 
 Launch CMake GUI.
 
-The first thing you would like to set is "Where to build the binaries". This 
+The first thing you need to set is "Where to build the binaries". This
 should be located somewhere outside the repository. For example:
-D:/dev/Doomseeker/visual2008
+D:/dev/Doomseeker/visual2017
 
 The second thing is "Where is the source code". Pick the top-most directory
 that contains the CMakeLists.txt file. In case of Doomseeker this is the root
@@ -76,42 +80,62 @@ D:/dev/Doomseeker/repo
 Now press "Configure" button.
 
 CMake should prompt about the type of compiler you want to use. Pick
-"Visual Studio 9 2008". Also make sure that "Use default native compilers"
-option is selected. Now press "Finish". If you did everything right up to this
-point then CMake should find the MSVC 2008 and Qt installations. The initial
-configuration may take some time but should finish without errors. Once done, 
-CMake will display some key-value positions in a table with a red background. 
+"Visual Studio 15 2017". The very important thing here is to define special toolset
+to ensure that folks who use Windows XP can run Doomseeker. Specify "v120_xp"
+as the toolset. Don't make a typo! Also make sure that
+"Use default native compilers" option is selected.
+
+Now press "Finish". If you did everything right up to this
+point then CMake should find the MSVC 2017 and Qt installations. The initial
+configuration may take some time but should finish without errors. Once done,
+CMake will display some key-value positions in a table with a red background.
 Red background means that these settings are new.
 
 Find "Grouped" and "Advanced" checkboxes in CMake GUI and check them both. The
 list should now change and you should see following items:
 - Ungrouped Entries
-- BZIP2
+- BUILD
 - CMAKE
-- FORCE
-- QT
-- ZLIB
-
-First of all open "Ungrouped Entries" and uncheck "BUILD_SHARED_LIBS". This
-comes from ZLib source code and we don't need this because we already have a
-compiled version of ZLib.
-
-Next open "FORCE" group and uncheck everything.
-
-Now we need to show Visual Studio where BZip2 and ZLib libraries are located.
-When you open BZIP2 and ZLIB groups it should say that all entries were not 
-found. Fortunately, the VS2008 compatible compiled forms of these libraries 
-are in Doomseeker repository in "dependencies" directory. Both libraries 
-are prepared for static linking and no additional DLLs are required.
-
-The "_INCLUDE_DIR" value should point to the directory where the ".h" files are.
-The "_LIBRARIES" value should point to the ".lib" file.
+- OPENSSL
 
 When you finish setting everything press "Configure" button again so that all
 red options should turn to normal background color and then press "Generate"
 button. This should create the ".sln" file in the target directory. You may
-now open this file with Visual Studio 2008 and then try to compile the program.
+now open this file with Visual Studio 2017 and then try to compile the program.
+
+It is also possible to compile from command line by using cmake:
+
+  cd build_dir
+  cmake --build . --config Release
+
 ================================================================================
-Now you may build the program and while it compiles you may open one 
+6. Tweaks.
+
+6.1. Concurrent compilation.
+
+Find CMAKE_CXX_FLAGS and CMAKE_C_FLAGS settings. Append /MP to the
+end. Press "Configure", then "Generate".
+
+Hint: When this is enabled, and compilation fails at first, try it
+again. There's a chance it will succeed the next time.
+
+6.2. Enabling INSTALL target.
+
+Open OPENSSL branch and point both settings there to appropriate DLL files.
+The setting names tell you which file you need for which setting.
+
+Remember to change CMAKE_INSTALL_PREFIX path to something less stupid than
+"C:\Program Files (x86)\Doomseeker". Be aware that the installed files are
+dumped directly to this directory.
+
+================================================================================
+Now you may build the program and while it compiles you may open one
 of the source code files that I created back in 2009 and cry :)
+--------------------------------------------------------------------------------
+Copyright (C) 2012 The Doomseeker Team
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
 ================================================================================

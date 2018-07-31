@@ -2,20 +2,20 @@
 // gamecreateparams.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2014 "Zalewa" <zalewapl@gmail.com>
@@ -23,8 +23,10 @@
 #include "gamecreateparams.h"
 
 #include "serverapi/serverstructs.h"
+#include "gamedemo.h"
+#include <QFileInfo>
 
-class GameCreateParams::PrivData
+DClass<GameCreateParams>
 {
 	public:
 		bool broadcastToLan;
@@ -34,6 +36,7 @@ class GameCreateParams::PrivData
 		QList<GameCVar> cvars;
 		QString executablePath;
 		QString demoPath;
+		GameDemo demoRecord;
 		QList<DMFlagsSection> dmFlags;
 		QString email;
 		GameMode gameMode;
@@ -46,21 +49,22 @@ class GameCreateParams::PrivData
 		int maxPlayers;
 		QString motd;
 		QString name;
+		QMap<QString, QVariant> options;
 		unsigned short port;
+		QList<bool> pwadsOptional;
 		QStringList pwadsPaths;
 		bool randomMapRotation;
 		QString rconPassword;
 		int skill;
+		bool upnp;
+		quint16 upnpPort;
 		QString url;
 };
 
-
-COPYABLE_D_POINTERED_DEFINE(GameCreateParams);
-
+DPointered(GameCreateParams)
 
 GameCreateParams::GameCreateParams()
 {
-	d = new PrivData();
 	d->broadcastToLan = true;
 	d->broadcastToMaster = true;
 	d->randomMapRotation = false;
@@ -68,11 +72,12 @@ GameCreateParams::GameCreateParams()
 	d->maxPlayers = 0;
 	d->port = 0;
 	d->skill = 0;
+	d->upnp = true;
+	d->upnpPort = 0;
 }
 
 GameCreateParams::~GameCreateParams()
 {
-	delete d;
 }
 
 const QString& GameCreateParams::connectPassword() const
@@ -103,6 +108,16 @@ const QList<GameCVar>& GameCreateParams::cvars() const
 const QString& GameCreateParams::demoPath() const
 {
 	return d->demoPath;
+}
+
+const GameDemo &GameCreateParams::demoRecord() const
+{
+	return d->demoRecord;
+}
+
+void GameCreateParams::setDemoRecord(const GameDemo &demo)
+{
+	d->demoRecord = demo;
 }
 
 QList<DMFlagsSection>& GameCreateParams::dmFlags()
@@ -160,6 +175,12 @@ const QString& GameCreateParams::iwadPath() const
 	return d->iwadPath;
 }
 
+QString GameCreateParams::iwadName() const
+{
+	QFileInfo fi(iwadPath());
+	return fi.fileName();
+}
+
 const QString& GameCreateParams::map() const
 {
 	return d->map;
@@ -195,9 +216,29 @@ const QString& GameCreateParams::name() const
 	return d->name;
 }
 
+QVariant GameCreateParams::option(const QString &name) const
+{
+	return d->options[name];
+}
+
+void GameCreateParams::setOption(const QString &name, const QVariant &value)
+{
+	d->options[name] = value;
+}
+
 unsigned short GameCreateParams::port() const
 {
 	return d->port;
+}
+
+QList<bool>& GameCreateParams::pwadsOptional()
+{
+	return d->pwadsOptional;
+}
+
+const QList<bool>& GameCreateParams::pwadsOptional() const
+{
+	return d->pwadsOptional;
 }
 
 QStringList& GameCreateParams::pwadsPaths()
@@ -208,6 +249,28 @@ QStringList& GameCreateParams::pwadsPaths()
 const QStringList& GameCreateParams::pwadsPaths() const
 {
 	return d->pwadsPaths;
+}
+
+QStringList GameCreateParams::pwadsNames() const
+{
+	QStringList result;
+	foreach (const QString &path, pwadsPaths())
+	{
+		QFileInfo fi(path);
+		result << fi.fileName();
+	}
+	return result;
+}
+
+QList<PWad> GameCreateParams::pwads() const
+{
+	QList<PWad> result;
+	QStringList names = pwadsNames();
+	for (int i = 0; i < names.size(); ++i)
+	{
+		result << PWad(names[i], pwadsOptional()[i]);
+	}
+	return result;
 }
 
 const QString& GameCreateParams::rconPassword() const
@@ -310,6 +373,11 @@ void GameCreateParams::setPort(unsigned short port)
 	d->port = port;
 }
 
+void GameCreateParams::setPwadsOptional(const QList<bool>& pwadsOptional)
+{
+	d->pwadsOptional = pwadsOptional;
+}
+
 void GameCreateParams::setPwadsPaths(const QStringList& pwadsPaths)
 {
 	d->pwadsPaths = pwadsPaths;
@@ -338,6 +406,26 @@ void GameCreateParams::setUrl(const QString& url)
 int GameCreateParams::skill() const
 {
 	return d->skill;
+}
+
+bool GameCreateParams::upnp() const
+{
+	return d->upnp;
+}
+
+void GameCreateParams::setUpnp(bool upnp)
+{
+	d->upnp = upnp;
+}
+
+quint16 GameCreateParams::upnpPort() const
+{
+	return d->upnpPort;
+}
+
+void GameCreateParams::setUpnpPort(quint16 port)
+{
+	d->upnpPort = port;
 }
 
 const QString& GameCreateParams::url() const

@@ -25,6 +25,7 @@
 #include "entities/waddownloadinfo.h"
 #include "zip/unarchive.h"
 #include "ioutils.h"
+#include "filefind.h"
 
 #include <QDebug>
 #include <QDir>
@@ -45,17 +46,33 @@ WadInstaller::WadInstallerResult WadInstaller::installArchive(UnArchive& archive
 	}
 
 	WadInstallerResult result;
+#ifndef NDEBUG
+	foreach(const QString &file, archive.files())
+	{
+		qDebug() << "archive file entry " << file;
+	}
+#endif
+	FileFind fileFinder(archive.files());
 
 	// We will try to find all requested WADs in the single archive.
 	foreach (const WadDownloadInfo* pWadInfo, requestedWads)
 	{
 		const QString& name = pWadInfo->name();
+#ifndef NDEBUG
+		qDebug() << "requestedWad " << name;
+#endif
 
-		int entryIndex = archive.findFileEntry(name);
+		int entryIndex = fileFinder.findFilename(name);
+#ifndef NDEBUG
+		qDebug() << "requestedWad index in the archive " << entryIndex;
+#endif
 		if (entryIndex >= 0)
 		{
 			// File was found in the archive. Attempt extraction.
 			QString filePath = installDir.absoluteFilePath(name);
+#ifndef NDEBUG
+			qDebug() << "extracting requestedWad to path " << filePath;
+#endif
 			if (archive.extract(entryIndex, filePath))
 			{
 				result.installedWads << filePath;
@@ -79,14 +96,14 @@ WadInstaller::WadInstallerResult WadInstaller::installFile(const QString& fileNa
 	// Save the file from input stream to the media storage device.
 	QString filePath = installDir.absoluteFilePath(fileName);
 	QFile file(filePath);
-	
+
 	if (!file.open(QFile::WriteOnly))
 	{
 		return WadInstallerResult::makeCriticalError(
 				tr("Failed to open file \"%1\" for write.")
 					.arg(filePath) );
 	}
-	
+
 	if (!stream->isOpen())
 	{
 		stream->open(QIODevice::ReadOnly);
@@ -94,22 +111,22 @@ WadInstaller::WadInstallerResult WadInstaller::installFile(const QString& fileNa
 	else if (stream->isOpen() && !stream->isReadable())
 	{
 		return WadInstallerResult::makeCriticalError(
-				tr("Developer failure in WadInstaller::installFile(): ") 
+				tr("Developer failure in WadInstaller::installFile(): ")
 				+ tr("input stream is open but is not readable."));
 	}
-	
+
 	if (stream->size() <= 0)
 	{
 		return WadInstallerResult::makeError(tr("Attempt to save an empty file."));
 	}
-	
+
 	if (!IOUtils::copy(*stream, file))
 	{
 		return WadInstallerResult::makeCriticalError(
 				tr("Failed to save file \"%1\".")
 					.arg(filePath) );
 	}
-	
+
 	file.close();
 
 	return WadInstallerResult::makeSuccess(filePath);

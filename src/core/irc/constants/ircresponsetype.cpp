@@ -1,6 +1,23 @@
 //------------------------------------------------------------------------------
 // ircresponsetype.cpp
+//------------------------------------------------------------------------------
 //
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+// 02110-1301  USA
+//
+//------------------------------------------------------------------------------
 // Copyright (C) 2011 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "ircresponsetype.h"
@@ -98,14 +115,53 @@ QString IRCResponseType::toRfcString(MsgType type)
 		case RPLLUserMe:
 			return "255";
 
+		case RPLAway:
+			return "301";
+
+		case RPLWhoIsRegnick:
+			return "307";
+
 		case RPLWhoIsUser:
 			return "311";
+
+		case RPLWhoIsServer:
+			return "312";
+
+		case RPLWhoIsOperator:
+			return "313";
+
+		case RPLWhoIsIdle:
+			return "317";
+
+		case RPLEndOfWhoIs:
+			return "318";
+
+		case RPLWhoIsChannels:
+			return "319";
+
+		case RPLWhoIsSpecial:
+			return "320";
+
+		case RPLChannelUrl:
+			return "328";
+
+		case RPLCreationTime:
+			return "329";
+
+		case RPLWhoIsAccount:
+			return "330";
 
 		case RPLTopic:
 			return "332";
 
 		case RPLTopicWhoTime:
 			return "333";
+
+		case RPLWhoIsBot:
+			return "335";
+
+		case RPLWhoIsActually:
+			return "338";
 
 		case RPLNamReply:
 			return "353";
@@ -122,14 +178,47 @@ QString IRCResponseType::toRfcString(MsgType type)
 		case RPLEndOfMOTD:
 			return "376";
 
+		case RPLWhoIsHost:
+			return "378";
+
+		case RPLWhoIsModes:
+			return "379";
+
 		case ERRNoSuchNick:
 			return "401";
+
+		case ERRCannotSendToChan:
+			return "404";
+
+		case ERRErroneousNickname:
+			return "432";
 
 		case ERRNicknameInUse:
 			return "433";
 
+		case ERRChannelIsFull:
+			return "471";
+
+		case ERRInviteOnlyChan:
+			return "473";
+
+		case ERRBannedFromChan:
+			return "474";
+
+		case ERRBadChannelKey:
+			return "475";
+
+		case ERRBadChannelMask:
+			return "476";
+
+		case ERRNoChanModes:
+			return "477";
+
 		case ERRChanOpPrivIsNeeded:
 			return "482";
+
+		case RPLWhoIsSecure:
+			return "671";
 
 		case Join:
 			return "JOIN";

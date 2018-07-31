@@ -2,20 +2,20 @@
 // serverlistmodel.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -24,22 +24,18 @@
 #define __SERVER_LIST_MODEL_H_
 
 #include "serverapi/serverptr.h"
-#include <QHostAddress>
-#include <QSortFilterProxyModel>
-#include <QStandardItem>
 #include <QStandardItemModel>
-#include <QString>
-#include <QPixmap>
 
+class EnginePlugin;
 class Server;
 class ServerListSortFilterProxyModel;
-class ServerListHandler;
+class ServerList;
 
 class ServerListModel : public QStandardItemModel
 {
 	Q_OBJECT
 
-	friend class ServerListHandler;
+	friend class ServerList;
 	friend class ServerListProxyModel;
 
 	public:
@@ -70,14 +66,13 @@ class ServerListModel : public QStandardItemModel
 			SLDT_SORT = Qt::UserRole+2
 		};
 
-		ServerListModel(ServerListHandler* parent);
+		ServerListModel(ServerList* parent);
 
 		/**
 		 * @return New row index.
 		 */
-		int addServer(ServerPtr server, int response);
-
-		void destroyRows();
+		int addServer(ServerPtr server);
+		QList<ServerPtr> customServers() const;
 
 		/**
 		 *	@brief Finds index of the row where server is contained.
@@ -86,7 +81,11 @@ class ServerListModel : public QStandardItemModel
 		 */
 		int findServerOnTheList(const Server* server);
 
-		ServerListHandler* handler() { return parentHandler; }
+		ServerList* handler() { return parentHandler; }
+
+		QList<ServerPtr> nonSpecialServers() const;
+		QList<ServerPtr> servers() const;
+		QList<ServerPtr> serversForPlugin(const EnginePlugin *plugin) const;
 
 		/**
 		 *	Enforces update of a given row. No modificiation is done
@@ -96,7 +95,7 @@ class ServerListModel : public QStandardItemModel
 		void redraw(int row);
 		void redrawAll();
 
-		void removeCustomServers();
+		void removeServer(const ServerPtr &server);
 
 		/**
 		 *  Updates flag on given row.
@@ -107,25 +106,24 @@ class ServerListModel : public QStandardItemModel
 		/**
 		 *	Returns row index.
 		 */
-		int updateServer(int row, ServerPtr server, int response);
+		int updateServer(int row, ServerPtr server);
 
-		ServerPtr serverFromList(int rowIndex);
-		ServerPtr serverFromList(const QModelIndex&);
+		ServerPtr serverFromList(int rowIndex) const;
+		ServerPtr serverFromList(const QModelIndex&) const;
 
 		void setRefreshing(ServerPtr server);
 
 	signals:
 		void allRowsContentChanged();
-		void modelCleared();
 		void rowContentChanged(int row);
 
-	protected:
+	private:
 		void prepareHeaders();
 		ServerGroup serverGroup(int row);
 
 		QVariant columnSortData(int row, int column);
 
-		ServerListHandler* parentHandler;
+		ServerList* parentHandler;
 };
 
 #endif

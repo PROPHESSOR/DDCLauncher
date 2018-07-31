@@ -2,34 +2,37 @@
 // zandronumengineplugin.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net> (skulltagengineplugin.cpp)
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net> (skulltagengineplugin.cpp)
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 
 #include <datapaths.h>
+#include <ini/ini.h>
 #include <pathfinder/pathfinder.h>
 #include <plugins/engineplugin.h>
-#include <strings.h>
+#include <strings.hpp>
 
 #include "huffman/huffman.h"
 #include "createserverdialogpages/flagspage.h"
+#include "zandronumbroadcast.h"
 #include "zandronumbinaries.h"
+#include "zandronumgameexefactory.h"
 #include "zandronumgamehost.h"
 #include "zandronumgameinfo.h"
 #include "zandronumengineplugin.h"
@@ -37,18 +40,26 @@
 #include "zandronumserver.h"
 #include "enginezandronumconfigbox.h"
 
+DClass<ZandronumEnginePlugin>
+{
+public:
+	ZandronumBroadcast *broadcast;
+};
+DPointered(ZandronumEnginePlugin);
+
 INSTALL_PLUGIN(ZandronumEnginePlugin)
 
 ZandronumEnginePlugin::ZandronumEnginePlugin()
 {
 	HUFFMAN_Construct();
+	d->broadcast = new ZandronumBroadcast();
 
 	const // clear warnings
 	#include "zandronum.xpm"
 
 	init("Zandronum", zandronum_xpm,
 		EP_Author, "The Doomseeker Team",
-		EP_Version, 15,
+		EP_Version, PLUGIN_VERSION,
 
 		EP_AllowsURL,
 		EP_AllowsEmail,
@@ -56,49 +67,38 @@ ZandronumEnginePlugin::ZandronumEnginePlugin()
 		EP_AllowsJoinPassword,
 		EP_AllowsRConPassword,
 		EP_AllowsMOTD,
+		EP_AllowsUpnp,
+		EP_AllowsUpnpPort,
 #if defined(Q_OS_WIN32) || defined(Q_OS_MAC)
 		EP_ClientOnly,
 #endif
+		EP_ClientExeName, "zandronum",
+		EP_ServerExeName, "zandronum-server",
+		EP_GameFileSearchSuffixes, "zandronum",
 		EP_DontCreateDMFlagsPagesAutomatic,
 		EP_DefaultServerPort, 10666,
-		EP_HasMasterServer,
 		EP_DefaultMaster, "master.zandronum.com:15300",
 		EP_SupportsRandomMapRotation,
-		EP_GameModes, ZandronumGameInfo::gameModes(),
-		EP_GameModifiers, ZandronumGameInfo::gameModifiers(),
 		EP_IRCChannel, "Zandronum", "irc.zandronum.com", "#zandronum",
 		EP_RefreshThreshold, 10,
 		EP_DemoExtension, false, "cld",
 		EP_URLScheme, "zan",
+		EP_Broadcast, d->broadcast,
+		EP_MasterClient, new ZandronumMasterClient(),
 		EP_Done
 	);
 }
 
-void ZandronumEnginePlugin::setupConfig(IniSection &config) const
+void ZandronumEnginePlugin::setupConfig(IniSection &config)
 {
-	// Default to where the automatic installations install to.
-#ifdef Q_OS_WIN32
-	QString programFilesDirectory = DataPaths::programFilesDirectory(DataPaths::x86);
-	QString trimPattern = QString("\\/");
-	QString paths = Strings::trimr(programFilesDirectory, trimPattern);
-
-	paths += "\\Zandronum;" + gDefaultDataPaths->workingDirectory() + ";.";
-
-	PathFinder pf(paths.split(";"));
-	config.createSetting("BinaryPath", pf.findFile("zandronum.exe"));
-#else
-	QString paths = QString("/usr/bin;/usr/local/bin;/usr/share/bin;/usr/games/zandronum;/usr/local/games/zandronum;/usr/share/games/zandronum;") + gDefaultDataPaths->workingDirectory() + ";.";
-	PathFinder pf(paths.split(";"));
-	config.createSetting("BinaryPath", pf.findFile("zandronum"));
-	config.createSetting("ServerBinaryPath", pf.findFile("zandronum-server"));
-#endif
-
 	config.createSetting("Masterserver", data()->defaultMaster);
 	config.createSetting("EnableTesting", true);
 	config.createSetting("AllowServersToDisplayMyCountry", false);
+	config.createSetting("TestingPath",
+		DataPaths::defaultInstance()->pluginLocalDataLocationPath(*this));
 }
 
-ConfigurationBaseBox *ZandronumEnginePlugin::configuration(QWidget *parent) const
+ConfigPage *ZandronumEnginePlugin::configuration(QWidget *parent)
 {
 	return new EngineZandronumConfigBox(staticInstance(), *data()->pConfig, parent);
 }
@@ -116,6 +116,16 @@ QList<CreateServerDialogPage*> ZandronumEnginePlugin::createServerDialogPages(
 GameHost* ZandronumEnginePlugin::gameHost()
 {
 	return new ZandronumGameHost();
+}
+
+QList<GameMode> ZandronumEnginePlugin::gameModes() const
+{
+	return ZandronumGameInfo::gameModes();
+}
+
+QList<GameCVar> ZandronumEnginePlugin::gameModifiers() const
+{
+	return ZandronumGameInfo::gameModifiers();
 }
 
 QList<GameCVar> ZandronumEnginePlugin::limits(const GameMode& gm) const
@@ -167,12 +177,14 @@ QList<GameCVar> ZandronumEnginePlugin::limits(const GameMode& gm) const
 	return gl;
 }
 
-MasterClient *ZandronumEnginePlugin::masterClient() const
-{
-	return new ZandronumMasterClient();
-}
-
 ServerPtr ZandronumEnginePlugin::mkServer(const QHostAddress &address, unsigned short port) const
 {
 	return ServerPtr(new ZandronumServer(address, port));
+}
+
+void ZandronumEnginePlugin::start()
+{
+	EnginePlugin::start();
+	setGameExeFactory(QSharedPointer<GameExeFactory>(new ZandronumGameExeFactory(this)));
+	d->broadcast->start();
 }

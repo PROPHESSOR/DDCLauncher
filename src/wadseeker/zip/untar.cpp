@@ -18,13 +18,14 @@
 // 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2011 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2011 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include "untar.h"
 
 #include <QBuffer>
 #include <QFile>
+#include <QStringList>
 
 UnTar::UnTar(QIODevice *device) : UnArchive(device), valid(true)
 {
@@ -60,6 +61,14 @@ QString UnTar::fileNameFromIndex(int file)
 	return directory[file].filename;
 }
 
+QStringList UnTar::files()
+{
+	QStringList files;
+	foreach(const TarFile &tarfile, directory)
+		files << tarfile.filename;
+	return files;
+}
+
 int UnTar::findFileEntry(const QString &entryName)
 {
 	for(int i = 0;i < directory.count();i++)
@@ -86,7 +95,7 @@ void UnTar::scanTarFile()
 			break;
 		}
 
-		file.filename = QString::fromAscii(buffer, qMin(static_cast<int>(strlen(buffer)), 100));
+		file.filename = QString::fromUtf8(buffer, qMin(static_cast<int>(strlen(buffer)), 100));
 		if(file.filename.isEmpty())
 			break;
 		file.size = QString(&buffer[124]).left(12).toUInt(&valid, 8);

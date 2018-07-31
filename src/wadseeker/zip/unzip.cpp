@@ -38,66 +38,28 @@ class IODeviceCloser
 		{
 			this->d = d;
 		}
-		
+
 		~IODeviceCloser()
 		{
 			this->d->close();
 		}
-		
+
 	private:
 		QIODevice* d;
 };
 
-UnZip::UnZip(QIODevice *device) 
+UnZip::UnZip(QIODevice *device)
 : UnArchive(device)
 {
+	if (device->open(QIODevice::ReadOnly))
+	{
+		centralDirectory = ZipFile::CentralDirectory::find(device);
+		device->close();
+	}
 }
 
 UnZip::~UnZip()
 {
-}
-
-QList<ZipLocalFileHeader> UnZip::allDataHeaders()
-{
-	qint64 pos = 0;
-	QList<ZipLocalFileHeader> list;
-
-	if (!isValid())
-	{
-		emit message(tr("No valid zip data is present."), WadseekerLib::Error);
-		return list;
-	}
-
-	if (!stream->open(QFile::ReadOnly))
-	{
-		emit message(tr("Failed to open archive for reading."), WadseekerLib::Error);
-		return list;
-	}
-	
-	IODeviceCloser ioDevCloser(stream);
-	while(true)
-	{
-		ZipLocalFileHeader zip;
-
-		int readError = this->readHeader(pos, zip);
-
-		if(readError == ZipLocalFileHeader::Corrupted)
-		{
-			emit message(tr("ZIP file is corrupted!"), WadseekerLib::Error);
-			break;
-		}
-		else if (readError == ZipLocalFileHeader::NoError)
-		{
-			list << zip;
-			pos += zip.fileEntrySize();
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	return list;
 }
 
 bool UnZip::extract(int file, const QString& where)
@@ -108,30 +70,30 @@ bool UnZip::extract(int file, const QString& where)
 		return false;
 	}
 
-	ZipLocalFileHeader header;
+	ZipFile::LocalFileHeader header;
 	if (!stream->open(QFile::ReadOnly))
 	{
 		qDebug() << "UnZip::extract(): Failed to open archive for reading.";
 		return false;
 	}
 	IODeviceCloser ioDevCloser(stream);
-	
-	int headerResult = readHeaderFromFileIndex(file, header);
-	if (headerResult != ZipLocalFileHeader::NoError)
+
+	ZipFile::HeaderError headerResult = readHeaderFromFileIndex(file, header);
+	if (headerResult != ZipFile::NoError)
 	{
-		qDebug() << "UnZip::extract(): Failed to extract file" << file 
+		qDebug() << "UnZip::extract(): Failed to extract file" << file
 			<< ", result:" << headerResult;
 		return false;
 	}
 	qint64 pos = header.headerPosition + header.howManyBytesTillData();
-	
+
 	if (!stream->seek(pos))
 	{
 		qDebug() << "UnZip::extract(): Failed to seek archive to pos" << pos
 			<< "for file:" << file << ", result:" << headerResult;
 		return false;
 	}
-	
+
 	QFile outputFile(where);
 	outputFile.open(QFile::WriteOnly);
 	bool bOk = true;
@@ -146,102 +108,50 @@ bool UnZip::extract(int file, const QString& where)
 		bOk = IOUtils::copy(*stream, outputFile, header.uncompressedSize);
 	}
 	outputFile.close();
-	return bOk;		
+	return bOk;
 }
 
 int UnZip::findFileEntry(const QString& entryName)
 {
-	if (!isValid())
-	{
-		return -1;
-	}
+	return centralDirectory.fileIndex(entryName);
 
-	qint64 pos = 0;
-	int fileIndex = 0;
-
-	if (!stream->open(QFile::ReadOnly))
-	{
-		return -1;
-	}
-	
-	IODeviceCloser ioDevCloser(stream);
-	while(true)
-	{
-		ZipLocalFileHeader zip;
-
-		int err;
-		err = this->readHeader(pos, zip);
-		if (err != ZipLocalFileHeader::NoError)
-		{
-			fileIndex = -1;
-			break;
-		}
-
-		QFileInfo fi(zip.fileName);
-		QString strFile = fi.fileName();
-		// If file was found return it's header.
-		if (strFile.compare(entryName, Qt::CaseInsensitive) == 0)
-		{
-			break;
-		}
-
-		pos += zip.fileEntrySize();
-		++fileIndex;
-	}
-	
-	return fileIndex;
 }
 
 QString UnZip::fileNameFromIndex(int file)
 {
-	ZipLocalFileHeader header;
+	return centralDirectory[file].fileName;
+}
 
-	if (!stream->open(QFile::ReadOnly))
-	{
-		return QString();
-	}
-	
-	int result = readHeaderFromFileIndex(file, header);
-	stream->close();
-
-	return result == ZipLocalFileHeader::NoError 
-		? header.fileName 
-		: QString();
+QStringList UnZip::files()
+{
+	QStringList files;
+	for (int i = 0; i < centralDirectory.fileCount(); ++i)
+		files << centralDirectory[i].fileName;
+	return files;
 }
 
 bool UnZip::isZip()
 {
-	ZipLocalFileHeader zip;
-	int err;
-	if (!stream->open(QIODevice::ReadOnly))
-	{
-		return false;
-	}
-	
-	err = readHeader(0, zip);
-	stream->close();
-
-	return err == ZipLocalFileHeader::NoError;
+	return centralDirectory.isValid();
 }
 
-int UnZip::readHeader(qint64 pos, ZipLocalFileHeader& zip)
+ZipFile::HeaderError UnZip::readHeader(qint64 pos, ZipFile::LocalFileHeader& zip)
 {
 	// This expects the file to be already open and doesn't close it.
-	int readErr;
 	if (pos >= stream->size())
 	{
-		return ZipLocalFileHeader::EndOfFileReached;
+		return ZipFile::EndOfFileReached;
 	}
-	
+
 	if (!stream->seek(pos))
 	{
-		return ZipLocalFileHeader::Corrupted;
+		return ZipFile::Corrupted;
 	}
 
 	QByteArray array = stream->read(ZIP_LOCAL_FILE_HEADER_SIZE);
 
-	readErr = zip.fromByteArray(array);
-	if (readErr != ZipLocalFileHeader::NoError)
+	ZipFile::HeaderError readErr = zip.fromByteArray(array);
+	if (readErr != ZipFile::NoError)
 	{
 		return readErr;
 	}
@@ -249,7 +159,7 @@ int UnZip::readHeader(qint64 pos, ZipLocalFileHeader& zip)
 	array = stream->read(zip.fileNameLength);
 	if (array.size() < zip.fileNameLength)
 	{
-		return ZipLocalFileHeader::Corrupted;
+		return ZipFile::Corrupted;
 	}
 
 	zip.fileName = array.constData();
@@ -257,53 +167,54 @@ int UnZip::readHeader(qint64 pos, ZipLocalFileHeader& zip)
 	array = stream->read(zip.extraFieldLength);
 	if (array.size() < zip.extraFieldLength)
 	{
-		return ZipLocalFileHeader::Corrupted;
+		return ZipFile::Corrupted;
 	}
 
 	zip.extraField = array;
 
 	zip.headerPosition = pos;
 
-	return ZipLocalFileHeader::NoError;
+	return ZipFile::NoError;
 }
 
-int UnZip::readHeaderFromFileIndex(int file, ZipLocalFileHeader& zip)
+ZipFile::HeaderError UnZip::readHeaderFromFileIndex(int file, ZipFile::LocalFileHeader& zip)
 {
-	ZipLocalFileHeader tempHeader;
-	qint64 pos = 0;
-	for (int i = 0; i <= file; ++i)
+	zip = ZipFile::LocalFileHeader();
+	ZipFile::LocalFileHeader tempHeader;
+	ZipFile::CentralDirectoryFileHeader centralDirectoryHeader = centralDirectory[file];
+	if (!centralDirectoryHeader.isValid())
+		return ZipFile::Corrupted;
+
+	qint64 pos = centralDirectoryHeader.localFileHeaderOffset;
+	ZipFile::HeaderError errorCode = readHeader(pos, tempHeader);
+	if (errorCode != ZipFile::NoError)
 	{
-		int result = readHeader(pos, tempHeader);
-		if (result != ZipLocalFileHeader::NoError)
-		{
-			return result;
-		}
-		
-		pos += tempHeader.fileEntrySize();
+		return errorCode;
 	}
-	
-	zip = tempHeader; 
-	return ZipLocalFileHeader::NoError;
+	tempHeader.compressedSize = centralDirectoryHeader.compressedSize;
+
+	zip = tempHeader;
+	return ZipFile::NoError;
 }
 
 int UnZip::uncompress(QIODevice& streamIn, QIODevice& streamOut, unsigned long compressedSize)
 {
 	const unsigned long BUFFER_SIZE = 2 * 1024 * 1024;
 	char* out = new char[BUFFER_SIZE];
-	
+
 	z_stream zstream;
 	zstream.next_out = (unsigned char*)out;
 	zstream.avail_out = BUFFER_SIZE;
 	zstream.zalloc = Z_NULL;
 	zstream.zfree = Z_NULL;
 	unsigned int err = inflateInit2(&zstream, -15);
-	
+
 	int ret = Z_OK;
 	bool bOk = true;
-	do 
+	do
 	{
 		QByteArray inData = streamIn.read(BUFFER_SIZE);
-		if (inData.isEmpty()) 
+		if (inData.isEmpty())
 		{
 			err = Z_STREAM_END;
 			break;
@@ -312,13 +223,13 @@ int UnZip::uncompress(QIODevice& streamIn, QIODevice& streamOut, unsigned long c
 		zstream.next_in = (Bytef*)inData.data();
 
 		// run inflate() on input until output buffer not full
-		do 
+		do
 		{
 			zstream.avail_out = BUFFER_SIZE;
 			zstream.next_out = (Bytef*)out;
 			ret = inflate(&zstream, Z_NO_FLUSH);
-			
-			switch (ret) 
+
+			switch (ret)
 			{
 				case Z_NEED_DICT:
 					ret = Z_DATA_ERROR;
@@ -327,14 +238,14 @@ int UnZip::uncompress(QIODevice& streamIn, QIODevice& streamOut, unsigned long c
 					bOk = false;
 					break;
 			}
-			
+
 			if (!bOk)
 			{
 				break;
 			}
-			
+
 			int have = BUFFER_SIZE - zstream.avail_out;
-			if (streamOut.write(out, have) != have) 
+			if (streamOut.write(out, have) != have)
 			{
 				bOk = false;
 				ret = Z_ERRNO;
@@ -344,12 +255,12 @@ int UnZip::uncompress(QIODevice& streamIn, QIODevice& streamOut, unsigned long c
 
         // done when inflate() says it's done
     } while (ret != Z_STREAM_END && bOk);
-	
+
 	int inflateEndErr = inflateEnd(&zstream);
 	if(err != Z_STREAM_END)
 	{
 		return err;
 	}
-	
+
 	return inflateEndErr;
 }

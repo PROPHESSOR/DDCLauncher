@@ -2,43 +2,40 @@
 // dockBuddiesList.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #ifndef __DOCKBUDDIESLIST_H__
 #define __DOCKBUDDIESLIST_H__
 
-#include "global.h"
 #include "serverapi/buddyinfo.h"
 #include "serverapi/serverptr.h"
-#include "ui_dockBuddiesList.h"
-#include "ui_addBuddyDlg.h"
+#include "dptr.h"
 
-#include <QList>
-#include <QRegExp>
-#include <QStandardItemModel>
+#include <QDialog>
+#include <QDockWidget>
 
-class MasterClient;
-class Player;
-class Server;
+class MasterManager;
+class QAbstractButton;
+class QModelIndex;
 
-class DockBuddiesList : public QDockWidget, private Ui::DockBuddiesList
+class DockBuddiesList : public QDockWidget
 {
 	Q_OBJECT
 
@@ -55,32 +52,15 @@ class DockBuddiesList : public QDockWidget, private Ui::DockBuddiesList
 		DockBuddiesList(QWidget *parent=NULL);
 		~DockBuddiesList();
 
+		bool hasBuddy(const ServerPtr &server);
+
 	public slots:
 		void addBuddy();
-		void scan(const MasterClient *master=NULL);
+		void scan(const MasterManager *master=NULL);
 
 	signals:
 		void joinServer(const ServerPtr &server);
-
-	protected:
-		class BuddyLocationInfo
-		{
-			public:
-				BuddyLocationInfo(const Player &buddy, ServerPtr location);
-				COPYABLE_D_POINTERED_DECLARE(BuddyLocationInfo);
-				~BuddyLocationInfo();
-
-				const Player &buddy() const;
-				ServerPtr location() const;
-
-			private:
-				class PrivData;
-				PrivData *d;
-		};
-
-		QList<DockBuddiesList::BuddyLocationInfo> buddies;
-		QStandardItemModel *buddiesTableModel;
-		QList<QRegExp> pBuddies;
+		void scanCompleted();
 
 	protected slots:
 		void deleteBuddy();
@@ -88,22 +68,28 @@ class DockBuddiesList : public QDockWidget, private Ui::DockBuddiesList
 		void patternsListContextMenu(const QPoint &pos) const;
 
 	private:
-		const MasterClient *masterClient;
+		DPtr<DockBuddiesList> d;
+
+		const MasterManager *masterClient;
 		bool save;
 };
 
-class AddBuddyDlg : public QDialog, private Ui::AddBuddyDlg
+class AddBuddyDlg : public QDialog
 {
 	Q_OBJECT
 
 	public:
 		AddBuddyDlg(QWidget *parent=NULL);
+		~AddBuddyDlg();
 
-		BuddyInfo::PatternType patternType() const { return basicPattern->isChecked() ? BuddyInfo::PT_BASIC : BuddyInfo::PT_ADVANCED; }
-		QString pattern() const { return patternBox->text(); }
+		BuddyInfo::PatternType patternType() const;
+		QString pattern() const;
 
 	protected slots:
 		void buttonBoxClicked(QAbstractButton *button);
+
+	private:
+		DPtr<AddBuddyDlg> d;
 };
 
 #endif /* __DOCKBUDDIESLIST_H__ */

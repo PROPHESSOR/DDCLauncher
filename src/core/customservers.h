@@ -2,20 +2,20 @@
 // customservers.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -66,13 +66,10 @@ class CustomServers : public MasterClient
 		const EnginePlugin *plugin() const { return NULL; }
 
 		/**
-		 *	Convenience method - tries to read config seeking for
-		 *	"CustomServers" entry, decode it and launch setServers() method.
-		 *	@param receiver - object to receive server signals
-		 *	@param slotUpdated - slot to receive Server::updated signals
-		 *	@param slotBegunRefreshing - slot to receive Server::begunRefreshing signals
+		 * Convenience method - tries to read config seeking for
+		 * "CustomServers" entry, decode it and launch setServers() method.
 		 */
-		void readConfig(QObject* receiver, const char* slotUpdated, const char* slotBegunRefreshing);
+		QList<ServerPtr> readConfig();
 
 		/**
 		 *	Since this is not required here (there's no real
@@ -81,16 +78,13 @@ class CustomServers : public MasterClient
 		void refreshStarts() {}
 
 		/**
-		 *	Sets a list of custom servers.
-		 *	@param csiList - list of custom servers. If element's
-		 *		engineIndex is < 0 the element is discarded. Also
-		 *		the element will be discarded if it's hostname cannot
-		 *		be resolved.
-		 *	@param receiver - object to receive server signals
-		 *	@param slotUpdated - slot to receive Server::updated signals
-		 *	@param slotBegunRefreshing - slot to receive Server::begunRefreshing signals
+		 * Sets a list of custom servers.
+		 * @param csiList - list of custom servers. If element's
+		 *     engineIndex is < 0 the element is discarded. Also
+		 *     the element will be discarded if its hostname cannot
+		 *     be resolved.
 		 */
-		void setServers(const QList<CustomServerInfo>& csiList, QObject* receiver, const char* slotUpdated, const char* slotBegunRefreshing);
+		QList<ServerPtr> setServers(const QList<CustomServerInfo>& serverDefs);
 
 	protected:
 		QByteArray createServerListRequest() { return QByteArray(); }

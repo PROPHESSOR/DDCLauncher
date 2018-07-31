@@ -2,34 +2,36 @@
 // strings.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
-#include "strings.h"
+#include "strings.hpp"
 
 #include "random.h"
 
 #include "plugins/engineplugin.h"
 #include "plugins/pluginloader.h"
+#include "datastreamoperatorwrapper.h"
 
 #include <cassert>
 #include <cmath>
 
+#include <QDataStream>
 #include <QDateTime>
 #include <QDir>
 #include <QStringList>
@@ -83,7 +85,7 @@ QString Strings::colorizeString(const QString &str, int current)
 			if(i >= str.length())
 				break;
 			QChar colorChar = str[i].toLower();
-			int color = colorChar.toAscii() - 97;
+			int color = colorChar.toLatin1() - 97;
 
 			// special cases
 			if(colorChar == '+')
@@ -349,9 +351,10 @@ bool Strings::isUrlSafe(const QString& url)
 	bool bIsSafe1 = scheme.isEmpty();
 	bool bIsSafe2 = (scheme.compare("http", Qt::CaseInsensitive) == 0);
 	bool bIsSafe3 = (scheme.compare("ftp", Qt::CaseInsensitive) == 0);
+	bool bIsSafe4 = (scheme.compare("https", Qt::CaseInsensitive) == 0);
 
 
-	return bIsSafe1 || bIsSafe2 || bIsSafe3;
+	return bIsSafe1 || bIsSafe2 || bIsSafe3 || bIsSafe4;
 }
 
 QString Strings::normalizePath(QString path)
@@ -364,22 +367,8 @@ QString Strings::normalizePath(QString path)
 
 QByteArray Strings::readUntilByte(QDataStream& stream, unsigned char stopByte)
 {
-	QByteArray result;
-	bool bStopByteEncountered = false;
-
-	while (!stream.atEnd() && !bStopByteEncountered)
-	{
-		quint8 rByte;
-		stream >> rByte;
-		result += rByte;
-
-		if (rByte == stopByte)
-		{
-			bStopByteEncountered = true;
-		}
-	}
-
-	return result;
+	DataStreamOperatorWrapper reader(&stream);
+	return reader.readRawUntilByte(stopByte);
 }
 
 float Strings::scaleDataUnit(float bytes, DataUnit& outUnit)
@@ -435,7 +424,7 @@ QString& Strings::trimr(QString& str, const QString& charList)
 	int i;
 	for (i = str.length() - 1; i >= 0; --i)
 	{
-		if (!isCharOnCharList(str[i].toAscii(), charList))
+		if (!isCharOnCharList(str[i].toLatin1(), charList))
 			break;
 	}
 	++i;
@@ -448,7 +437,7 @@ QString& Strings::triml(QString& str, const QString& charList)
 	int i;
 	for (i = 0; i < str.length(); ++i)
 	{
-		if (!isCharOnCharList(str[i].toAscii(), charList))
+		if (!isCharOnCharList(str[i].toLatin1(), charList))
 			break;
 	}
 

@@ -2,41 +2,42 @@
 // player.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2010 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2010 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include "player.h"
-#include "strings.h"
+#include "strings.hpp"
 
-class Player::PrivData
+DClass<Player>
 {
 	public:
 		QString name;
-		short score;
+		long score;
 		unsigned short ping;
 		bool spectator;
 		bool bot;
-		PlayerTeam team;
+		Player::PlayerTeam team;
 };
+
+DPointered(Player)
 
 Player::Player()
 {
-	d = new PrivData();
 	d->score = 0;
 	d->ping = 0;
 	d->spectator = false;
@@ -44,9 +45,9 @@ Player::Player()
 	d->team = TEAM_NONE;
 }
 
-Player::Player(const QString &name, unsigned short score, unsigned short ping, PlayerTeam team, bool spectator, bool bot)
+Player::Player(const QString &name, long score, unsigned long ping,
+	PlayerTeam team, bool spectator, bool bot)
 {
-	d = new PrivData();
 	d->name = name;
 	d->score = score;
 	d->ping = ping;
@@ -57,22 +58,17 @@ Player::Player(const QString &name, unsigned short score, unsigned short ping, P
 
 Player::Player(const Player& other)
 {
-	d = new PrivData();
-	*d = *other.d;
+	d = other.d;
 }
 
 Player& Player::operator=(const Player& other)
 {
-	if (this != &other)
-	{
-		*d = *other.d;
-	}
+	d = other.d;
 	return *this;
 }
 
 Player::~Player()
 {
-	delete d;
 }
 
 bool Player::isBot() const
@@ -102,10 +98,28 @@ QString Player::nameColorTagsStripped() const
 	{
 		if (d->name[i] < 32 || d->name[i] > 126)
 		{
-			// Lets only remove the following character on \c.
+			// Strip on \c.
 			// Removing the control characters is still a good idea though.
-			if(d->name[i] == ESCAPE_COLOR_CHAR)
-				++i;
+			if (d->name[i] == ESCAPE_COLOR_CHAR)
+			{
+				// Find out what exactly needs to be removed. Either
+				// it will be just one character, a bracket-enclosed
+				// range or nothing if sequence is invalid.
+				int colorCodeIdx = i + 1;
+				bool range = false;
+				for (; colorCodeIdx < d->name.length(); ++colorCodeIdx)
+				{
+					QChar symbol = d->name[colorCodeIdx];
+					if (symbol == '[')
+						range = true;
+					else if ((range && symbol == ']') || !range)
+						break;
+				}
+				if (range && colorCodeIdx >= d->name.length())
+					++i;  // We didn't find range end.
+				else
+					i = colorCodeIdx;
+			}
 			continue;
 		}
 
@@ -123,7 +137,7 @@ QString Player::nameFormatted() const
 		if ((d->name[i] < 32 || d->name[i] > 126) && d->name[i] != ESCAPE_COLOR_CHAR)
 			continue;
 
-		switch (d->name[i].toAscii())
+		switch (d->name[i].toLatin1())
 		{
 			case '<':
 				ret += "&lt;";
@@ -142,12 +156,12 @@ QString Player::nameFormatted() const
 	return Strings::colorizeString(ret);
 }
 
-unsigned short Player::ping() const
+unsigned long Player::ping() const
 {
 	return d->ping;
 }
 
-short Player::score() const
+long Player::score() const
 {
 	return d->score;
 }

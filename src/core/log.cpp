@@ -2,51 +2,51 @@
 // log.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "log.h"
-#include "strings.h"
+#include "strings.hpp"
 #include <QDateTime>
 #include <QMutexLocker>
 #include <cstdio>
 
-class Log::PrivData
+DClass<Log>
 {
 	public:
 		QString logContent;
 		QMutex mutex;
-		bool printToStdout;
+		bool printToStderr;
 		bool timestamps;
 };
+
+DPointeredNoCopy(Log)
 
 Log gLog;
 
 Log::Log()
 {
-	d = new PrivData();
 	d->timestamps = true;
-	d->printToStdout = true;
+	d->printToStderr = true;
 }
 
 Log::~Log()
 {
-	delete d;
 }
 
 void Log::addEntry(const QString& string)
@@ -65,9 +65,9 @@ void Log::addUnformattedEntry(const QString& string)
 {
 	QMutexLocker locker(&d->mutex);
 
-	if (isPrintingToStdout())
+	if (isPrintingToStderr())
 	{
-		printf("%s", string.toAscii().constData());
+		fprintf(stderr, "%s", string.toUtf8().constData());
 	}
 
 	d->logContent += string;
@@ -89,53 +89,14 @@ const QString& Log::content() const
 	return d->logContent;
 }
 
-int Log::doLogPrintf(char* output, unsigned outputSize, const char* str, va_list argList)
+bool Log::isPrintingToStderr() const
 {
-	QMutexLocker locker(&d->mutex);
-
-	if (str == NULL)
-	{
-		return - 1;
-	}
-
-	return vsnprintf(output, outputSize, str, argList);
+	return d->printToStderr;
 }
 
 bool Log::isPrintingToStdout() const
 {
-	return d->printToStdout;
-}
-
-void Log::logPrintf(const char* str, ...)
-{
-	va_list argList;
-	char tempText[1024];
-
-	va_start(argList, str);
-
-	int size = doLogPrintf(tempText, sizeof(tempText), str, argList);
-	if(size == -1)
-	{
-		return;
-	}
-
-	addEntry(tempText);
-}
-
-void Log::logUnformattedPrintf(const char* str, ...)
-{
-	va_list argList;
-	char tempText[1024];
-
-	va_start(argList, str);
-
-	int size = doLogPrintf(tempText, sizeof(tempText), str, argList);
-	if(size == -1)
-	{
-		return;
-	}
-
-	addUnformattedEntry(tempText);
+	return isPrintingToStderr();
 }
 
 Log& Log::operator<<(const QString& string)
@@ -146,7 +107,12 @@ Log& Log::operator<<(const QString& string)
 
 void Log::setPrintingToStdout(bool b)
 {
-	d->printToStdout = b;
+	setPrintingToStderr(b);
+}
+
+void Log::setPrintingToStderr(bool b)
+{
+	d->printToStderr = b;
 }
 
 void Log::setTimestampsEnabled(bool b)

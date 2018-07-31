@@ -1,6 +1,6 @@
 project(updater)
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 # If the SIGN_UPDATER option is enabled, the updater.exe
@@ -14,25 +14,22 @@ include_directories(external)
 include_directories(external/TinyThread/source)
 
 if (WIN32)
-	include_directories(external/zlib/)
-	include_directories(external/bzip2)
 	include_directories(external/win32cpp/include)
 
-	# [Zalewa] Removing "/NODEFAULTLIB:libcmt.lib" will cause the .exe projects
-	# to fail to compile in MSVC. Why, one might ask? Because C++, that's why.
-	# (and because of /MT)
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:libcmt.lib")
+	# [Doomseeker]
 	# Link the updater binary statically with the Visual C++ runtime
-	# so that the executable can function standalone
-	set(CMAKE_CXX_FLAGS_RELEASE "/MT /O2 /Ob2 /D NDEBUG")
-	set(CMAKE_C_FLAGS_RELEASE "/MT /O2 /Ob2 /D NDEBUG")
+	# so that the executable can function standalone.
+	# Note: it's very important that all library dependencies
+	# are compiled with /MT flag.
+	include(${CMAKE_SOURCE_DIR}/cmake/Modules/Macros.cmake)
+	msvc_mt()
 else()
 	# optimize for reduced code size
 	set(CMAKE_CXX_FLAGS_RELEASE "-Os")
 	set(CMAKE_C_FLAGS_RELEASE "-Os")
 endif()
 
-#[BL] This stuff isn't needed sicne we take of this in the root CMakeLists.
+#[BL] This stuff isn't needed since we take care of this in the root CMakeLists.
 #if (APPLE)
 	# Build the updater as a dual 32/64bit binary.  If only one architecture
 	# is required, removing the other architecture will reduce the size

@@ -2,20 +2,20 @@
 // zandronumbinaries.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
@@ -38,8 +38,9 @@
 #include <QProgressDialog>
 #include <ini/inisection.h>
 #include <ini/inivariable.h>
+#include <strings.hpp>
 
-#define TESTING_BINARY_URL_BASE "http://zandronum.com/downloads/testing/%1/ZandroDev%1-%2"
+#define TESTING_BINARY_URL_BASE "https://zandronum.com/downloads/testing/%1/ZandroDev%1-%2"
 
 #ifdef Q_OS_WIN32
 #define TESTING_BINARY_URL TESTING_BINARY_URL_BASE"windows.zip"
@@ -66,6 +67,20 @@ class ZandronumClientExeFile::PrivData
 {
 	public:
 		QSharedPointer<const ZandronumServer> server;
+
+		bool isEmptyDir(const QString &path) const
+		{
+			QDir dir(path);
+			return dir.exists() && dir.entryList(
+				QDir::NoDotAndDotDot | QDir::AllEntries).isEmpty();
+		}
+
+		bool isNonEmptyDir(const QString &path) const
+		{
+			QDir dir(path);
+			return dir.exists() && !dir.entryList(
+				QDir::NoDotAndDotDot | QDir::AllEntries).isEmpty();
+		}
 };
 
 ZandronumClientExeFile::ZandronumClientExeFile(const QSharedPointer<const ZandronumServer> &server)
@@ -89,13 +104,7 @@ IniSection &ZandronumClientExeFile::config()
 
 Message ZandronumClientExeFile::install(QWidget *parent)
 {
-	QString messageBoxContent = tr("Testing binaries for version %1 can be installed.\n\n"
-		"Do you want Doomseeker to create %1 directory and copy all your .ini files from your base directory?"
-		).arg(testingVersion());
-
-	if (QMessageBox::question(parent,
-		tr("Doomseeker - missing testing binaries"), messageBoxContent,
-		QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+	if (askToInstallTestingVersion(parent))
 	{
 		QString path = config()["TestingPath"];
 		if (path.isEmpty())
@@ -104,9 +113,14 @@ Message ZandronumClientExeFile::install(QWidget *parent)
 		}
 
 		QDir dir(path);
-		if (!dir.mkdir(testingVersion()))
+		if (!dir.mkpath("."))
 		{
 			return Message::customError(tr("Unable to create directory:\n%1").arg(path));
+		}
+		if (!dir.mkpath(testingVersion()))
+		{
+			return Message::customError(tr("Unable to create directory:\n%1/%2").arg(
+					path, testingVersion()));
 		}
 
 		QString finalDestinationPath = path + '/' + testingVersion();
@@ -137,6 +151,40 @@ Message ZandronumClientExeFile::install(QWidget *parent)
 	return Message(Message::Type::CANCELLED);
 }
 
+bool ZandronumClientExeFile::askToInstallTestingVersion(QWidget *parent) const
+{
+	QString question;
+	QMessageBox::Icon icon = QMessageBox::NoIcon;
+	if (d->isNonEmptyDir(testingVersionInstallPath()))
+	{
+		question = tr("<p>Installation of testing binaries for version %1 "
+			"can potentially <b>overwrite</b> your files.</p>"
+			"<p>Game will be installed to:<br>%2</p>"
+			"<p>Do you want Doomseeker to extract Zandronum files, potentially "
+			"<b>overwriting existing ones</b>, and to copy all your configuration "
+			"files from your base directory?</p>").arg(
+				testingVersion(), testingVersionInstallPath());
+		icon = QMessageBox::Warning;
+	}
+	else
+	{
+		question = tr("Zandronum testing version %1 can be installed.\n\n"
+			"Game will be installed to:\n%2\n\n"
+			"Do you want Doomseeker to install that version and copy all "
+			"your configuration files from your base directory?").arg(
+				testingVersion(), testingVersionInstallPath());
+		icon = QMessageBox::Question;
+	}
+	QMessageBox box(icon, tr("Doomseeker - install Zandronum testing version"), question,
+		QMessageBox::Yes | QMessageBox::No, parent);
+
+	// Gross hack to enable text copying from a QMessageBox.
+	// http://stackoverflow.com/a/32595502/1089357
+	box.setStyleSheet("QMessageBox { messagebox-text-interaction-flags: 5; }");
+
+	return box.exec() == QMessageBox::Yes;
+}
+
 QString ZandronumClientExeFile::pathToExe(Message& message)
 {
 	IniSection& config = *ZandronumEnginePlugin::staticInstance()->data()->pConfig;
@@ -150,25 +198,18 @@ QString ZandronumClientExeFile::pathToExe(Message& message)
 		message = Message();
 		QString error;
 
-		// This is common code for both Unix and Windows:
-		IniVariable setting = config["TestingPath"];
-		QString path = setting;
-		if (path.isEmpty())
+		QString testingPathRoot = config["TestingPath"];
+		if (testingPathRoot.isEmpty())
 		{
 			error = tr("No testing directory specified for Zandronum");
 			message = Message::customError(error);
 			return QString();
 		}
 
-		if (path[path.length() - 1] != '/' && path[path.length() - 1] != '\\' )
-		{
-			path += '/';
-		}
-
-		path += testingVersion();
+		QString path = testingVersionInstallPath();
 
 		QFileInfo fi(path);
-		if (!fi.exists())
+		if (!fi.exists() || d->isEmptyDir(path))
 		{
 			error = tr("%1\ndoesn't exist.\nYou need to install new testing binaries.").arg(path);
 			message = Message(Message::Type::GAME_NOT_FOUND_BUT_CAN_BE_INSTALLED, error);
@@ -186,8 +227,9 @@ QString ZandronumClientExeFile::pathToExe(Message& message)
 		fi = QFileInfo(binPath);
 		if (!fi.exists() || (fi.isDir() && !fi.isBundle()))
 		{
-			error = tr("%1\ndoesn't contain Zandronum executable").arg(path);
-			message = Message::customError(error);
+			error = tr("%1\nexists but doesn't contain Zandronum executable.\n\n"
+				"Doomseeker can still install the game there if you want.").arg(path);
+			message = Message(Message::Type::GAME_NOT_FOUND_BUT_CAN_BE_INSTALLED, error);
 			return QString();
 		}
 
@@ -195,7 +237,7 @@ QString ZandronumClientExeFile::pathToExe(Message& message)
 		QString retPath;
 		if (!spawnTestingBatchFile(path, retPath, message))
 		{
-			// message is already specified inside spawnTestingBatchFile()S
+			// message is already specified inside spawnTestingBatchFile()
 			return QString();
 		}
 
@@ -208,6 +250,13 @@ QString ZandronumClientExeFile::testingVersion() const
 	QString testingVersion = d->server->gameVersion();
 	// Strip out extraneous data in the version number.
 	return testingVersion.left(testingVersion.indexOf(' '));
+}
+
+QString ZandronumClientExeFile::testingVersionInstallPath() const
+{
+	IniSection& config = *ZandronumEnginePlugin::staticInstance()->data()->pConfig;
+	QString path =  config["TestingPath"];
+	return Strings::combinePaths(path, testingVersion());
 }
 
 QString ZandronumClientExeFile::workingDirectory(Message& message)
@@ -296,6 +345,11 @@ bool ZandronumClientExeFile::downloadTestingBinaries(const QDir &destination, QW
 #endif
 }
 
+QString ZandronumClientExeFile::scriptFileExtension()
+{
+	return SCRIPT_FILE_EXTENSION;
+}
+
 bool ZandronumClientExeFile::spawnTestingBatchFile(const QString& versionDir, QString& fullPathToFile, Message& message)
 {
 	QString binaryPath = versionDir + '/' + ZANDRONUM_BINARY_NAME;
@@ -354,9 +408,9 @@ bool ZandronumClientExeFile::spawnTestingBatchFile(const QString& versionDir, QS
 	content += "cd \"" + cdDir + "\" \n";
 	content += "export LANG=C\n";
 	#ifdef Q_OS_MAC
-	content += "\"" + binaryPath + ZANDRONUM_APP_BUNDLE_BIN "\" $*";
+	content += "\"" + binaryPath + ZANDRONUM_APP_BUNDLE_BIN "\" \"$@\"\n";
 	#else
-	content += "\"" + binaryPath + "\" $*"; // $* deals with all the parameters
+	content += "\"" + binaryPath + "\" \"$@\"\n"; // "$@" deals with all the parameters
 	#endif
 	#endif
 
@@ -367,7 +421,7 @@ bool ZandronumClientExeFile::spawnTestingBatchFile(const QString& versionDir, QS
 		return false;
 	}
 
-	if (file.write(content.toAscii()) < 0)
+	if (file.write(content.toUtf8()) < 0)
 	{
 		QString error = tr("Error while writing batch file \"%1\"").arg(fullPathToFile);
 		message = Message::customError(error);
@@ -450,7 +504,7 @@ void TestingProgressDialog::getUrl(const QUrl& url)
 {
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setRawHeader("User-Agent", Version::userAgent().toAscii());
+	request.setRawHeader("User-Agent", Version::userAgent().toUtf8());
 
 	this->pNetworkReply = networkAccessManager.get(request);
 

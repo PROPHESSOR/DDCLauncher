@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EngineConfigPage</class>
+ <widget class="QWidget" name="EngineConfigPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>374</width>
+    <height>492</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_6">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="serverBinaryBox" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="exePickArea" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Custom parameters:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QComboBox" name="cboCustomParameters">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::InsertAlphabetically</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSaveCustomParameters">
+       <property name="icon">
+        <iconset resource="../../../../media/resources.qrc">
+         <normaloff>:/icons/diskette.png</normaloff>:/icons/diskette.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDeleteCustomParameters">
+       <property name="icon">
+        <iconset resource="../../../../media/resources.qrc">
+         <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QWidget" name="masterAddressBox" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Masterserver address:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="leMasterserverAddress"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblError">
+     <property name="text">
+      <string>[error]</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../../../media/resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>btnSaveCustomParameters</sender>
+   <signal>clicked()</signal>
+   <receiver>EngineConfigPage</receiver>
+   <slot>saveCustomParameters()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>326</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>326</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnDeleteCustomParameters</sender>
+   <signal>clicked()</signal>
+   <receiver>EngineConfigPage</receiver>
+   <slot>removeCurrentCustomParametersFromStorage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>353</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>357</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cboCustomParameters</sender>
+   <signal>editTextChanged(QString)</signal>
+   <receiver>EngineConfigPage</receiver>
+   <slot>updateCustomParametersSaveState()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>291</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>291</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>saveCustomParameters()</slot>
+  <slot>removeCurrentCustomParametersFromStorage()</slot>
+  <slot>updateCustomParametersSaveState()</slot>
+ </slots>
+</ui>

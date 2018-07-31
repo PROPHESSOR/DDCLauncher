@@ -2,20 +2,20 @@
 // ircadapterbase.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -28,6 +28,7 @@
 
 class IRCMessageClass;
 class IRCNetworkAdapter;
+class IRCNetworkEntity;
 
 /**
  *	@brief Provides an unified communication interface between a client and
@@ -36,7 +37,7 @@ class IRCNetworkAdapter;
 class IRCAdapterBase : public QObject
 {
 	Q_OBJECT
-		
+
 	public:
 		/**
 		 *	@brief Defines all possible types of IRC adapters.
@@ -47,7 +48,7 @@ class IRCAdapterBase : public QObject
 			ChannelAdapter,
 			PrivAdapter
 		};
-		
+
 		/**
 		 *	@brief Destructor emits terminating() signal.
 		 */
@@ -74,19 +75,19 @@ class IRCAdapterBase : public QObject
 		 *	@param pOrigin
 		 *		Origin of this message. Can be used to determine where the error
 		 *		and message signals should be passed.
-		 */	
+		 */
 		virtual void doSendMessage(const QString& message, IRCAdapterBase* pOrigin) = 0;
-		
+
 		void emitError(const QString& strError)
 		{
 			emit error(strError);
 		}
-		
+
 		void emitFocusRequest()
 		{
 			emit focusRequest();
 		}
-		
+
 		void emitMessage(const QString& strMessage)
 		{
 			emit message(strMessage);
@@ -96,7 +97,7 @@ class IRCAdapterBase : public QObject
 		{
 			emit messageWithClass(strMessage, messageClass);
 		}
-		
+
 		/**
 		 *	@brief The idea of the adapter system is that each adapter
 		 *	is either a network or is a child of a network.
@@ -105,6 +106,7 @@ class IRCAdapterBase : public QObject
 		 *	to which this adapter belongs.
 		 */
 		virtual IRCNetworkAdapter* network() = 0;
+		const IRCNetworkEntity &networkEntity() const;
 
 		virtual QString recipient() const
 		{
@@ -117,22 +119,25 @@ class IRCAdapterBase : public QObject
 		virtual QString title() const = 0;
 
 	public slots:
+		void emitMessageToAllChatBoxes(const QString &message, const IRCMessageClass &msgClass);
+
 		void sendMessage(const QString& message)
 		{
 			doSendMessage(message, NULL);
 		}
-	
+
 	signals:
 		void error(const QString& error);
-		
+
 		/**
 		 *	@brief Called when this adapter requests UI focus.
 		 */
 		void focusRequest();
-		
+
 		void message(const QString& message);
 		void messageWithClass(const QString& message, const IRCMessageClass& messageClass);
-		
+		void messageToNetworksCurrentChatBox(const QString &message, const IRCMessageClass &msgClass);
+
 		void terminating();
 
 		/**

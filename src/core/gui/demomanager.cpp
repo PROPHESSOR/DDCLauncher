@@ -2,30 +2,32 @@
 // demomanager.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2011 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2011 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 
 #include "demomanager.h"
+#include "ui_demomanager.h"
 #include "ini/ini.h"
 #include "ini/settingsproviderqt.h"
 #include "datapaths.h"
 #include "pathfinder/pathfinder.h"
+#include "pathfinder/wadpathfinder.h"
 #include "plugins/engineplugin.h"
 #include "plugins/pluginloader.h"
 #include "serverapi/gameexeretriever.h"
@@ -41,26 +43,46 @@
 #include <QPushButton>
 #include <QStandardItemModel>
 
-DemoManagerDlg::DemoManagerDlg() : selectedDemo(NULL)
+class Demo
 {
-	setupUi(this);
+	public:
+		QString filename;
+		QString port;
+		QDateTime time;
+		QStringList wads;
+		QStringList optionalWads;
+};
 
-	// Add a play button
-	QPushButton *playButton = buttonBox->addButton(tr("Play"), QDialogButtonBox::ActionRole);
-	playButton->setIcon(QIcon(":/icons/media-playback-start.png"));
+DClass<DemoManagerDlg> : public Ui::DemoManagerDlg
+{
+	public:
+		Demo *selectedDemo;
+		QStandardItemModel *demoModel;
+		QList<QList<Demo> > demoTree;
+};
 
-	demoModel = new QStandardItemModel();
+DPointered(DemoManagerDlg)
+
+DemoManagerDlg::DemoManagerDlg()
+{
+	d->setupUi(this);
+	d->selectedDemo = NULL;
+
+	d->demoModel = new QStandardItemModel();
 	adjustDemoList();
 
-	connect(buttonBox, SIGNAL( clicked(QAbstractButton *) ), this, SLOT( performAction(QAbstractButton *) ));
-	connect(demoList->selectionModel(), SIGNAL( currentChanged(const QModelIndex &, const QModelIndex &) ), this, SLOT( updatePreview(const QModelIndex &) ));
+	connect(d->demoList->selectionModel(), SIGNAL( currentChanged(const QModelIndex &, const QModelIndex &) ), this, SLOT( updatePreview(const QModelIndex &) ));
+}
+
+DemoManagerDlg::~DemoManagerDlg()
+{
 }
 
 void DemoManagerDlg::adjustDemoList()
 {
 	// Get valid extensions
 	QStringList demoExtensions;
-	for(int i = 0;i < gPlugins->numPlugins();++i)
+	for(unsigned i = 0;i < gPlugins->numPlugins();++i)
 	{
 		QString ext = QString("*.%1").arg(gPlugins->info(i)->data()->demoExtension);
 
@@ -83,7 +105,7 @@ void DemoManagerDlg::adjustDemoList()
 		QStringList demoData;
 		QString metaData = demoName.left(demoName.lastIndexOf("."));
 		// We need to split manually to handle escaping.
-		for(unsigned int i = 0;i < metaData.length();++i)
+		for(int i = 0;i < metaData.length();++i)
 		{
 			if(metaData[i] == '_')
 			{
@@ -125,14 +147,15 @@ void DemoManagerDlg::adjustDemoList()
 			QString pwads = metaData.retrieveSetting("meta", "pwads");
 			if(pwads.length() > 0)
 				demo.wads << pwads.split(";");
+			demo.optionalWads = metaData.retrieveSetting("meta", "optionalPwads").value().toStringList();
 		}
 
 		demoMap[date.daysTo(today)][time.secsTo(referenceTime)] = demo;
 	}
 
 	// Convert to a model
-	demoModel->clear();
-	demoTree.clear();
+	d->demoModel->clear();
+	d->demoTree.clear();
 	foreach(const DemoMap &demoDate, demoMap)
 	{
 		QStandardItem *item = new QStandardItem(demoDate.begin().value().time.toString("ddd. MMM d, yyyy"));
@@ -142,10 +165,10 @@ void DemoManagerDlg::adjustDemoList()
 			demoDateList << demo;
 			item->appendRow(new QStandardItem(demo.time.toString("hh:mm:ss")));
 		}
-		demoTree << demoDateList;
-		demoModel->appendRow(item);
+		d->demoTree << demoDateList;
+		d->demoModel->appendRow(item);
 	}
-	demoList->setModel(demoModel);
+	d->demoList->setModel(d->demoModel);
 }
 
 bool DemoManagerDlg::doRemoveDemo(const QString &file)
@@ -156,150 +179,182 @@ bool DemoManagerDlg::doRemoveDemo(const QString &file)
 	{
 		// Remove ini file as well, but don't bother warning if it can't be deleted for whatever reason
 		QFile::remove(file + ".ini");
-		selectedDemo = NULL;
+		d->selectedDemo = NULL;
 		return true;
 	}
 	return false;
 }
 
+void DemoManagerDlg::deleteSelected()
+{
+	if(QMessageBox::question(this, tr("Delete demo?"),
+			tr("Are you sure you want to delete the selected demo?"),
+			QMessageBox::Yes|QMessageBox::Cancel) == QMessageBox::Yes)
+	{
+		QModelIndex index = d->demoList->selectionModel()->currentIndex();
+		if(d->selectedDemo == NULL)
+		{
+			int dateRow = index.row();
+			for(int timeRow = 0;index.child(timeRow, 0).isValid();++timeRow)
+			{
+				if(doRemoveDemo(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + d->demoTree[dateRow][timeRow].filename))
+				{
+					d->demoModel->removeRow(timeRow, index);
+					d->demoTree[dateRow].removeAt(timeRow);
+					if(d->demoTree[dateRow].size() == 0)
+					{
+						d->demoModel->removeRow(dateRow);
+						d->demoTree.removeAt(dateRow);
+						break;
+					}
+
+					// We deleted the top row, so decrement our pointer
+					--timeRow;
+				}
+			}
+		}
+		else
+		{
+			if(doRemoveDemo(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + d->selectedDemo->filename))
+			{
+				// Adjust the tree
+				int dateRow = index.parent().row();
+				int timeRow = index.row();
+
+				d->demoModel->removeRow(timeRow, index.parent());
+				d->demoTree[dateRow].removeAt(timeRow);
+				if(d->demoTree[dateRow].size() == 0)
+				{
+					d->demoModel->removeRow(dateRow);
+					d->demoTree.removeAt(dateRow);
+				}
+			}
+		}
+	}
+}
+
+void DemoManagerDlg::exportSelected()
+{
+	if(d->selectedDemo == NULL)
+		return;
+
+	QFileDialog saveDialog(this);
+	saveDialog.setAcceptMode(QFileDialog::AcceptSave);
+	saveDialog.selectFile(d->selectedDemo->filename);
+	if(saveDialog.exec() == QDialog::Accepted)
+	{
+		// Copy the demo to the new location.
+		if(!QFile::copy(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + d->selectedDemo->filename, saveDialog.selectedFiles().first()))
+			QMessageBox::critical(this, tr("Unable to save"), tr("Could not write to the specified location."));
+	}
+}
+
+void DemoManagerDlg::playSelected()
+{
+	if(d->selectedDemo == NULL)
+		return;
+
+	// Look for the plugin used to record.
+	EnginePlugin *plugin = NULL;
+	for(unsigned i = 0;i < gPlugins->numPlugins();i++)
+	{
+		if (d->selectedDemo->port == gPlugins->info(i)->data()->name)
+		{
+			plugin = gPlugins->info(i);
+		}
+	}
+	if(plugin == NULL)
+	{
+		QMessageBox::critical(this, tr("No plugin"),
+			tr("The \"%1\" plugin does not appear to be loaded.").arg(d->selectedDemo->port));
+		return;
+	}
+
+	// Get executable path for pathfinder.
+	Message binMessage;
+	QString binPath = GameExeRetriever(*plugin->gameExe()).pathToOfflineExe(binMessage);
+
+	// Locate all the files needed to play the demo
+	PathFinder pf;
+	pf.addPrioritySearchDir(binPath);
+	WadPathFinder wadFinder = WadPathFinder(pf);
+
+	QStringList missingWads;
+	QStringList wadPaths;
+
+	foreach (const QString &wad, d->selectedDemo->wads)
+	{
+		WadFindResult findResult = wadFinder.find(wad);
+		if (findResult.isValid())
+			wadPaths << findResult.path();
+		else
+			missingWads << wad;
+	}
+
+	if(!missingWads.isEmpty())
+	{
+		QMessageBox::critical(this, tr("Files not found"),
+			tr("The following files could not be located: ") + missingWads.join(", "));
+		return;
+	}
+	QStringList optionalWadPaths;
+	foreach (const QString &wad, d->selectedDemo->optionalWads)
+	{
+		WadFindResult findResult = wadFinder.find(wad);
+		if (findResult.isValid())
+			optionalWadPaths << findResult.path();
+	}
+
+	// Play the demo
+	GameCreateParams params;
+	params.setDemoPath(gDefaultDataPaths->demosDirectoryPath()
+		+ QDir::separator() + d->selectedDemo->filename);
+	params.setIwadPath(wadPaths[0]);
+	params.setPwadsPaths(wadPaths.mid(1) + optionalWadPaths);
+	params.setHostMode(GameCreateParams::Demo);
+	params.setExecutablePath(binPath);
+
+	GameHost* gameRunner = plugin->gameHost();
+	Message message = gameRunner->host(params);
+
+	if (message.isError())
+	{
+		QMessageBox::critical(this, tr("Doomseeker - error"), message.contents());
+	}
+
+	delete gameRunner;
+}
+
+
 void DemoManagerDlg::performAction(QAbstractButton *button)
 {
-	if(button == buttonBox->button(QDialogButtonBox::Close))
+	if(button == d->buttonBox->button(QDialogButtonBox::Close))
 		reject();
-	else if(button == buttonBox->button(QDialogButtonBox::Save))
-	{
-		if(selectedDemo == NULL)
-			return;
-
-		QFileDialog saveDialog(this);
-		saveDialog.setAcceptMode(QFileDialog::AcceptSave);
-		saveDialog.selectFile(selectedDemo->filename);
-		if(saveDialog.exec() == QDialog::Accepted)
-		{
-			// Copy the demo to the new location.
-			if(!QFile::copy(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + selectedDemo->filename, saveDialog.selectedFiles().first()))
-				QMessageBox::critical(this, tr("Unable to save"), tr("Could not write to the specified location."));
-		}
-	}
-	else if(button == buttonBox->button(QDialogButtonBox::Discard))
-	{
-		if(QMessageBox::question(this, tr("Delete demo?"), tr("Are you sure you want to delete the selected demo?"), QMessageBox::Yes|QMessageBox::Cancel) == QMessageBox::Yes)
-		{
-			QModelIndex index = demoList->selectionModel()->currentIndex();
-			if(selectedDemo == NULL)
-			{
-				int dateRow = index.row();
-				for(int timeRow = 0;index.child(timeRow, 0).isValid();++timeRow)
-				{
-					if(doRemoveDemo(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + demoTree[dateRow][timeRow].filename))
-					{
-						demoModel->removeRow(timeRow, index);
-						demoTree[dateRow].removeAt(timeRow);
-						if(demoTree[dateRow].size() == 0)
-						{
-							demoModel->removeRow(dateRow);
-							demoTree.removeAt(dateRow);
-							break;
-						}
-
-						// We deleted the top row, so decrement our pointer
-						--timeRow;
-					}
-				}
-			}
-			else
-			{
-				if(doRemoveDemo(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + selectedDemo->filename))
-				{
-					// Adjust the tree
-					int dateRow = index.parent().row();
-					int timeRow = index.row();
-
-					demoModel->removeRow(timeRow, index.parent());
-					demoTree[dateRow].removeAt(timeRow);
-					if(demoTree[dateRow].size() == 0)
-					{
-						demoModel->removeRow(dateRow);
-						demoTree.removeAt(dateRow);
-					}
-				}
-			}
-		}
-	}
-	else // Play
-	{
-		if(selectedDemo == NULL)
-			return;
-
-		// Look for the plugin used to record.
-		EnginePlugin *plugin = NULL;
-		for(int i = 0;i < gPlugins->numPlugins();i++)
-		{
-			if (selectedDemo->port == gPlugins->info(i)->data()->name)
-			{
-				plugin = gPlugins->info(i);
-			}
-		}
-		if(plugin == NULL)
-		{
-			QMessageBox::critical(this, tr("No plugin"), tr("The \"%1\" plugin does not appear to be loaded.").arg(selectedDemo->port));
-			return;
-		}
-
-		// Get executable path for pathfinder.
-		Message binMessage;
-		QString binPath = GameExeRetriever(*plugin->gameExe()).pathToOfflineExe(binMessage);
-
-		// Locate all the files needed to play the demo
-		PathFinder pf;
-		pf.addPrioritySearchDir(binPath);
-		PathFinderResult result = pf.findFiles(selectedDemo->wads);
-		if(!result.missingFiles().isEmpty())
-		{
-			QMessageBox::critical(this, tr("Files not found"),
-				tr("The following files could not be located: ") + result.missingFiles().join(", "));
-			return;
-		}
-
-		// Play the demo
-		GameCreateParams params;
-		params.setDemoPath(gDefaultDataPaths->demosDirectoryPath() + QDir::separator() + selectedDemo->filename);
-		params.setIwadPath(result.foundFiles()[0]);
-		params.setPwadsPaths(result.foundFiles().mid(1));
-		params.setHostMode(GameCreateParams::Demo);
-		params.setExecutablePath(binPath);
-
-		GameHost* gameRunner = plugin->gameHost();
-		Message message = gameRunner->host(params);
-
-		if (message.isError())
-		{
-			QMessageBox::critical(this, tr("Doomseeker - error"), message.contents());
-		}
-
-		delete gameRunner;
-	}
 }
 
 void DemoManagerDlg::updatePreview(const QModelIndex &index)
 {
 	if(!index.isValid() || !index.parent().isValid())
 	{
-		preview->setText("");
-		selectedDemo = NULL;
+		d->preview->setText("");
+		d->selectedDemo = NULL;
 		return;
 	}
 
 	int dateRow = index.parent().row();
 	int timeRow = index.row();
-	selectedDemo = &demoTree[dateRow][timeRow];
+	d->selectedDemo = &d->demoTree[dateRow][timeRow];
 
-	QString text = "<b>" + tr("Port") + ":</b><p style=\"margin: 0px 0px 0px 10px\">" + selectedDemo->port + "</p>" +
+	QString text = "<b>" + tr("Port") + ":</b><p style=\"margin: 0px 0px 0px 10px\">" + d->selectedDemo->port + "</p>" +
 		"<b>" + tr("WADs") + ":</b><p style=\"margin: 0px 0px 0px 10px\">";
-	foreach(const QString &wad, selectedDemo->wads)
+	foreach(const QString &wad, d->selectedDemo->wads)
 	{
 		text += wad + "<br />";
 	}
+	foreach(const QString &wad, d->selectedDemo->optionalWads)
+	{
+		text += "[" + wad + "]<br />";
+	}
 	text += "</p>";
-	preview->setText(text);
+	d->preview->setText(text);
 }

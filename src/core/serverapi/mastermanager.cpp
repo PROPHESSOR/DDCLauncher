@@ -2,29 +2,28 @@
 // mastermanager.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net>
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net>
 //------------------------------------------------------------------------------
 #include <cassert>
 
 #include "mastermanager.h"
 
-#include "serverapi/masterclientsignalproxy.h"
 #include "serverapi/message.h"
 #include "serverapi/server.h"
 #include "customservers.h"
@@ -41,11 +40,6 @@ MasterManager::~MasterManager()
 {
 	clearServers();
 
-	for (int i = 0; i < mastersReceivers.size(); ++i)
-	{
-		delete mastersReceivers[i];
-	}
-
 	for(int i = 0;i < masters.size();i++)
 		delete masters[i];
 
@@ -60,26 +54,34 @@ void MasterManager::addMaster(MasterClient *master)
 	masters.append(master);
 	master->setEnabled(true);
 
-	MasterClientSignalProxy* pMasterReceiver = new MasterClientSignalProxy(master);
-	connect(pMasterReceiver, SIGNAL( listUpdated(MasterClient*) ),
-		this, SLOT( masterListUpdated(MasterClient*) ) );
-	connect(pMasterReceiver, SIGNAL( message(MasterClient*, const QString&, const QString&, bool) ),
-		this, SIGNAL( masterMessage(MasterClient*, const QString&, const QString&, bool) ) );
-	connect(pMasterReceiver, SIGNAL( messageImportant(MasterClient*, const Message&) ),
-		this, SIGNAL( masterMessageImportant(MasterClient*, const Message&) ));
-
-	mastersReceivers.append(pMasterReceiver);
+	this->connect(master, SIGNAL(listUpdated()), SLOT(masterListUpdated()));
+	this->connect(master, SIGNAL(message(QString, QString, bool)),
+		SLOT(forwardMasterMessage(QString, QString, bool)));
+	this->connect(master, SIGNAL(messageImportant(Message)),
+		SLOT(forwardMasterMessageImportant(Message)));
 }
 
-void MasterManager::masterListUpdated(MasterClient* pSender)
+QList<ServerPtr> MasterManager::allServers() const
 {
-	foreach(ServerPtr pServer, pSender->servers())
+	QList<ServerPtr> result;
+	foreach (MasterClient *master, masters)
+	{
+		result << master->servers();
+	}
+	result << customServers->servers();
+	return result;
+}
+
+void MasterManager::masterListUpdated()
+{
+	MasterClient *master = static_cast<MasterClient*>(sender());
+	foreach(ServerPtr pServer, master->servers())
 	{
 		registerNewServer(pServer);
 	}
 
-	emit listUpdatedForMaster(pSender);
-	mastersBeingRefreshed.remove(pSender);
+	emit listUpdatedForMaster(master);
+	mastersBeingRefreshed.remove(master);
 	if (mastersBeingRefreshed.isEmpty())
 	{
 		emit listUpdated();

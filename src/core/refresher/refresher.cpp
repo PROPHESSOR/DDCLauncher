@@ -2,32 +2,35 @@
 // refresher.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #include "refresher.h"
 
+#include "configuration/queryspeed.h"
+#include "refresher/canrefreshserver.h"
+#include "refresher/udpsocketpool.h"
 #include "serverapi/masterclient.h"
-#include "serverapi/masterclientsignalproxy.h"
 #include "serverapi/mastermanager.h"
 #include "plugins/pluginloader.h"
 #include "serverapi/server.h"
 #include "configuration/doomseekerconfig.h"
+#include "log.h"
 
 #include <QHash>
 #include <QList>
@@ -38,7 +41,6 @@
 #include <QThread>
 #include <QRunnable>
 #include <QSet>
-#include <QUdpSocket>
 
 class ServerRefreshTime
 {
@@ -68,17 +70,42 @@ class Refresher::Data
 		bool bSleeping;
 		bool bKeepRunning;
 		int delayBetweenResends;
+		QTimer flushPendingDatagramsTimer;
 		MasterHashtable registeredMasters;
 
-		/**
-		 * This will keep list of ALL servers to make sure that no server is
-		 * registered twice. Furthermore, all Server pointers can be tested
-		 * if the objects they point to have been deleted.
-		 */
-		QList<QPointer<Server> > registeredServers;
+		QList<QPointer<Server> > unchallengedServers;
 		QList<ServerRefreshTime> refreshingServers;
-		QUdpSocket* socket;
+		UdpSocketPool socketPool;
 		QSet<MasterClient*> unchallengedMasters;
+
+		bool hasAnyServers() const
+		{
+			return !unchallengedServers.isEmpty() || !refreshingServers.isEmpty();
+		}
+
+		bool isServerRegistered(Server *server) const
+		{
+			return unchallengedServers.contains(server) ||
+				refreshingServers.contains(ServerRefreshTime(server));
+		}
+
+		QPointer<Server> popNextUnchallengedServer()
+		{
+			while (!unchallengedServers.isEmpty())
+			{
+				QPointer<Server> server = unchallengedServers.takeFirst();
+				if (!server.isNull())
+				{
+					return server;
+				}
+			}
+			return NULL;
+		}
+
+		QUdpSocket *socket(const Server *server)
+		{
+			return socketPool.acquire(server->address(), server->port());
+		}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,59 +113,26 @@ class Refresher::Data
 class Refresher::MasterClientInfo
 {
 	public:
-		MasterClientInfo(MasterClient* pMaster, Refresher* pParent)
+		MasterClientInfo(Refresher* parent)
 		{
-			pParentThread = pParent;
-			pLastChallengeTimer = NULL;
-			pReceiver = new MasterClientSignalProxy(pMaster);
-			connect(pReceiver, SIGNAL( listUpdated(MasterClient*) ), pParent, SLOT( masterFinishedRefreshing(MasterClient*) ) );
-
-			numOfChallengesSent = 0;
-		}
-		~MasterClientInfo()
-		{
-			delete pReceiver;
-			if (pLastChallengeTimer != NULL)
-			{
-				delete pLastChallengeTimer;
-			}
+			connect(&lastChallengeTimer, SIGNAL(timeout()),
+				parent, SLOT(attemptTimeoutMasters()));
+			lastChallengeTimer.setSingleShot(true);
+			lastChallengeTimer.setInterval(MASTER_SERVER_TIMEOUT_DELAY);
 		}
 
 		void fireLastChallengeSentTimer()
 		{
-			// This was previously done with an object of QTimer
-			// instead of a pointer.
-			// Unfortunately on Windows it produced a cross-threading
-			// warning messages saying that timer cannot be started
-			// from a different thread.
-			if (pLastChallengeTimer == NULL)
-			{
-				pLastChallengeTimer = new QTimer();
-				connect(pLastChallengeTimer, SIGNAL(timeout()),
-					pParentThread, SLOT(attemptTimeoutMasters()));
-				pLastChallengeTimer->setSingleShot(true);
-				pLastChallengeTimer->setInterval(MASTER_SERVER_TIMEOUT_DELAY);
-			}
-
-			pLastChallengeTimer->start();
+			lastChallengeTimer.start();
 		}
 
 		bool isLastChallengeTimerActive() const
 		{
-			if (pLastChallengeTimer == NULL)
-			{
-				return false;
-			}
-
-			return pLastChallengeTimer->isActive();
+			return lastChallengeTimer.isActive();
 		}
 
-		int numOfChallengesSent;
-
-	protected:
-		MasterClientSignalProxy* pReceiver;
-		Refresher* pParentThread;
-		QTimer* pLastChallengeTimer;
+	private:
+		QTimer lastChallengeTimer;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,12 +146,14 @@ Refresher::Refresher()
 	d->bSleeping = true;
 	d->bKeepRunning = true;
 	d->delayBetweenResends = 1000;
-	d->socket = NULL;
+
+	this->connect(&d->flushPendingDatagramsTimer, SIGNAL(timeout()), SLOT(readAllPendingDatagrams()));
+	this->connect(&d->socketPool, SIGNAL(readyRead()), SLOT(readAllPendingDatagrams()));
+	d->flushPendingDatagramsTimer.start(1000);
 }
 
 Refresher::~Refresher()
 {
-	delete d->socket;
 	delete d;
 }
 
@@ -172,6 +168,13 @@ void Refresher::attemptTimeoutMasters()
 			master->timeoutRefresh();
 		}
 	}
+}
+
+void Refresher::concludeRefresh()
+{
+	d->bSleeping = true;
+	d->socketPool.releaseAll();
+	emit sleepingModeEnter();
 }
 
 Refresher *Refresher::instance()
@@ -211,7 +214,7 @@ Server* Refresher::findRefreshingServer(const QHostAddress& address,
 		{
 			continue;
 		}
-		if (refreshOp.server->address() == address && refreshOp.server->port() == port)
+		if (refreshOp.server->address().toIPv4Address() == address.toIPv4Address() && refreshOp.server->port() == port)
 		{
 			return refreshOp.server;
 		}
@@ -221,17 +224,12 @@ Server* Refresher::findRefreshingServer(const QHostAddress& address,
 
 bool Refresher::isAnythingToRefresh() const
 {
-	return !d->refreshingServers.isEmpty() || !d->registeredServers.isEmpty()
-		|| !d->registeredMasters.isEmpty() || !d->unchallengedMasters.isEmpty();
+	return d->hasAnyServers() || !d->registeredMasters.isEmpty() || !d->unchallengedMasters.isEmpty();
 }
 
-bool Refresher::hasFreeServerRefreshSlots() const
+void Refresher::masterFinishedRefreshing()
 {
-	return d->refreshingServers.size() < gConfig.doomseeker.queryBatchSize;
-}
-
-void Refresher::masterFinishedRefreshing(MasterClient* pMaster)
-{
+	MasterClient* pMaster = static_cast<MasterClient*>(sender());
 	const QList<ServerPtr>& servers = pMaster->servers();
 	foreach (ServerPtr pServer, servers)
 	{
@@ -242,8 +240,7 @@ void Refresher::masterFinishedRefreshing(MasterClient* pMaster)
 
 	if (servers.size() == 0 && !isAnythingToRefresh())
 	{
-		d->bSleeping = true;
-		emit sleepingModeEnter();
+		concludeRefresh();
 	}
 
 	emit finishedQueryingMaster(pMaster);
@@ -251,8 +248,8 @@ void Refresher::masterFinishedRefreshing(MasterClient* pMaster)
 
 void Refresher::purgeNullServers()
 {
-	d->registeredServers.removeAll(NULL);
 	d->refreshingServers.removeAll(ServerRefreshTime(NULL));
+	d->unchallengedServers.removeAll(NULL);
 }
 
 void Refresher::quit()
@@ -264,7 +261,8 @@ void Refresher::registerMaster(MasterClient* pMaster)
 {
 	if (!d->registeredMasters.contains(pMaster))
 	{
-		MasterClientInfo* pMasterInfo = new MasterClientInfo(pMaster, this);
+		MasterClientInfo* pMasterInfo = new MasterClientInfo(this);
+		this->connect(pMaster, SIGNAL(listUpdated()), SLOT(masterFinishedRefreshing()));
 
 		d->registeredMasters.insert(pMaster, pMasterInfo);
 		d->unchallengedMasters.insert(pMaster);
@@ -284,21 +282,23 @@ void Refresher::registerMaster(MasterClient* pMaster)
 
 bool Refresher::registerServer(Server* server)
 {
+	bool hadAnyServers = d->hasAnyServers();
 	purgeNullServers();
-	if (!d->registeredServers.contains(server))
+	if (!d->isServerRegistered(server))
 	{
-		if (!server->isRefreshable())
+		CanRefreshServer refreshChecker(server);
+		if (!refreshChecker.shouldRefresh())
 		{
 			return false;
 		}
-		d->registeredServers.append(server);
-		if (!server->isCustom())
+		d->unchallengedServers.append(server);
+		if (!server->isCustom() && !server->isLan())
 		{
 			emit block();
 		}
 
 		server->refreshStarts();
-		if (d->registeredServers.size() == 1)
+		if (!hadAnyServers && d->hasAnyServers())
 		{
 			if (d->bSleeping)
 			{
@@ -313,7 +313,7 @@ bool Refresher::registerServer(Server* server)
 
 void Refresher::readAllPendingDatagrams()
 {
-	while(d->socket->hasPendingDatagrams() && d->bKeepRunning)
+	while(d->socketPool.hasPendingDatagrams() && d->bKeepRunning)
 	{
 		readPendingDatagram();
 	}
@@ -322,13 +322,8 @@ void Refresher::readAllPendingDatagrams()
 void Refresher::readPendingDatagram()
 {
 	QHostAddress address;
-	quint16 port;
-	qint64 size = d->socket->pendingDatagramSize();
-	char* data = new char[size];
-	d->socket->readDatagram(data, size, &address, &port);
-
-	QByteArray dataArray(data, size);
-	delete[] data;
+	quint16 port = 0;
+	QByteArray dataArray = d->socketPool.readNextDatagram(&address, &port);
 
 	if (tryReadDatagramByMasterClient(address, port, dataArray))
 	{
@@ -344,11 +339,10 @@ void Refresher::sendMasterQueries()
 		MasterClient* pMaster = *d->unchallengedMasters.begin();
 
 		MasterClientInfo* pMasterInfo = d->registeredMasters[pMaster];
-		++pMasterInfo->numOfChallengesSent;
 		pMasterInfo->fireLastChallengeSentTimer();
 
 		pMaster->refreshStarts();
-		pMaster->sendRequest(d->socket);
+		pMaster->sendRequest(d->socketPool.acquireMasterSocket());
 		d->unchallengedMasters.remove(pMaster);
 	}
 }
@@ -361,22 +355,21 @@ void Refresher::sendServerQueries()
 	}
 
 	purgeNullServers();
-	if (!d->registeredServers.isEmpty())
+	if (d->hasAnyServers())
 	{
-		startNewServerRefreshesIfFreeSlots();
+		startNewServerRefresh();
 		resendCurrentServerRefreshesIfTimeout();
 		// Call self. This will continue until there's nothing more
 		// to refresh. Also make sure that there is at least some
 		// delay between calls or Doomseeker will hog CPU.
-		QTimer::singleShot(qMax(1U, gConfig.doomseeker.queryBatchDelay),
+		QTimer::singleShot(qMax(1, gConfig.doomseeker.querySpeed().intervalBetweenServers),
 			this, SLOT(sendServerQueries()));
 	}
 	else
 	{
 		if (!isAnythingToRefresh())
 		{
-			d->bSleeping = true;
-			emit sleepingModeEnter();
+			concludeRefresh();
 		}
 	}
 }
@@ -386,66 +379,21 @@ void Refresher::setDelayBetweenResends(int delay)
 	d->delayBetweenResends = qMax(delay, 100);
 }
 
-bool Refresher::shouldBlockRefreshingProcess() const
-{
-	if (!d->registeredMasters.isEmpty())
-	{
-		return true;
-	}
-
-	foreach(const Server* pServer, d->registeredServers)
-	{
-		if (!pServer->isCustom())
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 bool Refresher::start()
 {
-	QUdpSocket* socket = new QUdpSocket();
-	this->connect(socket, SIGNAL(readyRead()),
-		SLOT(readAllPendingDatagrams()));
-	if (socket->bind())
-	{
-		d->socket = socket;
-		return true;
-	}
-	else
-	{
-		delete socket;
-	}
-	return false;
+	return d->socketPool.acquireMasterSocket() != NULL;
 }
 
-void Refresher::startNewServerRefreshesIfFreeSlots()
+void Refresher::startNewServerRefresh()
 {
 	// Copy the list as the original will be modified.
 	// We don't want to confuse the foreach.
-	QList<QPointer<Server> > servers = d->registeredServers;
-	foreach (QPointer<Server> server, servers)
+	QPointer<Server> server = d->popNextUnchallengedServer();
+	if (!server.isNull())
 	{
-		if (server.isNull())
+		if (server->sendRefreshQuery(d->socket(server)))
 		{
-			continue;
-		}
-		if (!hasFreeServerRefreshSlots())
-		{
-			break;
-		}
-		if (!d->refreshingServers.contains(server))
-		{
-			if(server->sendRefreshQuery(d->socket))
-			{
-				d->refreshingServers.append(server);
-			}
-			else
-			{
-				d->registeredServers.removeAll(server);
-			}
+			d->refreshingServers.append(server);
 		}
 	}
 }
@@ -454,17 +402,16 @@ void Refresher::resendCurrentServerRefreshesIfTimeout()
 {
 	for (int i = 0; i < d->refreshingServers.size(); ++i)
 	{
-		ServerRefreshTime refreshOp = d->refreshingServers[i];
+		ServerRefreshTime &refreshOp = d->refreshingServers[i];
 		if (refreshOp.time.elapsed() > d->delayBetweenResends)
 		{
-			if (refreshOp.server->sendRefreshQuery(d->socket))
+			if (refreshOp.server->sendRefreshQuery(d->socket(refreshOp.server)))
 			{
 				refreshOp.time.start();
 			}
 			else
 			{
 				d->refreshingServers.removeOne(refreshOp);
-				d->registeredServers.removeAll(refreshOp.server);
 				// The collection on which we iterate just got shortened
 				// so let's back up by one step.
 				--i;
@@ -495,7 +442,7 @@ bool Refresher::tryReadDatagramByMasterClient(QHostAddress& address,
 					unregisterMaster(pMaster);
 					return true;
 				case MasterClient::RESPONSE_REPLY:
-					pMaster->sendRequest(d->socket);
+					pMaster->sendRequest(d->socketPool.acquireMasterSocket());
 					return true;
 				default:
 					return true;
@@ -520,7 +467,7 @@ bool Refresher::tryReadDatagramByServer(const QHostAddress& address,
 		switch(response)
 		{
 			case Server::RESPONSE_REPLY:
-				if(server->sendRefreshQuery(d->socket))
+				if(server->sendRefreshQuery(d->socket(server)))
 				{
 					// Reset timer
 					ServerRefreshTime refreshOp(server);
@@ -532,7 +479,6 @@ bool Refresher::tryReadDatagramByServer(const QHostAddress& address,
 				// Intentional fall through
 			default:
 				d->refreshingServers.removeAll(ServerRefreshTime(server));
-				d->registeredServers.removeAll(server);
 				server->refreshStops(static_cast<Server::Response>(response));
 				return true;
 
@@ -551,6 +497,7 @@ bool Refresher::tryReadDatagramByServer(const QHostAddress& address,
 
 void Refresher::unregisterMaster(MasterClient* pMaster)
 {
+	pMaster->disconnect(this);
 	Data::MasterHashtableIt it = d->registeredMasters.find(pMaster);
 	if (it != d->registeredMasters.end())
 	{

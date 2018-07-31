@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>278</width>
-    <height>263</height>
+    <width>417</width>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>IRC - Connect to Network</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -61,6 +61,23 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>User name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="leUserName">
+       <property name="toolTip">
+        <string>Sent to the IRC network during login. If not specified, defaults to nick.</string>
+       </property>
+       <property name="text">
+        <string>DSTestUser</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -75,7 +92,7 @@
      <item>
       <widget class="QComboBox" name="cboNetwork">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -83,23 +100,62 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnNewNetwork">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>60</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>New</string>
-       </property>
-      </widget>
+       <item>
+        <widget class="QPushButton" name="btnNewNetwork">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Add network</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../../media/resources.qrc">
+           <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Edit network</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../../media/resources.qrc">
+           <normaloff>:/icons/pencil.png</normaloff>:/icons/pencil.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnRemove">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Remove network</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../../../media/resources.qrc">
+           <normaloff>:/icons/x.png</normaloff>:/icons/x.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -120,6 +176,9 @@
        <property name="text">
         <string>74.207.247.18</string>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -131,8 +190,14 @@
      </item>
      <item row="1" column="1">
       <widget class="QSpinBox" name="spinPort">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
        <property name="minimum">
-        <number>6667</number>
+        <number>0</number>
        </property>
        <property name="maximum">
         <number>65535</number>
@@ -180,7 +245,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../../media/resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -194,7 +261,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
-     <y>274</y>
+     <y>272</y>
     </hint>
    </hints>
   </connection>
@@ -210,9 +277,62 @@
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
-     <y>274</y>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnEdit</sender>
+   <signal>clicked()</signal>
+   <receiver>IRCNetworkSelectionBox</receiver>
+   <slot>editCurrentNetwork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>352</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnNewNetwork</sender>
+   <signal>clicked()</signal>
+   <receiver>IRCNetworkSelectionBox</receiver>
+   <slot>createNewNetwork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>354</x>
+     <y>110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnRemove</sender>
+   <signal>clicked()</signal>
+   <receiver>IRCNetworkSelectionBox</receiver>
+   <slot>removeCurrentNetwork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>208</x>
+     <y>148</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>editCurrentNetwork()</slot>
+  <slot>createNewNetwork()</slot>
+  <slot>removeCurrentNetwork()</slot>
+ </slots>
 </ui>

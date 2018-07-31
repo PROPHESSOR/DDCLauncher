@@ -2,20 +2,20 @@
 // cfgwadseekersites.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2010 "Zalewa" <zalewapl@gmail.com>
@@ -23,18 +23,21 @@
 #ifndef __WADSEEKERCONFIG_SITES_H_
 #define __WADSEEKERCONFIG_SITES_H_
 
-#include "ui_cfgwadseekersites.h"
-#include "gui/configuration/configurationbasebox.h"
-#include <QKeyEvent>
+#include "gui/configuration/configpage.h"
+#include "dptr.h"
+#include <QIcon>
 
-class CFGWadseekerSites : public ConfigurationBaseBox, private Ui::CFGWadseekerSites
+class QUrl;
+
+class CFGWadseekerSites : public ConfigPage
 {
 	Q_OBJECT
 
 	public:
 		CFGWadseekerSites(QWidget* parent = NULL);
+		~CFGWadseekerSites();
 
-		QIcon icon() const { return QIcon(":/icons/emblem-web.png"); }
+		QIcon icon() const { return QIcon(":/icons/internet-web-browser.png"); }
 		QString name() const { return tr("Sites"); }
 		void readSettings();
 		QString title() const { return tr("Wadseeker - Sites"); }
@@ -46,7 +49,11 @@ class CFGWadseekerSites : public ConfigurationBaseBox, private Ui::CFGWadseekerS
 
 	protected:
 		void saveSettings();
-		void insertUrl(const QUrl& url);
+
+	private:
+		DPtr<CFGWadseekerSites> d;
+
+		void insertUrl(const QString& url);
 };
 
 #endif

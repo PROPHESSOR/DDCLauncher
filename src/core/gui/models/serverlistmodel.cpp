@@ -2,20 +2,20 @@
 // serverlistmodel.cpp
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
@@ -36,18 +36,16 @@ using namespace ServerListColumnId;
 
 //////////////////////////////////////////////////////////////
 
-ServerListModel::ServerListModel(ServerListHandler* parent)
+ServerListModel::ServerListModel(ServerList* parent)
 : QStandardItemModel(parent),
   parentHandler(parent)
 {
 	setSortRole(SLDT_SORT);
 }
 
-int ServerListModel::addServer(ServerPtr server, int response)
+int ServerListModel::addServer(ServerPtr server)
 {
-	QList<QStandardItem*> columns;
-	ServerListColumns::generateListOfCells(columns);
-
+	QList<QStandardItem*> columns = ServerListColumns::generateListOfCells();
 	appendRow(columns);
 
 	// Country flag is set only once. Set it here and avoid setting it in
@@ -60,14 +58,7 @@ int ServerListModel::addServer(ServerPtr server, int response)
 		rowHandler.setCountryFlag();
 	}
 
-	return rowHandler.updateServer(response);
-}
-
-void ServerListModel::destroyRows()
-{
-	int rows = rowCount();
-	removeRows(0, rows);
-	emit modelCleared();
+	return rowHandler.updateServer();
 }
 
 int ServerListModel::findServerOnTheList(const Server* server)
@@ -95,8 +86,7 @@ void ServerListModel::redraw(int row)
 
 void ServerListModel::redrawAll()
 {
-	int slotstyle = gConfig.doomseeker.slotStyle;
-	PlayersDiagram::loadImages(slotstyle);
+	PlayersDiagram::loadImages(gConfig.doomseeker.slotStyle);
 
 	for (int i = 0; i < rowCount(); ++i)
 	{
@@ -104,34 +94,73 @@ void ServerListModel::redrawAll()
 	}
 }
 
-void ServerListModel::removeCustomServers()
+QList<ServerPtr> ServerListModel::customServers() const
 {
-	QList<ServerPtr> serversToRemove;
+	QList<ServerPtr> servers;
 	for (int i = 0; i < rowCount(); ++i)
 	{
 		ServerPtr server = serverFromList(i);
 		if (server->isCustom())
 		{
-			serversToRemove.append(server);
+			servers << server;
 		}
 	}
+	return servers;
+}
 
-	foreach (ServerPtr server, serversToRemove)
+QList<ServerPtr> ServerListModel::nonSpecialServers() const
+{
+	QList<ServerPtr> servers;
+	for (int i = 0; i < rowCount(); ++i)
 	{
-		int index = findServerOnTheList(server.data());
-		if (index >= 0)
+		ServerPtr server = serverFromList(i);
+		if (!server->isCustom() && !server->isLan())
 		{
-			removeRow(index);
+			servers << server;
 		}
+	}
+	return servers;
+}
+
+QList<ServerPtr> ServerListModel::servers() const
+{
+	QList<ServerPtr> servers;
+	for (int i = 0; i < rowCount(); ++i)
+	{
+		servers << serverFromList(i);
+	}
+	return servers;
+}
+
+QList<ServerPtr> ServerListModel::serversForPlugin(const EnginePlugin *plugin) const
+{
+	QList<ServerPtr> servers;
+	for (int i = 0; i < rowCount(); ++i)
+	{
+		ServerPtr server = serverFromList(i);
+		if (server->plugin() == plugin)
+		{
+			servers << server;
+		}
+	}
+	return servers;
+}
+
+void ServerListModel::removeServer(const ServerPtr &server)
+{
+	int index = findServerOnTheList(server.data());
+	if (index >= 0)
+	{
+		removeRow(index);
 	}
 }
 
-ServerPtr ServerListModel::serverFromList(int rowIndex)
+ServerPtr ServerListModel::serverFromList(int rowIndex) const
 {
 	return ServerListRowHandler::serverFromList(this, rowIndex);
 }
 
-ServerPtr ServerListModel::serverFromList(const QModelIndex& index)
+ServerPtr ServerListModel::serverFromList(const QModelIndex& index) const
 {
 	return ServerListRowHandler::serverFromList(this, index.row());
 }
@@ -154,15 +183,13 @@ void ServerListModel::setRefreshing(ServerPtr server)
 
 void ServerListModel::prepareHeaders()
 {
-	QStringList labels;
-	ServerListColumns::generateColumnHeaderLabels(labels);
-	setHorizontalHeaderLabels(labels);
+	setHorizontalHeaderLabels(ServerListColumns::generateColumnHeaderLabels());
 }
 
-int ServerListModel::updateServer(int row, ServerPtr server, int response)
+int ServerListModel::updateServer(int row, ServerPtr server)
 {
 	ServerListRowHandler rowHandler(this, row, server);
-	rowHandler.updateServer(response);
+	rowHandler.updateServer();
 
 	return row;
 }

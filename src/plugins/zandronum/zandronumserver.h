@@ -2,23 +2,23 @@
 // zandronumserver.h
 //------------------------------------------------------------------------------
 //
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// 02110-1301, USA.
+// 02110-1301  USA
 //
 //------------------------------------------------------------------------------
-// Copyright (C) 2009 "Blzut3" <admin@maniacsvault.net> (skulltagserver.h)
+// Copyright (C) 2009 Braden "Blzut3" Obrzut <admin@maniacsvault.net> (skulltagserver.h)
 // Copyright (C) 2012 "Zalewa" <zalewapl@gmail.com>
 //------------------------------------------------------------------------------
 #ifndef DOOMSEEKER_PLUGIN_ZANDRONUMSERVER_H
@@ -26,10 +26,7 @@
 
 #include <QString>
 #include <QColor>
-#include <QTime>
-#include <QTimer>
 
-#include "serverapi/rconprotocol.h"
 #include "serverapi/server.h"
 
 #define NUM_ZANDRONUM_GAME_MODES 16
@@ -37,6 +34,7 @@
 #define ST_MAX_TEAMS 4U
 
 class GameClientRunner;
+class RConProtocol;
 class ZandronumServer;
 
 /**
@@ -127,6 +125,8 @@ class ZandronumServer : public Server
 			SQF_DATA_MD5SUM = 0x04000000,
 			SQF_ALL_DMFLAGS = 0x08000000,
 			SQF_SECURITY_SETTINGS= 0x10000000,
+			SQF_OPTIONAL_WADS = 0x20000000,
+			SQF_DEH = 0x40000000,
 
 			SQF_STANDARDQUERY =
 				SQF_NAME|SQF_URL|SQF_EMAIL|SQF_MAPNAME|SQF_MAXCLIENTS|
@@ -134,14 +134,13 @@ class ZandronumServer : public Server
 				SQF_FORCEPASSWORD|SQF_FORCEJOINPASSWORD|SQF_LIMITS|
 				SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER|
 				SQF_TEAMINFO_NAME|SQF_TEAMINFO_SCORE|SQF_GAMESKILL|
-				SQF_TESTING_SERVER|SQF_ALL_DMFLAGS|SQF_SECURITY_SETTINGS
+				SQF_TESTING_SERVER|SQF_ALL_DMFLAGS|SQF_SECURITY_SETTINGS|
+				SQF_OPTIONAL_WADS|SQF_DEH
 		};
 
 		ZandronumServer(const QHostAddress &address, unsigned short port);
 
 		ExeFile *clientExe();
-
-		bool isTestingServer() const { return testingServer; }
 
 		GameHost* gameHost();
 		GameClientRunner* gameRunner();
@@ -156,13 +155,14 @@ class ZandronumServer : public Server
 		QRgb teamColor(unsigned team) const;
 		QString teamName(unsigned team) const;
 
+		PathFinder wadPathFinder();
+
 	protected slots:
 		void updatedSlot(ServerPtr server, int response);
 
 	protected:
 		bool buckshot;
 		bool instagib;
-		bool testingServer;
 
 		float teamDamage;
 
@@ -183,55 +183,9 @@ class ZandronumServer : public Server
 		QByteArray createSendRequest();
 		static unsigned int millisecondTime();
 		Response readRequest(const QByteArray &data);
-};
-
-class ZandronumRConProtocol : public RConProtocol
-{
-	Q_OBJECT
 
 	private:
-		enum
-		{
-			SVRCU_PLAYERDATA = 0,
-			SVRCU_ADMINCOUNT,
-			SVRCU_MAP,
-
-			SVRC_OLDPROTOCOL = 32,
-			SVRC_BANNED,
-			SVRC_SALT,
-			SVRC_LOGGEDIN,
-			SVRC_INVALIDPASSWORD,
-			SVRC_MESSAGE,
-			SVRC_UPDATE,
-
-			CLRC_BEGINCONNECTION = 52,
-			CLRC_PASSWORD,
-			CLRC_COMMAND,
-			CLRC_PONG,
-			CLRC_DISCONNECT
-		};
-
-	public:
-		static RConProtocol *connectToServer(ServerPtr server);
-
-	public slots:
-		void disconnectFromServer();
-		void sendCommand(const QString &cmd);
-		void sendPassword(const QString &password);
-		void sendPong();
-
-	protected:
-		ZandronumRConProtocol(ServerPtr server);
-
-		void processPacket(QIODevice* ioDevice, bool initial=false, int maxUpdates=1);
-
-		QTimer pingTimer;
-		QString hostName;
-		QString salt;
-		int serverProtocolVersion;
-
-	protected slots:
-		void packetReady();
+		void resetPwadsList(const QList<PWad> &wads);
 };
 
 #endif
