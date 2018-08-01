@@ -497,7 +497,7 @@
   <action name="menuActionManageDemos">
    <property name="icon">
     <iconset resource="../../../media/resources.qrc">
-     <normaloff>:/icons/media-playback-start.png</normaloff>:/icons/media-playback-start.png</iconset>
+     <normaloff>:/icons/joystick.png</normaloff>:/icons/joystick.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Demo Manager</string>
@@ -515,7 +515,7 @@
   <action name="menuActionPlayOffline">
    <property name="icon">
     <iconset resource="../../../media/resources.qrc">
-     <normaloff>:/icons/person.png</normaloff>:/icons/person.png</iconset>
+     <normaloff>:/icons/media-playback-start.png</normaloff>:/icons/media-playback-start.png</iconset>
    </property>
    <property name="text">
     <string>Play offline</string>

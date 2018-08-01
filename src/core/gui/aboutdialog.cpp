@@ -28,46 +28,42 @@
 #include "version.h"
 #include <QPixmap>
 
-AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
-{
-	setupUi(this);
+AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent) {
+    setupUi(this);
 
-	connect(buttonBox, SIGNAL( clicked(QAbstractButton *) ), this, SLOT( close() ));
+    connect(buttonBox, SIGNAL( clicked(QAbstractButton *) ), this, SLOT( close() ));
 
-	// Doomseeker
-	versionChangeset->setText(Version::changeset());
-	versionNumber->setText(Version::versionRevision());
-	lblRevision->setText(QString::number(Version::revisionNumber()));
-	logo->setPixmap(QPixmap(":/logo.png"));
+    // Doomseeker
+    versionChangeset->setText(Version::changeset());
+    versionNumber->setText(Version::versionRevision());
+    lblRevision->setText(QString::number(Version::revisionNumber()));
+    // logo->setPixmap(QPixmap(":/logo.png"));
 
-	// Wadseeker
-	wadseekerAuthor->setText(WadseekerVersionInfo::author());
-	wadseekerDescription->setText(WadseekerVersionInfo::description());
-	wadseekerVersion->setText(WadseekerVersionInfo::version());
-	wadseekerYearSpan->setText(WadseekerVersionInfo::yearSpan());
+    // Wadseeker
+    wadseekerAuthor->setText(WadseekerVersionInfo::author());
+    wadseekerDescription->setText(WadseekerVersionInfo::description());
+    wadseekerVersion->setText(WadseekerVersionInfo::version());
+    wadseekerYearSpan->setText(WadseekerVersionInfo::yearSpan());
 
-	// Populate plugins dialog
-	for(unsigned i = 0; i < gPlugins->numPlugins(); ++i)
-	{
-		pluginBox->addItem( gPlugins->plugin(i)->info()->data()->name);
-	}
-	connect(pluginBox, SIGNAL( currentIndexChanged(int) ), this, SLOT( changePlugin(int) ));
-	changePlugin(0);
+    // Populate plugins dialog
+    for(unsigned i = 0; i < gPlugins->numPlugins(); ++i) {
+        pluginBox->addItem( gPlugins->plugin(i)->info()->data()->name);
+    }
+    connect(pluginBox, SIGNAL( currentIndexChanged(int) ), this, SLOT( changePlugin(int) ));
+    changePlugin(0);
 
-	adjustSize();
+    adjustSize();
 }
 
-AboutDialog::~AboutDialog()
-{
+AboutDialog::~AboutDialog() {
 }
 
-void AboutDialog::changePlugin(int pluginIndex)
-{
-	if(static_cast<unsigned> (pluginIndex) >= gPlugins->numPlugins())
-		return; // Invalid plugin.
+void AboutDialog::changePlugin(int pluginIndex) {
+    if(static_cast<unsigned> (pluginIndex) >= gPlugins->numPlugins())
+        return; // Invalid plugin.
 
-	const EnginePlugin* plug = gPlugins->plugin(pluginIndex)->info();
+    const EnginePlugin* plug = gPlugins->plugin(pluginIndex)->info();
 
-	pluginAuthor->setText(plug->data()->author);
-	pluginVersion->setText(QString("Version: %1.%2").arg(plug->data()->abiVersion).arg(plug->data()->version));
+    pluginAuthor->setText(plug->data()->author);
+    pluginVersion->setText(QString("Version: %1.%2").arg(plug->data()->abiVersion).arg(plug->data()->version));
 }

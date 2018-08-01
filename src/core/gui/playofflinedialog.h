@@ -20,8 +20,8 @@
 //------------------------------------------------------------------------------
 // Copyright (C) 2018 PROPHESSOR
 //------------------------------------------------------------------------------
-#ifndef DOOMSEEKER_GUI_CREATESERVERDIALOG_H
-#define DOOMSEEKER_GUI_CREATESERVERDIALOG_H
+#ifndef DOOMSEEKER_GUI_PLAYOFFLINEDIALOG_H
+#define DOOMSEEKER_GUI_PLAYOFFLINEDIALOG_H
 
 #include "ui_playofflinedialog.h"
 #include "serverapi/serverstructs.h"

@@ -1089,13 +1089,13 @@ void MainWindow::setupToolBar() {
     pToolBar->setObjectName("Toolbar");
 
     // Refresh buttons
-    toolBarGetServers = new QAction(QIcon(":/icons/arrow-down-double.png"), tr("Get Servers"), pToolBar);
-    toolBarRefreshAll = new QAction(QIcon(":/icons/view-refresh-2.png"), tr("Refresh All"), pToolBar);
+    toolBarGetServers = new QAction(QIcon(":/icons/view-refresh-2.png"), tr("Get Servers"), pToolBar);
+    toolBarRefreshAll = new QAction(QIcon(":/icons/arrow-down-double.png"), tr("Refresh All"), pToolBar);
 
     // Setup menu
     // Refresh buttons
     pToolBar->addAction(toolBarGetServers);
-    pToolBar->addAction(toolBarRefreshAll);
+    // pToolBar->addAction(toolBarRefreshAll);
 
     // File menu buttons.
     pToolBar->addSeparator();
