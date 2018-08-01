@@ -305,6 +305,7 @@
     </property>
     <addaction name="menuActionConfigure"/>
     <addaction name="menuActionIRCOptions"/>
+    <addaction name="menuActionGameOptions"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -522,6 +523,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="menuActionGameOptions">
+   <property name="text">
+    <string>Game Options</string>
    </property>
   </action>
  </widget>

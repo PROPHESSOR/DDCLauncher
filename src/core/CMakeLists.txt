@@ -77,7 +77,8 @@ qt4_wrap_ui(doomseekerUI
 	gui/configuration/cfgwadseekeridgames.ui
 	gui/configuration/cfgwadseekersites.ui
 	gui/configuration/engineconfigurationbasebox.ui
-	gui/irc/ircdock.ui
+        gui/configuration/gameconfig.ui
+        gui/irc/ircdock.ui
 	gui/irc/ircdocktabcontents.ui
 	gui/irc/ircnetworkselectionbox.ui
 	gui/widgets/serverconsole.ui
@@ -121,7 +122,8 @@ set(DOOMSEEKER_QT_FILES
 	gui/configuration/configurationdialog.h
 	gui/configuration/doomseekerconfigurationdialog.h
 	gui/configuration/engineconfigurationbasebox.h
-	gui/irc/ircdock.h
+        gui/configuration/gameconfig.h
+        gui/irc/ircdock.h
 	gui/irc/ircdocktabcontents.h
 	gui/irc/ircnetworkselectionbox.h
 	gui/models/serverlistcolumn.h
@@ -215,7 +217,7 @@ set(SOURCE_FILES
 	configuration/passwordscfg.cpp
 	configuration/serverpassword.cpp
 	configuration/serverpasswordsummary.cpp
-	gui/configuration/irc/cfgircappearance.cpp
+        gui/configuration/irc/cfgircappearance.cpp
 	gui/configuration/irc/cfgircdefinenetworkdialog.cpp
 	gui/configuration/irc/cfgircnetworks.cpp
 	gui/configuration/irc/cfgircsounds.cpp
@@ -236,7 +238,8 @@ set(SOURCE_FILES
 	gui/configuration/configurationdialog.cpp
 	gui/configuration/doomseekerconfigurationdialog.cpp
 	gui/configuration/engineconfigurationbasebox.cpp
-	gui/entity/serverlistfilterinfo.cpp
+        gui/configuration/gameconfig.cpp
+        gui/entity/serverlistfilterinfo.cpp
 	gui/helpers/comboboxex.cpp
 	gui/helpers/datetablewidgetitem.cpp
 	gui/helpers/playersdiagram.cpp
@@ -394,7 +397,7 @@ set(HEADER_FILES
 	configuration/passwordscfg.h
 	configuration/serverpassword.h
 	configuration/serverpasswordsummary.h
-	gui/entity/serverlistfilterinfo.h
+        gui/entity/serverlistfilterinfo.h
 	gui/helpers/comboboxex.h
 	gui/helpers/datetablewidgetitem.h
 	gui/helpers/playersdiagram.h

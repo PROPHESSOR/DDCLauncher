@@ -19,10 +19,12 @@
 //
 //------------------------------------------------------------------------------
 // Copyright (C) 2009 "Zalewa" <zalewapl@gmail.com>
+// Copyright (C) 2018 PROPHESSOR
 //------------------------------------------------------------------------------
 #include "configuration/doomseekerconfig.h"
 #include "gui/configuration/irc/ircconfigurationdialog.h"
 #include "gui/configuration/doomseekerconfigurationdialog.h"
+#include "gui/configuration/gameconfig.h"
 #include "gui/helpers/playersdiagram.h"
 #include "gui/irc/ircsounds.h"
 #include "gui/widgets/serversstatuswidget.h"
@@ -402,6 +404,7 @@ void MainWindow::connectEntities() {
     connect(menuActionCreateServer, SIGNAL( triggered() ), this, SLOT( menuCreateServer() ));
     connect(menuActionHelp, SIGNAL( triggered() ), this, SLOT ( menuHelpHelp() ) );
     connect(menuActionIRCOptions, SIGNAL( triggered() ), this, SLOT( menuIRCOptions() ) );
+    connect(menuActionGameOptions, SIGNAL( triggered() ), this, SLOT( menuGameOptions() ) );
     connect(menuActionLog, SIGNAL( triggered() ), this, SLOT( menuLog() ));
     connect(menuActionManageDemos, SIGNAL( triggered() ), this, SLOT( menuManageDemos() ) );
     connect(menuActionPlayOffline, SIGNAL( triggered() ), this, SLOT( menuPlayOffline() ));
@@ -836,6 +839,11 @@ void MainWindow::menuIRCOptions() {
         // files, so no harm should be done.
         ircDock->sounds().loadFromConfig();
     }
+}
+
+void MainWindow::menuGameOptions() {
+    GameConfig dialog(NULL);
+    dialog.exec();
 }
 
 void MainWindow::menuLog() {

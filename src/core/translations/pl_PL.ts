@@ -2101,6 +2101,64 @@ Executable: %3</source>
     </message>
 </context>
 <context>
+    <name>GameConfig</name>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="166"/>
+        <source>DDCLauncher - Game Upgrader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="167"/>
+        <source>Executable:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="168"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="169"/>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="170"/>
+        <source>Nick:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="171"/>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="172"/>
+        <source>Colorful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="173"/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_gameconfig.h" line="174"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration/gameconfig.cpp" line="76"/>
+        <source>Game executable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/configuration/gameconfig.cpp" line="76"/>
+        <source>Any file (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GameExeFactory</name>
     <message>
         <location filename="../serverapi/gameexefactory.cpp" line="63"/>
@@ -3174,7 +3232,7 @@ Wadseeker will not download commercial IWADs.
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="105"/>
+        <location filename="../gui/mainwindow.cpp" line="107"/>
         <source>Warning: 
 Doomseeker failed to detect any plugins.
 While the core application will still work its functionality is going to be limited.
@@ -3183,197 +3241,197 @@ One of the proper locations for plugin modules is the &quot;engines/&quot; direc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="112"/>
+        <location filename="../gui/mainwindow.cpp" line="114"/>
         <source>Doomseeker - plugin load failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="120"/>
+        <location filename="../gui/mainwindow.cpp" line="122"/>
         <source>&amp;Buddies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="121"/>
+        <location filename="../gui/mainwindow.cpp" line="123"/>
         <source>CTRL+B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="292"/>
+        <location filename="../gui/mainwindow.cpp" line="294"/>
         <source>Doomseeker - Auto Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="293"/>
+        <location filename="../gui/mainwindow.cpp" line="295"/>
         <source>Update is already in progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="300"/>
+        <location filename="../gui/mainwindow.cpp" line="302"/>
         <source>Removing old update packages from local temporary space.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="305"/>
+        <location filename="../gui/mainwindow.cpp" line="307"/>
         <source>Checking for updates...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="510"/>
+        <location filename="../gui/mainwindow.cpp" line="513"/>
         <source>Senseless refresh operation attempted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="512"/>
+        <location filename="../gui/mainwindow.cpp" line="515"/>
         <source>Doomseeker is unable to proceed with the refresh operation because the following problem has occured:
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="516"/>
+        <location filename="../gui/mainwindow.cpp" line="519"/>
         <source>Plugins are missing from the &quot;engines/&quot; directory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="518"/>
+        <location filename="../gui/mainwindow.cpp" line="521"/>
         <source>No master servers are enabled in the &quot;Query&quot; menu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="520"/>
+        <location filename="../gui/mainwindow.cpp" line="523"/>
         <source>Unknown error occured.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="524"/>
+        <location filename="../gui/mainwindow.cpp" line="527"/>
         <source>Doomseeker - senseless operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="530"/>
+        <location filename="../gui/mainwindow.cpp" line="533"/>
         <source>Total refresh process initialized!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="537"/>
+        <location filename="../gui/mainwindow.cpp" line="540"/>
         <source>Warning: No master servers were enabled for this refresh. Check your Query menu or &quot;engines/&quot; directory. Custom servers will still refresh.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="594"/>
+        <location filename="../gui/mainwindow.cpp" line="597"/>
         <source>Auto Updater:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="609"/>
+        <location filename="../gui/mainwindow.cpp" line="612"/>
         <source>Abort update.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="620"/>
+        <location filename="../gui/mainwindow.cpp" line="623"/>
         <source>IP2C Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="630"/>
+        <location filename="../gui/mainwindow.cpp" line="633"/>
         <source>&amp;IRC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="631"/>
+        <location filename="../gui/mainwindow.cpp" line="634"/>
         <source>CTRL+I</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="644"/>
+        <location filename="../gui/mainwindow.cpp" line="647"/>
         <source>&amp;Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="645"/>
+        <location filename="../gui/mainwindow.cpp" line="648"/>
         <source>CTRL+L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="660"/>
+        <location filename="../gui/mainwindow.cpp" line="663"/>
         <source>Servers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="672"/>
+        <location filename="../gui/mainwindow.cpp" line="675"/>
         <source>Server &amp;Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="673"/>
+        <location filename="../gui/mainwindow.cpp" line="676"/>
         <source>CTRL+D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="765"/>
-        <location filename="../gui/mainwindow.cpp" line="776"/>
+        <location filename="../gui/mainwindow.cpp" line="768"/>
+        <location filename="../gui/mainwindow.cpp" line="779"/>
         <source>Master server for %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="768"/>
+        <location filename="../gui/mainwindow.cpp" line="771"/>
         <source>Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="814"/>
-        <location filename="../gui/mainwindow.cpp" line="821"/>
+        <location filename="../gui/mainwindow.cpp" line="817"/>
+        <location filename="../gui/mainwindow.cpp" line="824"/>
         <source>Help error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="814"/>
+        <location filename="../gui/mainwindow.cpp" line="817"/>
         <source>No help found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="821"/>
+        <location filename="../gui/mainwindow.cpp" line="824"/>
         <source>Failed to open URL:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="888"/>
+        <location filename="../gui/mainwindow.cpp" line="896"/>
         <source>Welcome to Doomseeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="889"/>
+        <location filename="../gui/mainwindow.cpp" line="897"/>
         <source>Before you start browsing for servers, please ensure that Doomseeker is properly configured.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="903"/>
+        <location filename="../gui/mainwindow.cpp" line="911"/>
         <source>Program update detection &amp; download finished with status: [%1] %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="910"/>
+        <location filename="../gui/mainwindow.cpp" line="918"/>
         <source>Updates will be installed on next program start.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="915"/>
+        <location filename="../gui/mainwindow.cpp" line="923"/>
         <source>Update channel was changed during update process. Discarding update.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="950"/>
+        <location filename="../gui/mainwindow.cpp" line="958"/>
         <source>Query on startup warning: No master servers are enabled in the Query menu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="965"/>
+        <location filename="../gui/mainwindow.cpp" line="973"/>
         <source>Doomseeker critical error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="966"/>
+        <location filename="../gui/mainwindow.cpp" line="974"/>
         <source>Doomseeker was unable to find any plugin libraries.
 Although the application will still work it will not be possible to fetch any server info or launch any game.
 
@@ -3382,66 +3440,66 @@ To fix this problem you may try downloading Doomseeker again from the site speci
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1009"/>
+        <location filename="../gui/mainwindow.cpp" line="1017"/>
         <source>Querying...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1018"/>
+        <location filename="../gui/mainwindow.cpp" line="1026"/>
         <source>Done</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1087"/>
+        <location filename="../gui/mainwindow.cpp" line="1095"/>
         <source>Main Toolbar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1092"/>
+        <location filename="../gui/mainwindow.cpp" line="1100"/>
         <source>Get Servers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1093"/>
+        <location filename="../gui/mainwindow.cpp" line="1101"/>
         <source>Refresh All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1129"/>
+        <location filename="../gui/mainwindow.cpp" line="1137"/>
         <source>Search:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1140"/>
+        <location filename="../gui/mainwindow.cpp" line="1148"/>
         <source>Doomseeker - join command line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1157"/>
+        <location filename="../gui/mainwindow.cpp" line="1165"/>
         <source>Update installation problem:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1159"/>
+        <location filename="../gui/mainwindow.cpp" line="1167"/>
         <source>Update installation failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1161"/>
         <location filename="../gui/mainwindow.cpp" line="1169"/>
+        <location filename="../gui/mainwindow.cpp" line="1177"/>
         <source>Doomseeker - Auto Update problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1162"/>
+        <location filename="../gui/mainwindow.cpp" line="1170"/>
         <source>%1
 
 Remaining updates have been discarded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1166"/>
+        <location filename="../gui/mainwindow.cpp" line="1174"/>
         <source>Update install problem:
 %1
 
@@ -3449,7 +3507,7 @@ Remaining updates have been discarded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1232"/>
+        <location filename="../gui/mainwindow.cpp" line="1240"/>
         <source>Finished refreshing. Servers on the list: %1 (+ %2 custom). Players: %3.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3457,207 +3515,212 @@ Remaining updates have been discarded.</source>
 <context>
     <name>MainWindowWnd</name>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="340"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="344"/>
         <source>Doomseeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="341"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="345"/>
         <source>&amp;Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="342"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="346"/>
         <source>F5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="343"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="347"/>
         <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="344"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="348"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="345"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="349"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="346"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="350"/>
         <source>Server Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="347"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="351"/>
         <source>I</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="348"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="352"/>
         <source>&amp;Wadseeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="349"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="353"/>
         <source>Ctrl+Alt+W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="350"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="354"/>
         <source>&amp;Buddies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="351"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="355"/>
         <source>Ctrl+B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="352"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="356"/>
         <source>&amp;Create Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="353"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="357"/>
         <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="354"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="358"/>
         <source>&amp;Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="355"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="359"/>
         <source>Ctrl+L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="356"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="360"/>
         <source>&amp;Help (Online)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="357"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="361"/>
         <source>F1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="358"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="362"/>
         <source>&amp;Update IP2C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="359"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="363"/>
         <source>&amp;IRC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="360"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="364"/>
         <source>Ctrl+I</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="361"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="365"/>
         <source>&amp;IRC Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="362"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="366"/>
         <source>F6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="363"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="367"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="364"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="368"/>
         <source>&amp;Record Demo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="365"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="369"/>
         <source>&amp;Demo Manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="366"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="370"/>
         <source>&amp;Check for Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="367"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="371"/>
         <source>Play offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="368"/>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="372"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="370"/>
-        <source>New updates are available:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="371"/>
-        <source>Download &amp;&amp; Install</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="372"/>
-        <source>Discard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="374"/>
-        <source>Updates have been downloaded:</source>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="373"/>
+        <source>Game Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="375"/>
-        <source>Restart &amp;&amp; Install Now</source>
+        <source>New updates are available:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="376"/>
-        <source>Restart &amp;&amp; Install Later</source>
+        <source>Download &amp;&amp; Install</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="377"/>
-        <source>Server filter is applied</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build/src/core/ui_mainwindow.h" line="378"/>
-        <source>&amp;Options</source>
+        <source>Discard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="379"/>
-        <source>&amp;Help</source>
+        <source>Updates have been downloaded:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="380"/>
-        <source>&amp;File</source>
+        <source>Restart &amp;&amp; Install Now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="381"/>
-        <source>&amp;View</source>
+        <source>Restart &amp;&amp; Install Later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="382"/>
+        <source>Server filter is applied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="383"/>
+        <source>&amp;Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="384"/>
+        <source>&amp;Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="385"/>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="386"/>
+        <source>&amp;View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_mainwindow.h" line="387"/>
         <source>&amp;Query</source>
         <translation type="unfinished"></translation>
     </message>

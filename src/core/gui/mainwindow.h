@@ -281,6 +281,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindowWnd {
     void menuHelpAbout();
     void menuHelpHelp();
     void menuIRCOptions();
+    void menuGameOptions();
     void menuLog();
     void menuManageDemos();
     void menuOptionsConfigure();
