@@ -4,49 +4,58 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="392"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="403"/>
         <source>About Doomseeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="393"/>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="421"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="413"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/DDCLauncher/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHub.com/PROPHESSOR/DDCLauncher/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="433"/>
         <source>Doomseeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="394"/>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="423"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="406"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="435"/>
         <source>&lt;Version&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="395"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="404"/>
+        <source>DDCLauncher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="405"/>
+        <source>Discord Doom Community Launcher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="407"/>
         <source>&lt;Changeset&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="396"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="408"/>
         <source>Revision:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="398"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="410"/>
         <source>This value is relevant to auto updater feature.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="400"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="412"/>
         <source>&lt;Revision&gt;</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="401"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/doomseeker/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHub.com/PROPHESSOR/DoomSeeker/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message utf8="true">
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="402"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="414"/>
         <source>Copyright © 2009 - 2014 The Doomseeker Team
 Copyright © 2018 PROPHESSOR
 
@@ -54,57 +63,57 @@ This program is distributed under the terms of the GPL v2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="406"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="418"/>
         <source>Contact information:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="407"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="419"/>
         <source>Blzut3:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="408"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="420"/>
         <source>admin@maniacsvault.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="409"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="421"/>
         <source>zalewapl@gmail.com</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="410"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="422"/>
         <source>Zalewa:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="411"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="423"/>
         <source>PROPHESSOR:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="412"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="424"/>
         <source>xenteze@gmail.com</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="413"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="425"/>
         <source>Additional contributions from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="414"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="426"/>
         <source>Eruanna, Hyper_Eye, Nece228</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="415"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="427"/>
         <source>JSON library on BSD License (c) Eeli Reilin 2011 :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="416"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="428"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -113,48 +122,48 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="422"/>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="429"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="434"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="441"/>
         <source>Wadseeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="424"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="436"/>
         <source>&lt;a href=&quot;http://doomseeker.drdteam.org/&quot;&gt;http://doomseeker.drdteam.org/&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message utf8="true">
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="425"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="437"/>
         <source>Copyright ©</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="426"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="438"/>
         <source>&lt;YearSpan&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="427"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="439"/>
         <source>&lt;Author&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="428"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="440"/>
         <source>&lt;Description&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="430"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="442"/>
         <source>Version: 0.0.0.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="431"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="443"/>
         <source>&lt;Plugin Author&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="432"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="444"/>
         <source>Plugins</source>
         <translation type="unfinished"></translation>
     </message>

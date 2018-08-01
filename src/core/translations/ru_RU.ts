@@ -4,49 +4,58 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="392"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="403"/>
         <source>About Doomseeker</source>
         <translation>О программе DDCLauncher</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="393"/>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="421"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="413"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/DDCLauncher/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHub.com/PROPHESSOR/DDCLauncher/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="433"/>
         <source>Doomseeker</source>
         <translation>DDC Launcher</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="394"/>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="423"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="406"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="435"/>
         <source>&lt;Version&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="395"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="404"/>
+        <source>DDCLauncher</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="405"/>
+        <source>Discord Doom Community Launcher</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="407"/>
         <source>&lt;Changeset&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="396"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="408"/>
         <source>Revision:</source>
         <translation>Ревизия:</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="398"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="410"/>
         <source>This value is relevant to auto updater feature.</source>
         <translation>Это значение относится к автообновлению.</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="400"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="412"/>
         <source>&lt;Revision&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="401"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/PROPHESSOR/doomseeker/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHub.com/PROPHESSOR/DoomSeeker/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="402"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="414"/>
         <source>Copyright © 2009 - 2014 The Doomseeker Team
 Copyright © 2018 PROPHESSOR
 
@@ -57,57 +66,57 @@ Copyright © 2018 PROPHESSOR
 Эта программа распространяется на правах лицензии GPL v2.</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="406"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="418"/>
         <source>Contact information:</source>
         <translation>Контактная информация:</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="407"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="419"/>
         <source>Blzut3:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="408"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="420"/>
         <source>admin@maniacsvault.net</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="409"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="421"/>
         <source>zalewapl@gmail.com</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="410"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="422"/>
         <source>Zalewa:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="411"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="423"/>
         <source>PROPHESSOR:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="412"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="424"/>
         <source>xenteze@gmail.com</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="413"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="425"/>
         <source>Additional contributions from:</source>
         <translation>Так же, приняли участие в разработке:</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="414"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="426"/>
         <source>Eruanna, Hyper_Eye, Nece228</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="415"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="427"/>
         <source>JSON library on BSD License (c) Eeli Reilin 2011 :</source>
         <translation>JSON библиотека с BSD лицензией (c) Eeli Reilin 2011 :</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="416"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="428"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -116,48 +125,48 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="422"/>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="429"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="434"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="441"/>
         <source>Wadseeker</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="424"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="436"/>
         <source>&lt;a href=&quot;http://doomseeker.drdteam.org/&quot;&gt;http://doomseeker.drdteam.org/&lt;/a&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="425"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="437"/>
         <source>Copyright ©</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="426"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="438"/>
         <source>&lt;YearSpan&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="427"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="439"/>
         <source>&lt;Author&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="428"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="440"/>
         <source>&lt;Description&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="430"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="442"/>
         <source>Version: 0.0.0.0</source>
         <translation>Версия: 0.0.0.0</translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="431"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="443"/>
         <source>&lt;Plugin Author&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../build/src/core/ui_aboutdialog.h" line="432"/>
+        <location filename="../../../build/src/core/ui_aboutdialog.h" line="444"/>
         <source>Plugins</source>
         <translation>Плагины</translation>
     </message>
@@ -211,7 +220,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../apprunner.cpp" line="86"/>
         <location filename="../apprunner.cpp" line="119"/>
         <source>Starting (working dir %1): %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Запускаю (рабочий каталог %1): %2</translation>
     </message>
     <message>
         <location filename="../apprunner.cpp" line="107"/>
@@ -305,7 +314,7 @@ cannot be run</source>
     <message>
         <location filename="../updater/autoupdater.cpp" line="217"/>
         <source>Unknown error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Неизвестная ошибка.</translation>
     </message>
     <message>
         <location filename="../updater/autoupdater.cpp" line="261"/>
@@ -795,7 +804,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_cfgircdefinenetworkdialog.h" line="267"/>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Порт:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgircdefinenetworkdialog.h" line="268"/>
@@ -805,7 +814,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_cfgircdefinenetworkdialog.h" line="269"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Основное</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgircdefinenetworkdialog.h" line="270"/>
@@ -924,7 +933,7 @@ Do you wish to save the script anyway?</source>
     <message>
         <location filename="../../../build/src/core/ui_cfgircnetworks.h" line="92"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Добавить</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgircnetworks.h" line="93"/>
@@ -934,7 +943,7 @@ Do you wish to save the script anyway?</source>
     <message>
         <location filename="../../../build/src/core/ui_cfgircnetworks.h" line="94"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Убрать</translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/cfgircnetworks.cpp" line="170"/>
@@ -944,7 +953,7 @@ Do you wish to save the script anyway?</source>
     <message>
         <location filename="../gui/configuration/irc/cfgircnetworks.cpp" line="170"/>
         <source>Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IP/Адрес</translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/cfgircnetworks.h" line="43"/>
@@ -1146,12 +1155,12 @@ Do you wish to save the script anyway?</source>
     <message>
         <location filename="../../../build/src/core/ui_cfgserverpasswords.h" line="195"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Название</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgserverpasswords.h" line="197"/>
         <source>Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IP/Адрес</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgserverpasswords.h" line="200"/>
@@ -1161,7 +1170,7 @@ Do you wish to save the script anyway?</source>
     <message>
         <location filename="../../../build/src/core/ui_cfgserverpasswords.h" line="201"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Добавить</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgserverpasswords.h" line="202"/>
@@ -1198,47 +1207,47 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="109"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="110"/>
         <source>Aliases listed here will be used if WADs are not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Аналоги, указанные здесь будут использоваться, если вады не будут найдены.</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="112"/>
         <source>WAD</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="114"/>
         <source>Aliases</source>
-        <translation type="unfinished"></translation>
+        <translation>Альтернативы</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="115"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="116"/>
         <source>Add Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить стандартно</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="117"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Убрать</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadalias.h" line="118"/>
         <source>Multiple aliases can be separated with semicolon &apos;;&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Несколько альтернатив можно разделить с помощью точки с запятой &quot;;&quot;</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadalias.h" line="46"/>
         <source>WAD Aliases</source>
-        <translation type="unfinished"></translation>
+        <translation>Альтернативы WAD&apos;ов</translation>
     </message>
 </context>
 <context>
@@ -1246,32 +1255,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekerappearance.h" line="107"/>
         <source>Message colors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет сообщений:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekerappearance.h" line="108"/>
         <source>Notice:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уведомление:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekerappearance.h" line="110"/>
         <source>Error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekerappearance.h" line="112"/>
         <source>Critical error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Критическая ошибка:</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekerappearance.h" line="37"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешний вид</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekerappearance.h" line="39"/>
         <source>Wadseeker - Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Wadseeker - Внешний вид</translation>
     </message>
 </context>
 <context>
@@ -1279,7 +1288,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="216"/>
         <source>Directory where Wadseeker will put WADs into:</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка для скачивания WAD&apos;ов:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="218"/>
@@ -1291,12 +1300,17 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Time after which Wadseeker stops connecting if no response is received.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;(min: 20 seconds, max: 360 seconds)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Время, спустя которое которого Wadseeker забьёт болт на скачивание, если сайт не отвечает.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;(мин: 20 секунд, макс: 360 секунд)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="225"/>
         <source>Connect timeout (seconds):</source>
-        <translation type="unfinished"></translation>
+        <translation>Время ожидания соединения (в секундах):</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="235"/>
@@ -1308,33 +1322,38 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Time after which Wadseeker stops downloading if data stops coming.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;(min: 60 seconds, max: 360 seconds)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Время, спустя которое Wadseeker забьёт болт на скачивание, если соединение прервалось.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;(мин: 60 секунд, макс: 360 секунд)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="242"/>
         <source>Download timeout (seconds):</source>
-        <translation type="unfinished"></translation>
+        <translation>Время ожидания загрузки (в секундах):</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="259"/>
         <source>Max concurrent site seeks:</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество сайтов для одновременного поиска:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekergeneral.h" line="268"/>
         <source>Max concurrent WAD downloads:</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество одновременно скачиваемых вадов:</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekergeneral.cpp" line="67"/>
         <location filename="../gui/configuration/cfgwadseekergeneral.cpp" line="93"/>
         <source>Wadseeker - error</source>
-        <translation type="unfinished"></translation>
+        <translation>Wadseeker - Ошибка</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekergeneral.cpp" line="68"/>
         <source>The target directory you selected for Wadseeker can not be written to.</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка для скачивания вадов недоступна для записи.</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekergeneral.cpp" line="94"/>
@@ -1346,12 +1365,12 @@ Doomseeker will automatically add this path to the file search paths.</source>
     <message>
         <location filename="../gui/configuration/cfgwadseekergeneral.h" line="37"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Основное</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekergeneral.h" line="39"/>
         <source>Wadseeker - General</source>
-        <translation type="unfinished"></translation>
+        <translation>Wadseeker - Основное</translation>
     </message>
 </context>
 <context>
@@ -1359,27 +1378,27 @@ Doomseeker will automatically add this path to the file search paths.</source>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekeridgames.h" line="97"/>
         <source>Use Idgames archive</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать архив Idgames</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekeridgames.h" line="98"/>
         <source>Idgames archive URL (changing this is NOT recommended):</source>
-        <translation type="unfinished"></translation>
+        <translation>URL Idgames архива (лучше не трогать):</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekeridgames.h" line="99"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>По умолчанию</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekeridgames.h" line="38"/>
         <source>Idgames</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekeridgames.h" line="40"/>
         <source>Wadseeker - Idgames</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1387,32 +1406,32 @@ Doomseeker will automatically add this path to the file search paths.</source>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekersites.h" line="95"/>
         <source>Adds default URLs to the list. No URL that is currently on the list will be removed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить новый сайт в список для поиска вадов.</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekersites.h" line="97"/>
         <source>Add Defaults</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить сайт</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekersites.h" line="98"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_cfgwadseekersites.h" line="99"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Убрать</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekersites.h" line="38"/>
         <source>Sites</source>
-        <translation type="unfinished"></translation>
+        <translation>Сайты</translation>
     </message>
     <message>
         <location filename="../gui/configuration/cfgwadseekersites.h" line="40"/>
         <source>Wadseeker - Sites</source>
-        <translation type="unfinished"></translation>
+        <translation>Wadseeker - Сайты</translation>
     </message>
 </context>
 <context>
@@ -1430,17 +1449,17 @@ Doomseeker will automatically add this path to the file search paths.</source>
         <location filename="../connectionhandler.cpp" line="79"/>
         <location filename="../connectionhandler.cpp" line="175"/>
         <source>Doomseeker - join server</source>
-        <translation type="unfinished"></translation>
+        <translation>DDCLauncher - Зайти на сервер</translation>
     </message>
     <message>
         <location filename="../connectionhandler.cpp" line="76"/>
         <source>Connection to server timed out.</source>
-        <translation type="unfinished"></translation>
+        <translation>Время на подключение к серверу истекло.</translation>
     </message>
     <message>
         <location filename="../connectionhandler.cpp" line="79"/>
         <source>An error occured while trying to connect to server.</source>
-        <translation type="unfinished"></translation>
+        <translation>При попытке подключения к серверу возникла ошибка.</translation>
     </message>
     <message>
         <location filename="../connectionhandler.cpp" line="188"/>
@@ -1450,7 +1469,7 @@ Doomseeker will automatically add this path to the file search paths.</source>
     <message>
         <location filename="../connectionhandler.cpp" line="190"/>
         <source>Doomseeker - launch executable</source>
-        <translation type="unfinished"></translation>
+        <translation>DDCLauncher - Запустить бинарник</translation>
     </message>
 </context>
 <context>
@@ -1594,7 +1613,7 @@ Doomseeker will automatically add this path to the file search paths.</source>
     <message>
         <location filename="../../../build/src/core/ui_createserverdialog.h" line="646"/>
         <source>Difficulty:</source>
-        <translation>Сложность</translation>
+        <translation>Сложность:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_createserverdialog.h" line="647"/>
@@ -1793,7 +1812,9 @@ p, li { white-space: pre-wrap; }
         <source>Server binary for engine &quot;%1&quot; cannot be obtained.
 Following error has occured:
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Запускной файл движка &quot;%1&quot; недоступен.
+Произошла ошибка:
+%2</translation>
     </message>
     <message>
         <location filename="../gui/createserverdialog.cpp" line="797"/>
@@ -1881,7 +1902,7 @@ Default executable will be used.</source>
     <message>
         <location filename="../gui/demomanager.cpp" line="245"/>
         <source>The &quot;%1&quot; plugin does not appear to be loaded.</source>
-        <translation type="unfinished"></translation>
+        <translation>Плагин &quot;%1&quot; не может быть загружен.</translation>
     </message>
     <message>
         <location filename="../gui/demomanager.cpp" line="259"/>
@@ -2097,7 +2118,7 @@ Executable: %3</source>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="404"/>
         <source>Game can be installed by Doomseeker</source>
-        <translation type="unfinished"></translation>
+        <translation>Игра может быть установлена с помощью DDCLauncher</translation>
     </message>
     <message>
         <location filename="../serverapi/gameclientrunner.cpp" line="410"/>
@@ -2434,17 +2455,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="34"/>
         <source>Doomseeker - IRC Options</source>
-        <translation type="unfinished"></translation>
+        <translation>DDCLauncher - Настройки IRC</translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="41"/>
         <source>Settings saved!</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки сохранены!</translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="45"/>
         <source>Settings save failed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки НЕ сохранены!</translation>
     </message>
     <message>
         <location filename="../gui/configuration/irc/ircconfigurationdialog.cpp" line="84"/>
@@ -2472,12 +2493,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../irc/ircctcpparser.cpp" line="139"/>
         <source>REQUEST</source>
-        <translation type="unfinished"></translation>
+        <translation>ЗАПРОС</translation>
     </message>
     <message>
         <location filename="../irc/ircctcpparser.cpp" line="141"/>
         <source>REPLY</source>
-        <translation type="unfinished"></translation>
+        <translation>ОТВЕТ</translation>
     </message>
     <message>
         <location filename="../irc/ircctcpparser.cpp" line="143"/>
@@ -2490,24 +2511,24 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_ircdock.h" line="74"/>
         <source>IRC</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="200"/>
         <source>Connect</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключиться</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="201"/>
         <location filename="../gui/irc/ircdock.cpp" line="282"/>
         <source>Open chat window</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть окно чата</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="274"/>
         <location filename="../gui/irc/ircdock.cpp" line="278"/>
         <source>Doomseeker IRC - Open chat window</source>
-        <translation type="unfinished"></translation>
+        <translation>DDCLauncher IRC - Открыть окно чата</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="274"/>
@@ -2517,12 +2538,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="278"/>
         <source>You are not connected to this network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы не подключены к этой сети.</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdock.cpp" line="282"/>
         <source>Specify a channel or user name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Укажите канал, или ник участника:</translation>
     </message>
 </context>
 <context>
@@ -2530,22 +2551,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_ircdocktabcontents.h" line="138"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircdocktabcontents.h" line="139"/>
         <source>Send</source>
-        <translation type="unfinished"></translation>
+        <translation>Отправить</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircdocktabcontents.h" line="140"/>
         <source>Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircdocktabcontents.h" line="142"/>
         <source>Do not scroll text area</source>
-        <translation type="unfinished"></translation>
+        <translation>Не прокручивать поле для ввода</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="51"/>
@@ -2568,72 +2589,72 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="390"/>
         <source>Error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ошибка: %1</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="682"/>
         <source>Ban user</source>
-        <translation type="unfinished"></translation>
+        <translation>Забанить участника</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="682"/>
         <source>Input reason for banning user %1 from channel %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите причину для бана участника %1 в канале %2</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="720"/>
         <source>Kick user</source>
-        <translation type="unfinished"></translation>
+        <translation>Выгнать участника</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="720"/>
         <source>Input reason for kicking user %1 from channel %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите причину для изгнания участника %1 из канала %2</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="762"/>
         <source>Open chat window</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть окно чата</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="768"/>
         <source>Op</source>
-        <translation type="unfinished"></translation>
+        <translation>Дать админку (Op)</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="769"/>
         <source>Deop</source>
-        <translation type="unfinished"></translation>
+        <translation>Забрать админку (Deop)</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="770"/>
         <source>Half op</source>
-        <translation type="unfinished"></translation>
+        <translation>Дать частичную админку (Half op)</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="771"/>
         <source>De half op</source>
-        <translation type="unfinished"></translation>
+        <translation>Забрать частичную админку (De half op)</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="772"/>
         <source>Voice</source>
-        <translation type="unfinished"></translation>
+        <translation>Дать право голоса</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="773"/>
         <source>Devoice</source>
-        <translation type="unfinished"></translation>
+        <translation>Забрать право голоса</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="775"/>
         <source>Kick</source>
-        <translation type="unfinished"></translation>
+        <translation>Выгнать</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircdocktabcontents.cpp" line="776"/>
         <source>Ban</source>
-        <translation type="unfinished"></translation>
+        <translation>Забанить</translation>
     </message>
 </context>
 <context>
@@ -2661,22 +2682,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="204"/>
         <source>Command is too long.</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда очень длинная.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="208"/>
         <source>Not a chat window.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это не окно чата.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="217"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Выход</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="320"/>
         <source>IRC: Successfuly registered on network %1 [%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation>IRC: Успешно зарегистрирован в сети %1 [%2: %3]</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="359"/>
@@ -2686,42 +2707,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="410"/>
         <source>You have been kicked from channel %1 by %2 (Reason: %3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы были выгнаны из канала %1 участником %2 (Причина: %3)</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="415"/>
         <source>%1 was kicked by %2 (%3)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 изгнан из канала участником %2 (%3)</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="467"/>
         <source>%1 sets mode: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 изменил режим: %2</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="490"/>
         <source>Nickname %1 is already taken.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ник %1 уже занят.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="497"/>
         <source>Both nickname and alternate nickname are taken on this network.</source>
-        <translation type="unfinished"></translation>
+        <translation>И основной, и альтернативный ник уже заняты в этой сети.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="501"/>
         <source>No alternate nickname specified.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не указан альтернативный ник.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="507"/>
         <source>Using alternate nickname %1 to join.</source>
-        <translation type="unfinished"></translation>
+        <translation>Использование альтернативного ника %1 для входа.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="516"/>
         <source>User %1 is not logged in.</source>
-        <translation type="unfinished"></translation>
+        <translation>Участник %1 не залогинен.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="542"/>
@@ -2731,17 +2752,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="568"/>
         <source>FROM %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>ОТ %1: %2</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="638"/>
         <source>Updated own nickname.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновил свой ник.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="698"/>
         <source>You left channel %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы покинули канал %1.</translation>
     </message>
     <message>
         <location filename="../irc/ircnetworkadapter.cpp" line="732"/>
@@ -2751,7 +2772,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../irc/ircnetworkadapter.h" line="78"/>
         <source>Doomseeker End Of Line</source>
-        <translation type="unfinished"></translation>
+        <translation>DDCLauncher Конец Строки</translation>
     </message>
 </context>
 <context>
@@ -2759,82 +2780,82 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="193"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Диалог</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="194"/>
         <source>Nick:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ник:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="195"/>
         <source>DSTest</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="196"/>
         <source>Alternate nick:</source>
-        <translation type="unfinished"></translation>
+        <translation>Альтернативный ник:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="197"/>
         <source>DSTestA</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="198"/>
         <source>Real name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Реальное имя:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="199"/>
         <source>Doomseeker Tester</source>
-        <translation type="unfinished"></translation>
+        <translation>DDCLauncher Tester</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="200"/>
         <source>New</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="201"/>
         <source>Server address:</source>
-        <translation type="unfinished"></translation>
+        <translation>Адрес сервера:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="202"/>
         <source>74.207.247.18</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="203"/>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation>Порт:</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_ircnetworkselectionbox.h" line="204"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль:</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="54"/>
         <source>&lt;Last Used Configuration&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;Последние использованые настройки&gt;</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="158"/>
         <source>IRC connection error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка подключения к IRC</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="163"/>
         <source>You must specify a nick.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы должны указать ник.</translation>
     </message>
     <message>
         <location filename="../gui/irc/ircnetworkselectionbox.cpp" line="169"/>
         <source>You must specify a network address.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы должны указать адрес сети.</translation>
     </message>
 </context>
 <context>
@@ -2860,7 +2881,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="159"/>
         <source>Topic: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Тема: %1</translation>
     </message>
     <message>
         <location filename="../irc/ircresponseparser.cpp" line="171"/>
@@ -3679,7 +3700,7 @@ Remaining updates have been discarded.</source>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="380"/>
         <source>&amp;File</source>
-        <translation>&amp;Помощь</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../../../build/src/core/ui_mainwindow.h" line="381"/>
@@ -4565,12 +4586,12 @@ Default executable will be used.</source>
         <location filename="../updater/updateinstaller.cpp" line="91"/>
         <location filename="../updater/updateinstaller.cpp" line="123"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="93"/>
         <source>Nothing to update.</source>
-        <translation type="unfinished"></translation>
+        <translation>Нечего обновлять.</translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="95"/>
@@ -4615,7 +4636,7 @@ Default executable will be used.</source>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="143"/>
         <source>Installing update.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устанавливаю обновление.</translation>
     </message>
     <message>
         <location filename="../updater/updateinstaller.cpp" line="158"/>
